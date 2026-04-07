@@ -3,108 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Салодкая Мара Каталог</title>
+    <title>Салодкая Мара</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { --main-color: #8b5a2b; --accent-color: #e67e22; --bg-color: #fdfaf5; }
-        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg-color); margin: 0; padding: 15px; padding-bottom: 100px; color: #333; }
-        .header { text-align: center; margin-bottom: 20px; }
-        .header h1 { font-size: 24px; color: var(--main-color); margin: 0; }
-        .category-title { border-left: 4px solid var(--accent-color); padding-left: 10px; margin: 25px 0 15px; font-size: 18px; color: var(--main-color); }
+        body { font-family: sans-serif; background: var(--bg-color); margin: 0; padding: 15px; padding-bottom: 100px; }
+        .header { text-align: center; color: var(--main-color); margin-bottom: 20px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; }
-        .card img { width: 100%; height: 110px; object-fit: cover; background: #eee; }
-        .card-content { padding: 10px; flex-grow: 1; display: flex; flex-direction: column; }
-        .card h3 { font-size: 14px; margin: 0 0 5px; line-height: 1.2; height: 34px; overflow: hidden; }
-        .card p { font-size: 11px; color: #777; margin: 0 0 10px; line-height: 1.2; flex-grow: 1; }
-        .card-footer { display: flex; justify-content: space-between; align-items: center; }
-        .price { font-weight: bold; color: var(--accent-color); font-size: 15px; }
-        .add-btn { background: var(--main-color); color: white; border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; z-index: 100; }
-        .total-price { font-weight: bold; font-size: 20px; color: var(--main-color); }
-        .main-button { background: var(--accent-color); color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: bold; font-size: 16px; }
+        .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        .card img { width: 100%; height: 110px; object-fit: cover; }
+        .card-info { padding: 10px; flex-grow: 1; }
+        .card h3 { font-size: 14px; margin: 0; height: 35px; overflow: hidden; }
+        .price { color: var(--accent-color); font-weight: bold; margin-top: 5px; display: block; }
+        .add-btn { background: var(--main-color); color: white; border: none; width: 100%; padding: 8px; border-radius: 10px; margin-top: 10px; font-weight: bold; }
+        .footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #ddd; }
+        .main-btn { background: var(--accent-color); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="header"><h1>✨ Салодкая Мара ✨</h1></div>
-
-    <div class="category-title">Орешки</div>
     <div class="grid">
         <div class="card">
-            <img src="orshki.PNG" alt="Орешки">
-            <div class="card-content">
-                <h3>Орешки со сгущёнкой</h3>
-                <p>Классика из детства</p>
-                <div class="card-footer">
-                    <span class="price">1.1 BYN</span>
-                    <button class="add-btn" onclick="addToCart('Орешки кл.', 1.1)">+</button>
-                </div>
+            <img src="orshki.PNG">
+            <div class="card-info">
+                <h3>Орешки классика</h3>
+                <span class="price">1.1 BYN</span>
+                <button class="add-btn" onclick="add('Орешки кл.', 1.1)">В корзину</button>
             </div>
         </div>
         <div class="card">
-            <img src="oreshki s orehom.PNG" alt="С орехом">
-            <div class="card-content">
+            <img src="oreshki s orehom.PNG">
+            <div class="card-info">
                 <h3>Орешки с орехом</h3>
-                <p>Фундук, миндаль, грецкий</p>
-                <div class="card-footer">
-                    <span class="price">1.5 BYN</span>
-                    <button class="add-btn" onclick="addToCart('Орешки с ор.', 1.5)">+</button>
-                </div>
+                <span class="price">1.5 BYN</span>
+                <button class="add-btn" onclick="add('Орешки с ор.', 1.5)">В корзину</button>
             </div>
         </div>
         <div class="card">
-            <img src="kokosovoe.PNG" alt="Кокос">
-            <div class="card-content">
+            <img src="kokosovoe.PNG">
+            <div class="card-info">
                 <h3>Кокосовое</h3>
-                <p>Нежное кокосовое тесто</p>
-                <div class="card-footer">
-                    <span class="price">2.5 BYN</span>
-                    <button class="add-btn" onclick="addToCart('Кокосовое', 2.5)">+</button>
-                </div>
+                <span class="price">2.5 BYN</span>
+                <button class="add-btn" onclick="add('Кокосовое', 2.5)">В корзину</button>
             </div>
         </div>
         <div class="card">
-            <img src="trubochki.PNG" alt="Трубочки">
-            <div class="card-content">
+            <img src="trubochki.PNG">
+            <div class="card-info">
                 <h3>Трубочка</h3>
-                <p>Много вареной сгущёнки</p>
-                <div class="card-footer">
-                    <span class="price">4.0 BYN</span>
-                    <button class="add-btn" onclick="addToCart('Трубочка', 4.0)">+</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="category-title">Пирожные</div>
-    <div class="grid">
-        <div class="card">
-            <img src="gribochki.PNG" alt="Грибочки">
-            <div class="card-content">
-                <h3>Грибочки</h3>
-                <p>Со сгущёнкой и глазурью</p>
-                <div class="card-footer">
-                    <span class="price">2.5 BYN</span>
-                    <button class="add-btn" onclick="addToCart('Грибочки', 2.5)">+</button>
-                </div>
-            </div>
-        </div>
-        <div class="card">
-            <img src="gribochek.PNG" alt="Грибочек">
-            <div class="card-content">
-                <h3>Грибочек</h3>
-                <p>Классический вкус</p>
-                <div class="card-footer">
-                    <span class="price">2.5 BYN</span>
-                    <button class="add-btn" onclick="addToCart('Грибочек', 2.5)">+</button>
-                </div>
+                <span class="price">4.0 BYN</span>
+                <button class="add-btn" onclick="add('Трубочка', 4.0)">В корзину</button>
             </div>
         </div>
     </div>
 
     <div class="footer">
-        <div class="total-price"><span id="total">0</span> BYN</div>
-        <button class="main-button" onclick="sendOrder()">Заказать</button>
+        <div style="font-weight:bold"><span id="total">0</span> BYN</div>
+        <button class="main-btn" onclick="send()">Заказать</button>
     </div>
 
     <script>
@@ -113,27 +68,16 @@
         let total = 0;
         let cart = {};
 
-        function addToCart(name, price) {
+        function add(name, price) {
             total += price;
             cart[name] = (cart[name] || 0) + 1;
             document.getElementById('total').innerText = total.toFixed(2);
-            tg.HapticFeedback.impactOccurred('medium');
         }
 
-        function sendOrder() {
-            if (total === 0) {
-                tg.showAlert("Корзина пуста!");
-                return;
-            }
-            let orderList = Object.entries(cart)
-                .map(([name, qty]) => `${name} x${qty}`)
-                .join(", ");
-            
-            const data = {
-                order: orderList,
-                total: total.toFixed(2) + " BYN"
-            };
-            tg.sendData(JSON.stringify(data));
+        function send() {
+            if (total === 0) return tg.showAlert("Корзина пуста");
+            let order = Object.entries(cart).map(([n, q]) => `${n} x${q}`).join(", ");
+            tg.sendData(JSON.stringify({order: order, total: total.toFixed(2) + " BYN"}));
         }
     </script>
 </body>
