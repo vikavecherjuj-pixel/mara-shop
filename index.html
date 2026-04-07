@@ -13,10 +13,128 @@
         .category-title { border-left: 4px solid var(--accent-color); padding-left: 10px; margin: 25px 0 15px; font-size: 18px; color: var(--main-color); }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; }
-        .card img { width: 100%; height: 110px; object-fit: cover; background: #f0f0f0; }
+        .card img { width: 100%; height: 110px; object-fit: cover; background: #eee; }
         .card-content { padding: 10px; flex-grow: 1; display: flex; flex-direction: column; }
         .card h3 { font-size: 14px; margin: 0 0 5px; line-height: 1.2; height: 34px; overflow: hidden; }
         .card p { font-size: 11px; color: #777; margin: 0 0 10px; line-height: 1.2; flex-grow: 1; }
         .card-footer { display: flex; justify-content: space-between; align-items: center; }
         .price { font-weight: bold; color: var(--accent-color); font-size: 15px; }
-        .add-btn { background: var(--main-color); color: white; border: none; width: 30px; height: 30px; border-radius: 50%; font-size:
+        .add-btn { background: var(--main-color); color: white; border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; z-index: 100; }
+        .total-price { font-weight: bold; font-size: 20px; color: var(--main-color); }
+        .main-button { background: var(--accent-color); color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: bold; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <div class="header"><h1>✨ Салодкая Мара ✨</h1></div>
+
+    <div class="category-title">Орешки</div>
+    <div class="grid">
+        <div class="card">
+            <img src="orshki.PNG" alt="Орешки">
+            <div class="card-content">
+                <h3>Орешки со сгущёнкой</h3>
+                <p>Классика из детства</p>
+                <div class="card-footer">
+                    <span class="price">1.1 BYN</span>
+                    <button class="add-btn" onclick="addToCart('Орешки кл.', 1.1)">+</button>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <img src="oreshki s orehom.PNG" alt="С орехом">
+            <div class="card-content">
+                <h3>Орешки с орехом</h3>
+                <p>Фундук, миндаль, грецкий</p>
+                <div class="card-footer">
+                    <span class="price">1.5 BYN</span>
+                    <button class="add-btn" onclick="addToCart('Орешки с ор.', 1.5)">+</button>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <img src="kokosovoe.PNG" alt="Кокос">
+            <div class="card-content">
+                <h3>Кокосовое</h3>
+                <p>Нежное кокосовое тесто</p>
+                <div class="card-footer">
+                    <span class="price">2.5 BYN</span>
+                    <button class="add-btn" onclick="addToCart('Кокосовое', 2.5)">+</button>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <img src="trubochki.PNG" alt="Трубочки">
+            <div class="card-content">
+                <h3>Трубочка</h3>
+                <p>Много вареной сгущёнки</p>
+                <div class="card-footer">
+                    <span class="price">4.0 BYN</span>
+                    <button class="add-btn" onclick="addToCart('Трубочка', 4.0)">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="category-title">Пирожные</div>
+    <div class="grid">
+        <div class="card">
+            <img src="gribochki.PNG" alt="Грибочки">
+            <div class="card-content">
+                <h3>Грибочки</h3>
+                <p>Со сгущёнкой и глазурью</p>
+                <div class="card-footer">
+                    <span class="price">2.5 BYN</span>
+                    <button class="add-btn" onclick="addToCart('Грибочки', 2.5)">+</button>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <img src="gribochek.PNG" alt="Грибочек">
+            <div class="card-content">
+                <h3>Грибочек</h3>
+                <p>Классический вкус</p>
+                <div class="card-footer">
+                    <span class="price">2.5 BYN</span>
+                    <button class="add-btn" onclick="addToCart('Грибочек', 2.5)">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="total-price"><span id="total">0</span> BYN</div>
+        <button class="main-button" onclick="sendOrder()">Заказать</button>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        let total = 0;
+        let cart = {};
+
+        function addToCart(name, price) {
+            total += price;
+            cart[name] = (cart[name] || 0) + 1;
+            document.getElementById('total').innerText = total.toFixed(2);
+            tg.HapticFeedback.impactOccurred('medium');
+        }
+
+        function sendOrder() {
+            if (total === 0) {
+                tg.showAlert("Корзина пуста!");
+                return;
+            }
+            let orderList = Object.entries(cart)
+                .map(([name, qty]) => `${name} x${qty}`)
+                .join(", ");
+            
+            const data = {
+                order: orderList,
+                total: total.toFixed(2) + " BYN"
+            };
+            tg.sendData(JSON.stringify(data));
+        }
+    </script>
+</body>
+</html>
