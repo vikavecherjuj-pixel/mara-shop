@@ -64,4 +64,91 @@
         .qty-badge { position: absolute; top: -4px; right: -4px; background: var(--mcd-red); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; line-height: 18px; display: none; border: 2px solid white; font-weight: 900; }
 
         /* 4. ОПЛАТА */
-        .payment-footer { position
+        .payment-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; color: white; padding: 12px; z-index: 100; }
+        .total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .total-price { font-size: 20px; color: var(--mcd-yellow); font-weight: 900; }
+        .btn-pay { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: 700; text-transform: uppercase; font-family: 'Montserrat', sans-serif; background: var(--mcd-green); color: white; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div class="promo-banner"><img src="shokoladnya oreshki.jpg"></div>
+    <div class="brand-header"><h1>САЛОДКАЯ МАРА</h1></div>
+
+    <div class="main-area">
+        <div class="sidebar">
+            <div class="cat-item active" onclick="filterCat('oreshki', this)"><img src="oreshki.png"><br>ОРЕШКИ</div>
+            <div class="cat-item" onclick="filterCat('tubes', this)"><img src="trubochka1.jpg"><br>ТРУБОЧКИ</div>
+            <div class="cat-item" onclick="filterCat('cakes', this)"><img src="muraveynik.jpg"><br>ПИРОЖНОЕ</div>
+            <div class="cat-item" onclick="filterCat('tort', this)"><img src="tort 2.jpg"><br>ТОРТЫ</div>
+        </div>
+        <div class="menu-grid" id="menu-grid"></div>
+    </div>
+
+    <div class="payment-footer">
+        <div class="total-row"><span>ИТОГО:</span><span class="total-price"><span id="total-val">0.00</span> BYN</span></div>
+        <button class="btn-pay" onclick="finish()">ЗАКАЗАТЬ</button>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        let total = 0; let cart = {};
+
+        const products = [
+            { id: 'q1', cat: 'oreshki', name: 'Орешки со сгущёнкой', price: 1.10, img: 'oreshki.png', desc: 'Классические орешки с вареной сгущёнкой' },
+            { id: 'q2', cat: 'oreshki', name: 'Орешки со сгущёнкой и орехом', price: 1.50, img: 'oreshki sguchenka oreh.png', desc: 'С цельным орехом: фундук, миндаль, грецкий' },
+            { id: 'q3', cat: 'oreshki', name: 'Орешки с кокосом и миндалём', price: 1.80, img: 'oreshki kokos.jpg', desc: 'На основе шоколада и кокоса' },
+            { id: 'q4', cat: 'oreshki', name: 'Шоколадные орешки с Nutella и фундуком', price: 1.80, img: 'shokoladnya oreshki.jpg', desc: 'С настоящей Nutella' },
+            { id: 'q5', cat: 'tubes', name: 'Трубочки', price: 4.00, img: 'trubochka1.jpg', desc: 'Хрустящая вафля и много начинки' },
+            { id: 'q6', cat: 'cakes', name: 'Муравейник', price: 2.50, img: 'muraveynik.jpg', desc: 'Сгущёнка, печенье и грецкий орех' },
+            { id: 'q7', cat: 'cakes', name: 'Кокосовое', price: 2.50, img: 'kokosovoe.jpg', desc: 'Нежное кокосовое тесто' },
+            { id: 'q8', cat: 'cakes', name: 'Грибочек со сгущёнкой', price: 2.50, img: 'grobochki.jpg', desc: 'Внутри с вареной сгущёнкой' },
+            { id: 'q9', cat: 'cakes', name: 'Картошка', price: 4.00, img: 'kartoshka.jpg', desc: 'Классическое пирожное' },
+            { id: 'q10', cat: 'cakes', name: 'Шоколадная колбаса', price: 12.00, img: 'shokoladnaya kolbasa.jpg', desc: 'Домашний рецепт' },
+            { id: 'q11', cat: 'tort', name: 'Торт Медовик', price: 65.00, img: 'tort 2.jpg', desc: 'Сливочно-сметанный крем' }
+        ];
+
+        function renderProducts(cat) {
+            const grid = document.getElementById('menu-grid');
+            grid.innerHTML = '';
+            products.filter(p => p.cat === cat).forEach(p => {
+                grid.innerHTML += `
+                    <div class="product-card" onclick="add('${p.name}', ${p.price}, '${p.id}')">
+                        <div id="${p.id}" class="qty-badge">${cart[p.name] || 0}</div>
+                        <img src="${p.img}">
+                        <h3>${p.name}</h3>
+                        <p>${p.desc}</p>
+                        <div class="price">${p.price.toFixed(2)} BYN</div>
+                    </div>
+                `;
+                if(cart[p.name]) {
+                    const b = document.getElementById(p.id);
+                    b.style.display = 'block';
+                }
+            });
+        }
+
+        function filterCat(cat, el) {
+            document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+            renderProducts(cat);
+        }
+
+        function add(n, p, id) {
+            total += p; cart[n] = (cart[n] || 0) + 1;
+            document.getElementById('total-val').innerText = total.toFixed(2);
+            let b = document.getElementById(id);
+            b.innerText = cart[n]; b.style.display = 'block';
+            tg.HapticFeedback.impactOccurred('light');
+        }
+
+        function finish() {
+            if (total === 0) return tg.showAlert("Выберите товары");
+            tg.sendData(JSON.stringify({order: cart, total: total.toFixed(2)}));
+        }
+
+        renderProducts('oreshki');
+    </script>
+</body>
+</html>
