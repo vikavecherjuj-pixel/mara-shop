@@ -17,28 +17,22 @@
             height: 100vh; overflow: hidden; 
         }
         
-        /* 1. БАННЕР */
         .promo-banner { width: 100%; height: 85px; background: var(--mcd-yellow); flex-shrink: 0; }
         .promo-banner img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* 2. БРЕНД */
         .brand-header { padding: 10px; text-align: center; background: white; border-bottom: 1px solid #eee; flex-shrink: 0; }
         .brand-header h1 { margin: 0; font-size: 16px; color: var(--dark); font-weight: 900; text-transform: uppercase; }
         
-        /* 3. ПОЛЕ МЕНЮ */
         .main-area { flex-grow: 1; display: flex; overflow: hidden; }
         
-        /* Сайдбар */
         .sidebar { width: 85px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; align-items: center; padding-top: 10px; flex-shrink: 0; overflow-y: auto; }
         .cat-item { margin-bottom: 15px; text-align: center; font-size: 8px; color: #555; width: 100%; font-weight: 700; cursor: pointer; }
         .cat-item img { width: 40px; height: 40px; border-radius: 50%; background: #eee; margin-bottom: 4px; border: 2px solid transparent; object-fit: cover; }
         .cat-item.active { color: var(--mcd-red); }
         .cat-item.active img { border-color: var(--mcd-red); }
 
-        /* Сетка товаров */
         .menu-grid { flex-grow: 1; overflow-y: auto; padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-content: start; padding-bottom: 140px; }
         
-        /* Компактная карточка */
         .product-card { 
             background: white; border-radius: 12px; padding: 10px; text-align: center; 
             box-shadow: 0 3px 8px rgba(0,0,0,0.05); position: relative; 
@@ -57,13 +51,12 @@
         }
         
         .product-card .price { 
-            font-size: 12px; font-weight: 900; color: var(--accent); 
+            font-size: 11px; font-weight: 900; color: var(--accent); 
             margin-top: 4px; border-top: 1px solid #f9f9f9; padding-top: 4px;
         }
         
-        .qty-badge { position: absolute; top: -4px; right: -4px; background: var(--mcd-red); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; line-height: 18px; display: none; border: 2px solid white; font-weight: 900; }
+        .qty-badge { position: absolute; top: -4px; right: -4px; background: var(--mcd-red); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; line-height: 18px; display: none; border: 2px solid white; font-weight: 900; z-index: 10; }
 
-        /* 4. ОПЛАТА */
         .payment-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; color: white; padding: 12px; z-index: 100; }
         .total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .total-price { font-size: 20px; color: var(--mcd-yellow); font-weight: 900; }
@@ -95,18 +88,32 @@
         tg.expand();
         let total = 0; let cart = {};
 
+        const MIN_LIMITS = {
+            'Орешки со сгущёнкой': 20,
+            'Орешки со сгущёнкой и орехом': 20,
+            'Орешки с кокосом и миндалём': 20,
+            'Шоколадные орешки с Nutella и фундуком': 20,
+            'Трубочки': 6,
+            'Муравейник': 8,
+            'Кокосовое': 8,
+            'Грибочек со сгущёнкой': 12,
+            'Картошка': 4,
+            'Шоколадная колбаса': 1,
+            'Торт Медовик': 1
+        };
+
         const products = [
-            { id: 'q1', cat: 'oreshki', name: 'Орешки со сгущёнкой', price: 1.10, img: 'oreshki.png', desc: 'Классические орешки с вареной сгущёнкой' },
-            { id: 'q2', cat: 'oreshki', name: 'Орешки со сгущёнкой и орехом', price: 1.50, img: 'oreshki sguchenka oreh.png', desc: 'С цельным орехом: фундук, миндаль, грецкий' },
-            { id: 'q3', cat: 'oreshki', name: 'Орешки с кокосом и миндалём', price: 1.80, img: 'oreshki kokos.jpg', desc: 'На основе шоколада и кокоса' },
-            { id: 'q4', cat: 'oreshki', name: 'Шоколадные орешки с Nutella и фундуком', price: 1.80, img: 'shokoladnya oreshki.jpg', desc: 'С настоящей Nutella' },
-            { id: 'q5', cat: 'tubes', name: 'Трубочки', price: 4.00, img: 'trubochka1.jpg', desc: 'Хрустящая вафля и много начинки' },
-            { id: 'q6', cat: 'cakes', name: 'Муравейник', price: 2.50, img: 'muraveynik.jpg', desc: 'Сгущёнка, печенье и грецкий орех' },
-            { id: 'q7', cat: 'cakes', name: 'Кокосовое', price: 2.50, img: 'kokosovoe.jpg', desc: 'Нежное кокосовое тесто' },
-            { id: 'q8', cat: 'cakes', name: 'Грибочек со сгущёнкой', price: 2.50, img: 'grobochki.jpg', desc: 'Внутри с вареной сгущёнкой' },
-            { id: 'q9', cat: 'cakes', name: 'Картошка', price: 4.00, img: 'kartoshka.jpg', desc: 'Классическое пирожное' },
-            { id: 'q10', cat: 'cakes', name: 'Шоколадная колбаса', price: 12.00, img: 'shokoladnaya kolbasa.jpg', desc: 'Домашний рецепт' },
-            { id: 'q11', cat: 'tort', name: 'Торт Медовик', price: 65.00, img: 'tort 2.jpg', desc: 'Сливочно-сметанный крем' }
+            { id: 'q1', cat: 'oreshki', name: 'Орешки со сгущёнкой', price: 1.10, img: 'oreshki.png', desc: 'Мин. заказ — 20 шт' },
+            { id: 'q2', cat: 'oreshki', name: 'Орешки со сгущёнкой и орехом', price: 1.50, img: 'oreshki sguchenka oreh.png', desc: 'Мин. заказ — 20 шт' },
+            { id: 'q3', cat: 'oreshki', name: 'Орешки с кокосом и миндалём', price: 1.80, img: 'oreshki kokos.jpg', desc: 'Мин. заказ — 20 шт' },
+            { id: 'q4', cat: 'oreshki', name: 'Шоколадные орешки с Nutella и фундуком', price: 1.80, img: 'shokoladnya oreshki.jpg', desc: 'Мин. заказ — 20 шт' },
+            { id: 'q5', cat: 'tubes', name: 'Трубочки', price: 4.00, img: 'trubochka1.jpg', desc: 'Мин. заказ — 6 шт' },
+            { id: 'q6', cat: 'cakes', name: 'Муравейник', price: 2.50, img: 'muraveynik.jpg', desc: 'Мин. заказ — 8 шт' },
+            { id: 'q7', cat: 'cakes', name: 'Кокосовое', price: 2.50, img: 'kokosovoe.jpg', desc: 'Мин. заказ — 8 шт' },
+            { id: 'q8', cat: 'cakes', name: 'Грибочек со сгущёнкой', price: 2.50, img: 'grobochki.jpg', desc: 'Мин. заказ — 12 шт' },
+            { id: 'q9', cat: 'cakes', name: 'Картошка', price: 4.00, img: 'kartoshka.jpg', desc: 'Мин. заказ — 4 шт' },
+            { id: 'q10', cat: 'cakes', name: 'Шоколадная колбаса', price: 12.00, img: 'shokoladnaya kolbasa.jpg', desc: 'Мин. заказ — 1 шт' },
+            { id: 'q11', cat: 'tort', name: 'Торт Медовик', price: 65.00, img: 'tort 2.jpg', desc: 'Заказ от 1 шт' }
         ];
 
         function renderProducts(cat) {
@@ -124,7 +131,7 @@
                 `;
                 if(cart[p.name]) {
                     const b = document.getElementById(p.id);
-                    b.style.display = 'block';
+                    if(b) b.style.display = 'block';
                 }
             });
         }
@@ -136,16 +143,29 @@
         }
 
         function add(n, p, id) {
-            total += p; cart[n] = (cart[n] || 0) + 1;
+            total += p; 
+            cart[n] = (cart[n] || 0) + 1;
             document.getElementById('total-val').innerText = total.toFixed(2);
             let b = document.getElementById(id);
-            b.innerText = cart[n]; b.style.display = 'block';
+            if (b) {
+                b.innerText = cart[n];
+                b.style.display = 'block';
+            }
             tg.HapticFeedback.impactOccurred('light');
         }
 
         function finish() {
-            if (total === 0) return tg.showAlert("Выберите товары");
-            tg.sendData(JSON.stringify({order: cart, total: total.toFixed(2)}));
+            if (total === 0) return tg.showAlert("Ваша корзина пуста");
+            let errors = [];
+            for (let name in cart) {
+                if (cart[name] < MIN_LIMITS[name]) {
+                    errors.push(`${name}: мин. ${MIN_LIMITS[name]} шт.`);
+                }
+            }
+            if (errors.length > 0) {
+                return tg.showAlert("Нужно добрать до минимума:\n\n" + errors.join("\n"));
+            }
+            tg.sendData(JSON.stringify({order: cart, total: total.toFixed(2) + " BYN"}));
         }
 
         renderProducts('oreshki');
