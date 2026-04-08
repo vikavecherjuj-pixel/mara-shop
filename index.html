@@ -19,17 +19,38 @@
         .main-area { flex-grow: 1; display: flex; overflow: hidden; }
         
         .sidebar { width: 85px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; align-items: center; padding-top: 10px; flex-shrink: 0; overflow-y: auto; }
-        .cat-item { margin-bottom: 15px; text-align: center; font-size: 8px; color: #555; width: 100%; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .cat-item { margin-bottom: 15px; text-align: center; font-size: 8px; color: #555; width: 100%; font-weight: 700; cursor: pointer; }
         .cat-item img { width: 40px; height: 40px; border-radius: 50%; background: #eee; margin-bottom: 4px; border: 2px solid transparent; object-fit: cover; }
         .cat-item.active { color: var(--mcd-red); }
         .cat-item.active img { border-color: var(--mcd-red); }
 
         .menu-grid { flex-grow: 1; overflow-y: auto; padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-content: start; padding-bottom: 140px; }
-        .product-card { background: white; border-radius: 12px; padding: 8px; text-align: center; box-shadow: 0 3px 8px rgba(0,0,0,0.05); position: relative; display: flex; flex-direction: column; min-height: 160px; }
-        .product-card img { width: 100%; height: 80px; object-fit: contain; margin-bottom: 4px; }
-        .product-card h3 { font-size: 9px; margin: 2px 0; font-weight: 700; color: var(--dark); line-height: 1.1; }
-        .product-card p { font-size: 7px; color: #777; margin: 0; line-height: 1; }
-        .product-card .price { font-size: 11px; font-weight: 900; color: var(--accent); margin-top: 4px; }
+        
+        /* КАРТОЧКА С ВЫРАВНИВАНИЕМ */
+        .product-card { 
+            background: white; border-radius: 12px; padding: 8px; text-align: center; 
+            box-shadow: 0 3px 8px rgba(0,0,0,0.05); position: relative; 
+            display: flex; flex-direction: column; height: 210px; /* Фиксированная высота карточки */
+        }
+        .product-card img { width: 100%; height: 80px; object-fit: contain; margin-bottom: 5px; }
+        
+        /* Заголовок - фиксированная высота */
+        .product-card h3 { 
+            font-size: 9px; margin: 0; font-weight: 700; color: var(--dark); 
+            line-height: 1.2; height: 32px; display: flex; align-items: center; justify-content: center;
+        }
+        
+        /* Описание - фиксированная высота */
+        .product-card p { 
+            font-size: 7px; color: #777; margin: 4px 0; 
+            line-height: 1.1; height: 24px; display: flex; align-items: center; justify-content: center;
+        }
+        
+        /* Цена - всегда внизу */
+        .product-card .price { 
+            font-size: 11px; font-weight: 900; color: var(--accent); 
+            margin-top: auto; padding-top: 5px;
+        }
         
         .qty-badge { position: absolute; top: -4px; right: -4px; background: var(--mcd-red); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; line-height: 18px; display: none; border: 2px solid white; font-weight: 900; }
 
@@ -52,8 +73,7 @@
             <div class="cat-item" onclick="filterCat('tort', this)"><img src="tort 2.jpg"><br>ТОРТЫ</div>
         </div>
 
-        <div class="menu-grid" id="menu-grid">
-            </div>
+        <div class="menu-grid" id="menu-grid"></div>
     </div>
 
     <div class="payment-footer">
@@ -67,16 +87,23 @@
         let total = 0; let cart = {};
 
         const products = [
-            { id: 'q1', cat: 'oreshki', name: 'Орешки со сгущёнкой', price: 1.10, img: 'oreshki.png', desc: 'Классические орешки со сгущёнкой, как в детстве' },
-            { id: 'q2', cat: 'oreshki', name: 'Орешки со сгущёнкой и орехом', price: 1.50, img: 'oreshki sguchenka oreh.png', desc: 'Классические орешки со сгущёнкой и цельным орехом' },
-            { id: 'q3', cat: 'oreshki', name: 'Орешки с кокосом и миндалём', price: 1.80, img: 'oreshki kokos.jpg', desc: 'Тропический вкус нежного кокосового крема и миндаля' },
-            { id: 'q4', cat: 'oreshki', name: 'Шоколадные орешки с Nutella и фундуком', price: 1.80, img: 'shokoladnya oreshki.jpg', desc: 'Шоколад в шоколаде. Внутри настоящая Nutella и фундук' },
-            { id: 'q5', cat: 'tubes', name: 'Трубочки', price: 4.00, img: 'trubochka1.jpg', desc: 'Хрустящая трубочка со сгущёнкой от края до края' },
-            { id: 'q6', cat: 'cakes', name: 'Муравейник', price: 2.50, img: 'muraveynik.jpg', desc: 'Внутри сгущёнка, печенье и грецкий орех' },
-            { id: 'q7', cat: 'cakes', name: 'Кокосовое', price: 2.50, img: 'kokosovoe.jpg', desc: 'Нежное кокосовое тесто и прослойка вареной сгущёнки' },
-            { id: 'q8', cat: 'cakes', name: 'Грибочек со сгущёнкой', price: 2.50, img: 'grobochki.jpg', desc: 'Классические орешки со сгущёнкой в глазури' },
-            { id: 'q9', cat: 'cakes', name: 'Картошка', price: 4.00, img: 'kartoshka.jpg', desc: 'Классическое пирожное, как в детстве' },
-            { id: 'q10', cat: 'cakes', name: 'Шоколадная колбаса', price: 12.00, img: 'shokoladnaya kolbasa.jpg', desc: 'Домашний вкус' },
+            /* ОРЕШКИ */
+            { id: 'q1', cat: 'oreshki', name: 'Орешки со сгущёнкой', price: 1.10, img: 'oreshki.png', desc: 'Классические орешки с вареной сгущёнкой' },
+            { id: 'q2', cat: 'oreshki', name: 'Орешки со сгущёнкой и орехом', price: 1.50, img: 'oreshki sguchenka oreh.png', desc: 'С цельным орехом: фундук, миндаль, грецкий' },
+            { id: 'q3', cat: 'oreshki', name: 'Орешки с кокосом и миндалём', price: 1.80, img: 'oreshki kokos.jpg', desc: 'На основе шоколада и кокоса' },
+            { id: 'q4', cat: 'oreshki', name: 'Шоколадные орешки с Nutella и фундуком', price: 1.80, img: 'shokoladnya oreshki.jpg', desc: 'Из шоколадного теста с Nutella' },
+            
+            /* ТРУБОЧКИ */
+            { id: 'q5', cat: 'tubes', name: 'Трубочки', price: 4.00, img: 'trubochka1.jpg', desc: 'Хрустящая вафля и много начинки' },
+            
+            /* ПИРОЖНЫЕ */
+            { id: 'q6', cat: 'cakes', name: 'Муравейник', price: 2.50, img: 'muraveynik.jpg', desc: 'Сгущёнка, печенье и грецкий орех' },
+            { id: 'q7', cat: 'cakes', name: 'Кокосовое', price: 2.50, img: 'kokosovoe.jpg', desc: 'Нежное кокосовое тесто' },
+            { id: 'q8', cat: 'cakes', name: 'Грибочек со сгущёнкой', price: 2.50, img: 'grobochki.jpg', desc: 'Внутри с вареной сгущёнкой' },
+            { id: 'q9', cat: 'cakes', name: 'Картошка', price: 4.00, img: 'kartoshka.jpg', desc: 'Классическое пирожное' },
+            { id: 'q10', cat: 'cakes', name: 'Шоколадная колбаса', price: 12.00, img: 'shokoladnaya kolbasa.jpg', desc: 'Домашний рецепт' },
+            
+            /* ТОРТЫ */
             { id: 'q11', cat: 'tort', name: 'Торт Медовик', price: 65.00, img: 'tort 2.jpg', desc: 'Сливочно-сметанный крем' }
         ];
 
@@ -93,7 +120,10 @@
                         <div class="price">${p.price.toFixed(2)} BYN</div>
                     </div>
                 `;
-                if(cart[p.name]) document.getElementById(p.id).style.display = 'block';
+                if(cart[p.name]) {
+                    const b = document.getElementById(p.id);
+                    b.style.display = 'block';
+                }
             });
         }
 
