@@ -71,9 +71,10 @@
     <div class="main-area">
         <div class="sidebar">
             <div class="cat-item active" onclick="filterCat('oreshki', this)"><img src="oreshki.png"><br>ОРЕШКИ</div>
+            <div class="cat-item" onclick="filterCat('nabory', this)"><img src="tort 2.jpg"><br>НАБОРЫ</div>
             <div class="cat-item" onclick="filterCat('tubes', this)"><img src="trubochka1.jpg"><br>ТРУБОЧКИ</div>
-            <div class="cat-item" onclick="filterCat('cakes', this)"><img src="muraveynik.jpg"><br>ПИРОЖНОЕ</div>
-            <div class="cat-item" onclick="filterCat('tort', this)"><img src="tort 2.jpg"><br>ТОРТЫ</div>
+            <div class="cat-item" onclick="filterCat('cakes', this)"><img src="muraveynik.jpg"><br>ПИРОЖНЫЕ</div>
+            <div class="cat-item" onclick="filterCat('tort', this)"><img src="tort 2.jpg"><br>ТОРТ</div>
         </div>
         <div class="menu-grid" id="menu-grid"></div>
     </div>
@@ -89,31 +90,43 @@
         let total = 0; let cart = {};
 
         const MIN_LIMITS = {
-            'Орешки со сгущёнкой': 20,
-            'Орешки со сгущёнкой и орехом': 20,
-            'Орешки с кокосом и миндалём': 20,
-            'Шоколадные орешки с Nutella и фундуком': 20,
+            'Орешки со сгущёнкой': 10,
+            'Орешки со сгущёнкой и орехом': 10,
+            'Орешки с кокосом и миндалём': 10,
+            'Шоколадные орешки с Nutella и фундуком': 10,
             'Трубочки': 6,
             'Муравейник': 8,
             'Кокосовое': 8,
             'Грибочек со сгущёнкой': 12,
             'Картошка': 4,
             'Шоколадная колбаса': 1,
-            'Торт Медовик': 1
+            'Торт Медовик (1.1 кг)': 1,
+            'Торт Медовик (2.2 кг)': 1
         };
 
         const products = [
-            { id: 'q1', cat: 'oreshki', name: 'Орешки со сгущёнкой', price: 1.10, img: 'oreshki.png', desc: 'Мин. заказ — 20 шт' },
-            { id: 'q2', cat: 'oreshki', name: 'Орешки со сгущёнкой и орехом', price: 1.50, img: 'oreshki sguchenka oreh.png', desc: 'Мин. заказ — 20 шт' },
-            { id: 'q3', cat: 'oreshki', name: 'Орешки с кокосом и миндалём', price: 1.80, img: 'oreshki kokos.jpg', desc: 'Мин. заказ — 20 шт' },
-            { id: 'q4', cat: 'oreshki', name: 'Шоколадные орешки с Nutella и фундуком', price: 1.80, img: 'shokoladnya oreshki.jpg', desc: 'Мин. заказ — 20 шт' },
+            /* ОРЕШКИ */
+            { id: 'q1', cat: 'oreshki', name: 'Орешки со сгущёнкой', price: 1.10, img: 'oreshki.png', desc: 'Заказ от 10 шт' },
+            { id: 'q2', cat: 'oreshki', name: 'Орешки со сгущёнкой и орехом', price: 1.50, img: 'oreshki sguchenka oreh.png', desc: 'Заказ от 10 шт' },
+            { id: 'q3', cat: 'oreshki', name: 'Орешки с кокосом и миндалём', price: 1.80, img: 'oreshki kokos.jpg', desc: 'Заказ от 10 шт' },
+            { id: 'q4', cat: 'oreshki', name: 'Шоколадные орешки с Nutella и фундуком', price: 1.80, img: 'shokoladnya oreshki.jpg', desc: 'Заказ от 10 шт' },
+            
+            /* НАБОРЫ (пока пример, заменим на твои данные) */
+            { id: 'n1', cat: 'nabory', name: 'Набор Ассорти (20 шт)', price: 30.00, img: 'oreshki.png', desc: 'Все вкусы в одной коробке' },
+
+            /* ТРУБОЧКИ */
             { id: 'q5', cat: 'tubes', name: 'Трубочки', price: 4.00, img: 'trubochka1.jpg', desc: 'Мин. заказ — 6 шт' },
+            
+            /* ПИРОЖНЫЕ */
             { id: 'q6', cat: 'cakes', name: 'Муравейник', price: 2.50, img: 'muraveynik.jpg', desc: 'Мин. заказ — 8 шт' },
             { id: 'q7', cat: 'cakes', name: 'Кокосовое', price: 2.50, img: 'kokosovoe.jpg', desc: 'Мин. заказ — 8 шт' },
             { id: 'q8', cat: 'cakes', name: 'Грибочек со сгущёнкой', price: 2.50, img: 'grobochki.jpg', desc: 'Мин. заказ — 12 шт' },
             { id: 'q9', cat: 'cakes', name: 'Картошка', price: 4.00, img: 'kartoshka.jpg', desc: 'Мин. заказ — 4 шт' },
-            { id: 'q10', cat: 'cakes', name: 'Шоколадная колбаса', price: 12.00, img: 'shokoladnaya kolbasa.jpg', desc: 'Мин. заказ — 1 шт' },
-            { id: 'q11', cat: 'tort', name: 'Торт Медовик', price: 65.00, img: 'tort 2.jpg', desc: 'Заказ от 1 шт' }
+            { id: 'q10', cat: 'cakes', name: 'Шоколадная колбаса', price: 12.00, img: 'shokoladnaya kolbasa.jpg', desc: 'Заказ от 1 шт' },
+            
+            /* ТОРТ */
+            { id: 't1', cat: 'tort', name: 'Торт Медовик (1.1 кг)', price: 65.00, img: 'tort 2.jpg', desc: 'Классический медовик' },
+            { id: 't2', cat: 'tort', name: 'Торт Медовик (2.2 кг)', price: 120.00, img: 'tort 2.jpg', desc: 'Для большой компании' }
         ];
 
         function renderProducts(cat) {
@@ -121,7 +134,7 @@
             grid.innerHTML = '';
             products.filter(p => p.cat === cat).forEach(p => {
                 grid.innerHTML += `
-                    <div class="product-card" onclick="add('${p.name}', ${p.price}, '${p.id}')">
+                    <div class="product-card" onclick="add('${p.name}', ${p.price}, '${p.id}', '${p.cat}')">
                         <div id="${p.id}" class="qty-badge">${cart[p.name] || 0}</div>
                         <img src="${p.img}">
                         <h3>${p.name}</h3>
@@ -156,15 +169,34 @@
 
         function finish() {
             if (total === 0) return tg.showAlert("Ваша корзина пуста");
+            
             let errors = [];
+            let totalOreshki = 0;
+            let hasOreshki = false;
+
             for (let name in cart) {
+                // Если товар из категории ОРЕШКИ
+                const product = products.find(p => p.name === name);
+                if (product && product.cat === 'oreshki') {
+                    totalOreshki += cart[name];
+                    hasOreshki = true;
+                }
+
+                // Индивидуальный минимум
                 if (cart[name] < MIN_LIMITS[name]) {
-                    errors.push(`${name}: мин. ${MIN_LIMITS[name]} шт.`);
+                    errors.push(`${name}: минимум ${MIN_LIMITS[name]} шт.`);
                 }
             }
-            if (errors.length > 0) {
-                return tg.showAlert("Нужно добрать до минимума:\n\n" + errors.join("\n"));
+
+            // Общий минимум по орешкам
+            if (hasOreshki && totalOreshki < 20) {
+                errors.push(`Общее кол-во орешков в корзине должно быть от 20 шт.`);
             }
+
+            if (errors.length > 0) {
+                return tg.showAlert("Условия заказа:\n\n" + errors.join("\n"));
+            }
+
             tg.sendData(JSON.stringify({order: cart, total: total.toFixed(2) + " BYN"}));
         }
 
