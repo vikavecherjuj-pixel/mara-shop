@@ -6,125 +6,36 @@
     <title>Mara Kiosk</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --accent: #e67e22; --main-dark: #2c1a11; --bg: #fdfaf5; --mcd-green: #27ae60; --mcd-red: #db0007; }
+        :root { --accent: #e67e22; --dark: #2c1a11; --bg: #fdfaf5; --mcd-green: #27ae60; --mcd-red: #db0007; --mcd-yellow: #ffbc0d; }
         body { font-family: "Arial Black", sans-serif; background: var(--bg); margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
-        /* 1. Рекламный баннер */
-        .promo-banner { width: 100%; height: 120px; background: #ffbc0d; overflow: hidden; flex-shrink: 0; }
+        /* 1. РЕКЛАМНЫЙ БАННЕР */
+        .promo-banner { width: 100%; height: 80px; background: var(--mcd-yellow); flex-shrink: 0; }
         .promo-banner img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* 2. Название бренда */
-        .brand-header { padding: 10px; text-align: center; background: white; border-bottom: 2px solid #eee; flex-shrink: 0; }
-        .brand-header h1 { margin: 0; font-size: 20px; color: var(--main-dark); text-transform: uppercase; letter-spacing: 1px; }
+        /* 2. НАЗВАНИЕ БРЕНДА */
+        .brand-header { padding: 8px; text-align: center; background: white; border-bottom: 1px solid #eee; flex-shrink: 0; }
+        .brand-header h1 { margin: 0; font-size: 18px; color: var(--dark); text-transform: uppercase; }
 
-        /* 3. Поле меню (Сетка товаров) */
-        .menu-grid { flex-grow: 1; overflow-y: auto; padding: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding-bottom: 120px; }
-        .product-card { background: white; border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); position: relative; display: flex; flex-direction: column; }
-        .product-card img { width: 100%; height: 100px; object-fit: contain; border-radius: 8px; margin-bottom: 8px; }
-        .product-card h3 { font-size: 11px; margin: 5px 0; height: 28px; overflow: hidden; text-transform: uppercase; color: #444; }
-        .product-card .price { font-size: 14px; font-weight: bold; color: var(--accent); margin-bottom: 8px; }
-        .add-btn { background: var(--main-dark); color: white; border: none; padding: 8px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; }
+        /* 3. ПОЛЕ МЕНЮ (Слева категории, справа товары) */
+        .main-area { flex-grow: 1; display: flex; overflow: hidden; }
+        
+        /* Категории слева */
+        .sidebar { width: 75px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; align-items: center; padding-top: 10px; flex-shrink: 0; overflow-y: auto; }
+        .cat-item { margin-bottom: 15px; text-align: center; font-size: 9px; color: #555; width: 100%; cursor: pointer; }
+        .cat-item img { width: 40px; height: 40px; border-radius: 50%; background: #eee; margin-bottom: 4px; border: 2px solid transparent; object-fit: cover; }
+        .cat-item.active img { border-color: var(--mcd-red); }
 
-        /* Индикатор количества (как в Макдональдсе) */
-        .qty-badge { position: absolute; top: -5px; right: -5px; background: var(--mcd-red); color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; line-height: 22px; display: none; border: 2px solid white; }
+        /* Сетка товаров справа */
+        .menu-grid { flex-grow: 1; overflow-y: auto; padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-content: start; padding-bottom: 120px; }
+        .product-card { background: white; border-radius: 10px; padding: 8px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative; display: flex; flex-direction: column; }
+        .product-card img { width: 100%; height: 80px; object-fit: contain; margin-bottom: 5px; }
+        .product-card h3 { font-size: 10px; margin: 4px 0; height: 24px; overflow: hidden; text-transform: uppercase; }
+        .product-card .price { font-size: 12px; font-weight: bold; color: var(--accent); margin-bottom: 5px; }
+        .qty-badge { position: absolute; top: -4px; right: -4px; background: var(--mcd-red); color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; line-height: 20px; display: none; border: 2px solid white; font-weight: bold; }
 
-        /* 4. Поле оплаты (Нижняя панель) */
-        .payment-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; color: white; padding: 15px; z-index: 100; box-shadow: 0 -5px 15px rgba(0,0,0,0.2); }
-        .total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .total-text { font-size: 14px; color: #bbb; }
-        .total-price { font-size: 22px; color: #ffbc0d; font-weight: bold; }
-        .action-buttons { display: flex; gap: 10px; }
-        .btn { flex: 1; padding: 15px; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; cursor: pointer; }
-        .btn-cancel { background: #444; color: white; }
-        .btn-pay { background: var(--mcd-green); color: white; }
-    </style>
-</head>
-<body>
-
-    <div class="promo-banner">
-        <img src="orshki.PNG" alt="Promo"> </div>
-
-    <div class="brand-header">
-        <h1>✨ Салодкая Мара ✨</h1>
-    </div>
-
-    <div class="menu-grid">
-        <div class="product-card" onclick="updateQty('Орешки кл.', 1.1, 'q1')">
-            <div id="q1" class="qty-badge">0</div>
-            <img src="orshki.PNG">
-            <h3>Орешки со сгущенкой</h3>
-            <div class="price">1.10 BYN</div>
-            <button class="add-btn">ВЫБРАТЬ</button>
-        </div>
-        <div class="product-card" onclick="updateQty('Орешки с ор.', 1.5, 'q2')">
-            <div id="q2" class="qty-badge">0</div>
-            <img src="oreshki s orehom.PNG">
-            <h3>Орешки с орехом</h3>
-            <div class="price">1.50 BYN</div>
-            <button class="add-btn">ВЫБРАТЬ</button>
-        </div>
-        <div class="product-card" onclick="updateQty('Трубочка', 4.0, 'q3')">
-            <div id="q3" class="qty-badge">0</div>
-            <img src="trubochki.PNG">
-            <h3>Трубочка ваф.</h3>
-            <div class="price">4.00 BYN</div>
-            <button class="add-btn">ВЫБРАТЬ</button>
-        </div>
-        <div class="product-card" onclick="updateQty('Кокосовое', 2.5, 'q4')">
-            <div id="q4" class="qty-badge">0</div>
-            <img src="kokosovoe.PNG">
-            <h3>Кокосовое пир.</h3>
-            <div class="price">2.50 BYN</div>
-            <button class="add-btn">ВЫБРАТЬ</button>
-        </div>
-        <div class="product-card" onclick="updateQty('Грибочек', 2.5, 'q5')">
-            <div id="q5" class="qty-badge">0</div>
-            <img src="gribochek.PNG">
-            <h3>Грибочек</h3>
-            <div class="price">2.50 BYN</div>
-            <button class="add-btn">ВЫБРАТЬ</button>
-        </div>
-        <div class="product-card" onclick="updateQty('Медовик', 65.0, 'q6')">
-            <div id="q6" class="qty-badge">0</div>
-            <img src="medovik.PNG">
-            <h3>Торт Медовик</h3>
-            <div class="price">65.00 BYN</div>
-            <button class="add-btn">ВЫБРАТЬ</button>
-        </div>
-    </div>
-
-    <div class="payment-footer">
-        <div class="total-row">
-            <span class="total-text">ПРЕДВАРИТЕЛЬНАЯ СУММА:</span>
-            <span class="total-price"><span id="total-val">0.00</span> BYN</span>
-        </div>
-        <div class="action-buttons">
-            <button class="btn btn-cancel" onclick="location.reload()">СБРОСИТЬ</button>
-            <button class="btn btn-pay" onclick="finish()">ЗАКАЗАТЬ</button>
-        </div>
-    </div>
-
-    <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-        let total = 0;
-        let cart = {};
-
-        function updateQty(name, price, id) {
-            total += price;
-            cart[name] = (cart[name] || 0) + 1;
-            document.getElementById('total-val').innerText = total.toFixed(2);
-            let badge = document.getElementById(id);
-            badge.innerText = cart[name];
-            badge.style.display = 'block';
-            tg.HapticFeedback.impactOccurred('medium');
-        }
-
-        function finish() {
-            if (total === 0) return tg.showAlert("Корзина пуста");
-            let summary = Object.entries(cart).map(([n, q]) => `${n} x${q}`).join(", ");
-            tg.sendData(JSON.stringify({order: summary, total: total.toFixed(2) + " BYN"}));
-        }
-    </script>
-</body>
-</html>
+        /* 4. ПОЛЕ ОПЛАТЫ */
+        .payment-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; color: white; padding: 12px; z-index: 100; }
+        .total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .total-text { font-size: 11px; color: #bbb; }
+        .total-price { font-size: 20px; color: var(--mcd-yellow); font-weight: bold; }
