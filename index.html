@@ -3,44 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mara Kiosk</title>
+    <title>Mara Kiosk Full</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { --mc-green: #27ae60; --mc-yellow: #ffbc0d; --mc-red: #db0007; --bg: #f5f5f5; }
         body { font-family: "Arial Black", sans-serif; background: var(--bg); margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        /* Левое меню категорий */
-        .sidebar { width: 80px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; align-items: center; padding-top: 10px; }
-        .cat-item { margin-bottom: 20px; text-align: center; font-size: 10px; color: #555; cursor: pointer; }
-        .cat-item img { width: 40px; height: 40px; border-radius: 50%; background: #eee; margin-bottom: 5px; border: 2px solid transparent; }
+        /* Боковая панель категорий */
+        .sidebar { width: 90px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; align-items: center; padding-top: 10px; flex-shrink: 0; }
+        .cat-item { margin-bottom: 20px; text-align: center; font-size: 9px; color: #555; width: 100%; }
+        .cat-item img { width: 45px; height: 45px; border-radius: 50%; background: #eee; margin-bottom: 5px; border: 2px solid transparent; object-fit: cover; }
         .cat-item.active img { border-color: var(--mc-red); }
 
-        /* Основная зона с товарами */
-        .main-content { flex-grow: 1; overflow-y: auto; padding: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-content: start; }
-        .product-card { background: white; border-radius: 10px; padding: 10px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); position: relative; }
-        .product-card img { width: 100%; height: 100px; object-fit: contain; }
-        .product-card h3 { font-size: 12px; margin: 10px 0 5px; text-transform: uppercase; }
-        .product-card .price { color: #333; font-weight: bold; font-size: 14px; }
+        /* Основная зона */
+        .main-content { flex-grow: 1; overflow-y: auto; padding: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; padding-bottom: 120px; }
+        .product-card { background: white; border-radius: 12px; padding: 8px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 160px; }
+        .product-card img { width: 100%; height: 90px; object-fit: cover; border-radius: 8px; }
+        .product-card h3 { font-size: 11px; margin: 8px 0 4px; text-transform: uppercase; line-height: 1.1; }
+        .product-card .price { color: #333; font-weight: bold; font-size: 13px; margin-top: auto; }
         
-        /* Нижняя панель заказа */
-        .order-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #333; color: white; padding: 15px; display: flex; flex-direction: column; }
-        .order-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .total-amount { font-size: 20px; color: var(--mc-yellow); }
+        /* Панель заказа */
+        .order-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #222; color: white; padding: 12px; display: flex; flex-direction: column; z-index: 100; }
+        .order-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .total-amount { font-size: 18px; color: var(--mc-yellow); }
         .buttons-row { display: flex; gap: 10px; }
-        .btn { flex: 1; padding: 15px; border: none; border-radius: 5px; font-weight: bold; text-transform: uppercase; font-size: 14px; }
+        .btn { flex: 1; padding: 14px; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; font-size: 13px; }
         .btn-cancel { background: var(--mc-red); color: white; }
         .btn-done { background: var(--mc-green); color: white; }
 
-        /* Бейдж количества */
-        .badge { position: absolute; top: 5px; right: 5px; background: var(--mc-red); color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; line-height: 20px; display: none; }
+        .badge { position: absolute; top: -5px; right: -5px; background: var(--mc-red); color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; line-height: 22px; font-weight: bold; display: none; border: 2px solid white; }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
         <div class="cat-item active"><img src="orshki.PNG"><br>ОРЕШКИ</div>
-        <div class="cat-item"><img src="trubochki.PNG"><br>ВАФЛИ</div>
+        <div class="cat-item"><img src="trubochki.PNG"><br>ТРУБОЧКИ</div>
         <div class="cat-item"><img src="gribochki.PNG"><br>ДЕСЕРТЫ</div>
+        <div class="cat-item"><img src="medovik.PNG"><br>ТОРТЫ</div>
     </div>
 
     <div class="main-content">
@@ -56,63 +56,30 @@
             <h3>Орешки с орехом</h3>
             <div class="price">1.50 BYN</div>
         </div>
-        <div class="product-card" onclick="addToCart('Трубочка', 4.0, 'p3')">
+        <div class="product-card" onclick="addToCart('Орешки Кокос', 1.8, 'p3')">
             <div id="p3" class="badge">0</div>
+            <img src="kokosovoe.PNG">
+            <h3>Кокос & Миндаль</h3>
+            <div class="price">1.80 BYN</div>
+        </div>
+        <div class="product-card" onclick="addToCart('Nutella Орех', 1.8, 'p4')">
+            <div id="p4" class="badge">0</div>
+            <img src="orshki.PNG">
+            <h3>Nutella & Фундук</h3>
+            <div class="price">1.80 BYN</div>
+        </div>
+
+        <div class="product-card" onclick="addToCart('Трубочка', 4.0, 'p5')">
+            <div id="p5" class="badge">0</div>
             <img src="trubochki.PNG">
-            <h3>Трубочка ваф.</h3>
+            <h3>Трубочка сгущ.</h3>
             <div class="price">4.00 BYN</div>
         </div>
-        <div class="product-card" onclick="addToCart('Кокосовое', 2.5, 'p4')">
-            <div id="p4" class="badge">0</div>
-            <img src="kokosovoe.PNG">
-            <h3>Кокосовое</h3>
+
+        <div class="product-card" onclick="addToCart('Муравейник', 2.5, 'p6')">
+            <div id="p6" class="badge">0</div>
+            <img src="orshki.PNG">
+            <h3>Муравейник</h3>
             <div class="price">2.50 BYN</div>
         </div>
-    </div>
-
-    <div class="order-panel">
-        <div class="order-info">
-            <span>МОЙ ЗАКАЗ:</span>
-            <span class="total-amount">ИТОГО: <span id="total-val">0.00</span> BYN</span>
-        </div>
-        <div class="buttons-row">
-            <button class="btn btn-cancel" onclick="location.reload()">ОТМЕНА</button>
-            <button class="btn btn-done" onclick="finishOrder()">ГОТОВО</button>
-        </div>
-    </div>
-
-    <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-        let total = 0;
-        let cart = {};
-
-        function addToCart(name, price, id) {
-            total += price;
-            cart[name] = (cart[name] || 0) + 1;
-            
-            // Обновляем сумму
-            document.getElementById('total-val').innerText = total.toFixed(2);
-            
-            // Обновляем бейдж на карточке
-            let badge = document.getElementById(id);
-            badge.innerText = cart[name];
-            badge.style.display = 'block';
-            
-            tg.HapticFeedback.impactOccurred('medium');
-        }
-
-        function finishOrder() {
-            if (total === 0) {
-                tg.showAlert("Сначала выберите что-нибудь вкусное!");
-                return;
-            }
-            let summary = Object.entries(cart).map(([n, q]) => `${n} x${q}`).join(", ");
-            tg.sendData(JSON.stringify({
-                order: summary,
-                total: total.toFixed(2) + " BYN"
-            }));
-        }
-    </script>
-</body>
-</html>
+        <div class="product-card"
