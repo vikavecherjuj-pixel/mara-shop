@@ -26,12 +26,12 @@
         .main-area { flex-grow: 1; display: flex; overflow: hidden; }
         
         .sidebar { width: 85px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; align-items: center; padding-top: 10px; flex-shrink: 0; overflow-y: auto; }
-        .cat-item { margin-bottom: 15px; text-align: center; font-size: 8px; color: #555; width: 100%; font-weight: 700; cursor: pointer; }
+        .cat-item { margin-bottom: 15px; text-align: center; font-size: 8px; color: #555; width: 100%; font-weight: 700; cursor: pointer; transition: 0.2s; }
         .cat-item img { width: 40px; height: 40px; border-radius: 50%; background: #eee; margin-bottom: 4px; border: 2px solid transparent; object-fit: cover; }
-        .cat-item.active { color: var(--mcd-red); }
-        .cat-item.active img { border-color: var(--mcd-red); }
+        .cat-item.active { color: var(--mcd-red); transform: scale(1.05); }
+        .cat-item.active img { border-color: var(--mcd-red); box-shadow: 0 0 10px rgba(219, 0, 7, 0.2); }
 
-        .menu-grid { flex-grow: 1; overflow-y: auto; padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; padding-bottom: 160px; }
+        .menu-grid { flex-grow: 1; overflow-y: auto; padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; padding-bottom: 180px; }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .product-card { 
@@ -45,28 +45,30 @@
         .product-card p { font-size: 7.5px; color: #777; margin: 0; line-height: 1.1; min-height: 18px; display: flex; align-items: center; justify-content: center; }
         .product-card .price { font-size: 11px; font-weight: 900; color: var(--accent); margin: 4px 0; }
 
-        .counter-controls { display: flex; align-items: center; justify-content: space-between; background: #f8f8f8; border-radius: 20px; padding: 2px; border: 1px solid #eee; }
-        .btn-qty { width: 28px; height: 28px; border-radius: 50%; border: none; background: white; color: var(--dark); font-weight: 900; font-size: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; }
-        .qty-val { font-size: 12px; font-weight: 700; min-width: 20px; }
+        .counter-controls { display: flex; align-items: center; justify-content: space-between; background: #f8f8f8; border-radius: 20px; padding: 2px; border: 1px solid #eee; margin-top: auto; }
+        .btn-qty { width: 28px; height: 28px; border-radius: 50%; border: none; background: white; color: var(--dark); font-weight: 900; font-size: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; transition: 0.1s; }
+        .btn-qty:active { transform: scale(0.9); background: #eee; }
+        .qty-val { font-size: 12px; font-weight: 700; min-width: 20px; color: var(--dark); }
         .qty-badge { position: absolute; top: -4px; right: -4px; background: var(--mcd-red); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; line-height: 18px; display: none; border: 2px solid white; font-weight: 900; z-index: 10; }
 
-        /* ОБНОВЛЕННЫЙ ТЕМНЫЙ ФУТЕР */
-        .payment-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; padding: 15px; z-index: 100; border-radius: 20px 20px 0 0; }
+        /* ФУТЕР И КОНТРАСТНАЯ БЕЛАЯ КОРЗИНА */
+        .payment-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; padding: 15px; z-index: 100; border-radius: 20px 20px 0 0; box-shadow: 0 -5px 15px rgba(0,0,0,0.2); }
         .total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         
-        /* Кнопка очистки с подсветкой */
+        /* Кнопка очистки: Белое свечение и контраст */
         .clear-cart { 
-            background: rgba(231, 76, 60, 0.15); border: 1px solid #e74c3c; color: #e74c3c; 
-            width: 36px; height: 36px; border-radius: 10px; font-size: 16px; 
+            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.4); color: #ffffff; 
+            width: 40px; height: 40px; border-radius: 12px; font-size: 18px; 
             display: flex; align-items: center; justify-content: center; 
-            box-shadow: 0 0 10px rgba(231, 76, 60, 0.2);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); transition: 0.2s; cursor: pointer;
         }
+        .clear-cart:active { transform: scale(0.9); background: rgba(255, 255, 255, 0.3); }
         
         .total-info { text-align: right; }
-        .total-label { font-size: 10px; color: #aaa; font-weight: 700; display: block; margin-bottom: -2px; }
+        .total-label { font-size: 10px; color: #aaa; font-weight: 700; display: block; margin-bottom: -2px; text-transform: uppercase; }
         .total-price { font-size: 22px; color: var(--mcd-yellow); font-weight: 900; }
         
-        .btn-pay { width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: 900; text-transform: uppercase; font-family: 'Montserrat', sans-serif; background: var(--mcd-green); color: white; font-size: 14px; box-shadow: 0 4px 0 #1e8449; }
+        .btn-pay { width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: 900; text-transform: uppercase; font-family: 'Montserrat', sans-serif; background: var(--mcd-green); color: white; font-size: 14px; box-shadow: 0 4px 0 #1e8449; transition: 0.1s; cursor: pointer; }
         .btn-pay:active { transform: translateY(2px); box-shadow: 0 2px 0 #1e8449; }
     </style>
 </head>
@@ -90,7 +92,7 @@
         <div class="total-row">
             <button class="clear-cart" onclick="clearCart()">🗑️</button>
             <div class="total-info">
-                <span class="total-label">ИТОГО:</span>
+                <span class="total-label">К ОПЛАТЕ:</span>
                 <span class="total-price"><span id="total-val">0.00</span> BYN</span>
             </div>
         </div>
@@ -101,6 +103,7 @@
         let tg = window.Telegram.WebApp;
         tg.expand();
         
+        // Приветствие по имени из Telegram
         const user = tg.initDataUnsafe?.user;
         if (user && user.first_name) {
             document.getElementById('welcome-title').innerText = `МАРА • ${user.first_name.toUpperCase()}`;
@@ -108,6 +111,7 @@
 
         let total = 0; let cart = {};
 
+        // Лимиты для автозаполнения и проверки
         const MIN_LIMITS = {
             'Орешки со сгущёнкой': 10, 'Орешки со сгущёнкой и орехом': 10,
             'Орешки с кокосом и миндалём': 10, 'Шоколадные орешки с Nutella и фундуком': 10,
@@ -117,18 +121,27 @@
         };
 
         const products = [
+            /* ОРЕШКИ (С автозаполнением до 10 шт) */
             { id: 'q1', cat: 'oreshki', name: 'Орешки со сгущёнкой', price: 1.10, img: 'oreshki.png', desc: 'Заказ от 10 шт' },
             { id: 'q2', cat: 'oreshki', name: 'Орешки со сгущёнкой и орехом', price: 1.50, img: 'oreshki sguchenka oreh.png', desc: 'Заказ от 10 шт' },
             { id: 'q3', cat: 'oreshki', name: 'Орешки с кокосом и миндалём', price: 1.80, img: 'oreshki kokos.jpg', desc: 'Заказ от 10 шт' },
             { id: 'q4', cat: 'oreshki', name: 'Шоколадные орешки с Nutella и фундуком', price: 1.80, img: 'shokoladnya oreshki.jpg', desc: 'Заказ от 10 шт' },
+            
+            /* ТРУБОЧКИ */
             { id: 'q5', cat: 'tubes', name: 'Трубочки', price: 4.00, img: 'trubochka1.jpg', desc: 'Заказ от 6 шт' },
+            
+            /* ПИРОЖНЫЕ */
             { id: 'q6', cat: 'cakes', name: 'Муравейник', price: 2.50, img: 'muraveynik.jpg', desc: 'Заказ от 8 шт' },
             { id: 'q7', cat: 'cakes', name: 'Кокосовое', price: 2.50, img: 'kokosovoe.jpg', desc: 'Заказ от 8 шт' },
             { id: 'q8', cat: 'cakes', name: 'Грибочек со сгущёнкой', price: 2.50, img: 'grobochki.jpg', desc: 'Заказ от 12 шт' },
             { id: 'q9', cat: 'cakes', name: 'Картошка', price: 4.00, img: 'kartoshka.jpg', desc: 'Заказ от 4 шт' },
             { id: 'q10', cat: 'cakes', name: 'Шоколадная колбаса', price: 12.00, img: 'shokoladnaya kolbasa.jpg', desc: 'Заказ от 1 шт' },
+            
+            /* ТОРТ */
             { id: 't1', cat: 'tort', name: 'Торт Медовик (1.1 кг)', price: 65.00, img: 'tort 2.jpg', desc: 'Заказ от 1 шт' },
             { id: 't2', cat: 'tort', name: 'Торт Медовик (2.2 кг)', price: 130.00, img: 'tort 2.jpg', desc: 'Заказ от 1 шт' },
+            
+            /* НАБОРЫ (В самом низу) */
             { id: 'n1', cat: 'nabory', name: 'Набор Ассорти (20 шт)', price: 30.00, img: 'oreshki.png', desc: 'Заказ от 1 набора' }
         ];
 
@@ -140,7 +153,7 @@
                 grid.innerHTML += `
                     <div class="product-card">
                         <div id="badge-${p.id}" class="qty-badge" style="display: ${count > 0 ? 'block' : 'none'}">${count}</div>
-                        <img src="${p.img}">
+                        <img src="${p.img}" alt="${p.name}">
                         <h3>${p.name}</h3>
                         <p>${p.desc}</p>
                         <div class="price">${p.price.toFixed(2)} BYN</div>
@@ -162,49 +175,91 @@
 
         function changeQty(name, price, id, delta) {
             let current = cart[name] || 0;
-            if (current === 0 && delta === 1 && MIN_LIMITS[name] > 1) { delta = MIN_LIMITS[name]; }
+            
+            // Логика автозаполнения: если 0 и нажимаем "+", ставим сразу минимум (например, 10 для орешков)
+            if (current === 0 && delta === 1 && MIN_LIMITS[name] > 1) { 
+                delta = MIN_LIMITS[name]; 
+            }
+            
             let next = current + delta;
-            if (next < 0) return;
+            if (next < 0) return; // Нельзя меньше 0
+            
             cart[name] = next;
             total += (delta * price);
-            if (cart[name] <= 0) delete cart[name];
+            
+            // Если кол-во стало 0, убираем товар из корзины
+            if (cart[name] <= 0) {
+                delete cart[name];
+            }
+            
+            // Обновляем ИТОГО
             document.getElementById('total-val').innerText = Math.abs(total).toFixed(2);
+            
+            // Обновляем счётчик в карточке
             let qtyEl = document.getElementById(`qty-${id}`);
             if (qtyEl) qtyEl.innerText = cart[name] || 0;
+            
+            // Обновляем красный бейдж
             let badge = document.getElementById(`badge-${id}`);
             if (badge) {
                 badge.innerText = cart[name] || 0;
                 badge.style.display = cart[name] > 0 ? 'block' : 'none';
             }
+            
+            // Лёгкая вибрация при изменении
             tg.HapticFeedback.selectionChanged();
         }
 
         function clearCart() {
             if (Object.keys(cart).length === 0) return;
-            tg.showConfirm("Очистить корзину?", (ok) => {
+            tg.showConfirm("Очистить корзину полностью?", (ok) => {
                 if (ok) {
                     cart = {}; total = 0;
                     document.getElementById('total-val').innerText = "0.00";
+                    // Перерисовываем текущую активную категорию
                     const activeEl = document.querySelector('.cat-item.active');
                     const activeCat = activeEl.getAttribute('onclick').match(/'([^']+)'/)[1];
                     renderProducts(activeCat);
+                    tg.HapticFeedback.notificationOccurred('success');
                 }
             });
         }
 
         function finish() {
-            if (total <= 0) return tg.showAlert("Корзина пуста");
+            if (total <= 0) return tg.showAlert("Корзина пуста. Добавьте десерты!");
+            
             let errors = []; let totalOreshki = 0; let hasOreshki = false;
+            
             for (let name in cart) {
                 const product = products.find(p => p.name === name);
-                if (product && product.cat === 'oreshki') { totalOreshki += cart[name]; hasOreshki = true; }
-                if (cart[name] < MIN_LIMITS[name]) errors.push(`${name}: от ${MIN_LIMITS[name]} шт.`);
+                
+                // Считаем общее кол-во орешков (не наборов)
+                if (product && product.cat === 'oreshki') { 
+                    totalOreshki += cart[name]; 
+                    hasOreshki = true; 
+                }
+                
+                // Проверка индивидуальных минимумов (от 10 шт и т.д.)
+                if (cart[name] < MIN_LIMITS[name]) {
+                    errors.push(`${name}: от ${MIN_LIMITS[name]} шт.`);
+                }
             }
-            if (hasOreshki && totalOreshki < 20) errors.push(`Общее кол-во орешков должно быть от 20 шт.`);
-            if (errors.length > 0) return tg.showAlert("Нужно добрать:\n\n" + errors.join("\n"));
+            
+            // Проверка общего минимума по орешкам (20 шт)
+            if (hasOreshki && totalOreshki < 20) {
+                errors.push(`Общее кол-во орешков должно быть от 20 шт. (у вас ${totalOreshki})`);
+            }
+            
+            if (errors.length > 0) {
+                return tg.showAlert("Пожалуйста, подправьте заказ:\n\n" + errors.join("\n"));
+            }
+            
+            // Если всё ок, отправляем данные боту
+            tg.HapticFeedback.notificationOccurred('success');
             tg.sendData(JSON.stringify({order: cart, total: total.toFixed(2) + " BYN"}));
         }
 
+        // Инициализация: показываем орешки
         renderProducts('oreshki');
     </script>
 </body>
