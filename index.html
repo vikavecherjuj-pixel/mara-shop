@@ -31,7 +31,7 @@
         .cat-item.active { color: var(--mcd-red); }
         .cat-item.active img { border-color: var(--mcd-red); }
 
-        .menu-grid { flex-grow: 1; overflow-y: auto; padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; padding-bottom: 180px; }
+        .menu-grid { flex-grow: 1; overflow-y: auto; padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; padding-bottom: 160px; }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .product-card { 
@@ -50,19 +50,24 @@
         .qty-val { font-size: 12px; font-weight: 700; min-width: 20px; }
         .qty-badge { position: absolute; top: -4px; right: -4px; background: var(--mcd-red); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; line-height: 18px; display: none; border: 2px solid white; font-weight: 900; z-index: 10; }
 
-        /* ОБНОВЛЕННЫЙ ФУТЕР (Пункт №1) */
-        .payment-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; padding: 15px; z-index: 100; border-radius: 20px 20px 0 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.2); }
-        .total-white-plate { 
-            background: white; border-radius: 12px; padding: 10px 15px; 
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
-        }
-        .total-info { display: flex; flex-direction: column; }
-        .total-label { font-size: 10px; color: #888; font-weight: 700; text-transform: uppercase; }
-        .total-price { font-size: 20px; color: var(--dark); font-weight: 900; }
-        .clear-cart { background: #fee; border: 1px solid #fcc; color: #e74c3c; width: 40px; height: 40px; border-radius: 10px; font-size: 18px; display: flex; align-items: center; justify-content: center; }
+        /* ОБНОВЛЕННЫЙ ТЕМНЫЙ ФУТЕР */
+        .payment-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; padding: 15px; z-index: 100; border-radius: 20px 20px 0 0; }
+        .total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         
-        .btn-pay { width: 100%; padding: 16px; border: none; border-radius: 12px; font-weight: 900; text-transform: uppercase; font-family: 'Montserrat', sans-serif; background: var(--mcd-green); color: white; font-size: 15px; box-shadow: 0 4px 0 #1e8449; transition: 0.1s; }
-        .btn-pay:active { transform: translateY(3px); box-shadow: 0 1px 0 #1e8449; }
+        /* Кнопка очистки с подсветкой */
+        .clear-cart { 
+            background: rgba(231, 76, 60, 0.15); border: 1px solid #e74c3c; color: #e74c3c; 
+            width: 36px; height: 36px; border-radius: 10px; font-size: 16px; 
+            display: flex; align-items: center; justify-content: center; 
+            box-shadow: 0 0 10px rgba(231, 76, 60, 0.2);
+        }
+        
+        .total-info { text-align: right; }
+        .total-label { font-size: 10px; color: #aaa; font-weight: 700; display: block; margin-bottom: -2px; }
+        .total-price { font-size: 22px; color: var(--mcd-yellow); font-weight: 900; }
+        
+        .btn-pay { width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: 900; text-transform: uppercase; font-family: 'Montserrat', sans-serif; background: var(--mcd-green); color: white; font-size: 14px; box-shadow: 0 4px 0 #1e8449; }
+        .btn-pay:active { transform: translateY(2px); box-shadow: 0 2px 0 #1e8449; }
     </style>
 </head>
 <body>
@@ -82,10 +87,10 @@
     </div>
 
     <div class="payment-footer">
-        <div class="total-white-plate">
+        <div class="total-row">
             <button class="clear-cart" onclick="clearCart()">🗑️</button>
             <div class="total-info">
-                <span class="total-label">К оплате:</span>
+                <span class="total-label">ИТОГО:</span>
                 <span class="total-price"><span id="total-val">0.00</span> BYN</span>
             </div>
         </div>
