@@ -140,19 +140,19 @@
         const products = [
             /* Орешки (cat: 0) */
             { id: 'q1', cat: 0, name: {ru: 'Орешки со сгущёнкой', by: 'Арэшкі са згушчонкай', en: 'Nuts with condensed milk'}, price: 1.10, img: 'oreshki.png', min: 10 },
-            { id: 'q2', cat: 0, name: {ru: 'Орешки с грецким орехом', by: 'Арэшкі з арэхам', en: 'Nuts with walnuts'}, price: 1.50, img: 'oreshki sguchenka oreh.png', min: 10 },
+            { id: 'q2', cat: 0, name: {ru: 'Орешки со сгущёнкой и орехом', by: 'Арэшкі са згушчонкай і арэхам', en: 'Nuts with walnuts'}, price: 1.50, img: 'oreshki sguchenka oreh.png', min: 10 },
             { id: 'q3', cat: 0, name: {ru: 'Кокос и миндаль', by: 'Кокас і міндаль', en: 'Coconut & Almond'}, price: 1.80, img: 'oreshki kokos.jpg', min: 10 },
             { id: 'q4', cat: 0, name: {ru: 'Nutella и фундук', by: 'Nutella і фундук', en: 'Nutella & Hazelnut'}, price: 1.80, img: 'shokoladnya oreshki.jpg', min: 10 },
             /* Трубочки (cat: 1) */
             { id: 'q5', cat: 1, name: {ru: 'Трубочки со сгущенкой', by: 'Трубачкі са згушчонкай', en: 'Sweet tubes'}, price: 4.00, img: 'trubochka1.jpg', min: 6 },
             /* Пирожные (cat: 2) */
             { id: 'q6', cat: 2, name: {ru: 'Муравейник', by: 'Мурашнік', en: 'Anthill cake'}, price: 2.50, img: 'muraveynik.jpg', min: 8 },
-            { id: 'q7', cat: 2, name: {ru: 'Грибочки', by: 'Грыбочкі', en: 'Mushroom cakes'}, price: 2.00, img: 'muraveynik.jpg', min: 6 },
-            { id: 'q8', cat: 2, name: {ru: 'Сердечки', by: 'Сэрцайкі', en: 'Heart cakes'}, price: 3.00, img: 'muraveynik.jpg', min: 1 },
-            { id: 'q9', cat: 2, name: {ru: 'Кокосовое', by: 'Кокасавае', en: 'Coconut cake'}, price: 2.50, img: 'muraveynik.jpg', min: 5 },
-            { id: 'q10', cat: 2, name: {ru: 'Орешки в глазури', by: 'Арэшкі ў глазуры', en: 'Glazed nuts'}, price: 1.90, img: 'shokoladnya oreshki.jpg', min: 10 },
-            { id: 'q11', cat: 2, name: {ru: 'Картошка', by: 'Бульба', en: 'Potato cake'}, price: 2.80, img: 'muraveynik.jpg', min: 4 },
-            { id: 'q12', cat: 2, name: {ru: 'Шоколадная колбаса', by: 'Шакаладная каўбаса', en: 'Chocolate sausage'}, price: 15.00, img: 'muraveynik.jpg', min: 1 },
+            { id: 'q7', cat: 2, name: {ru: 'Грибочки', by: 'Грыбочкі', en: 'Mushroom cakes'}, price: 2.00, img: 'grobochi.jpg', min: 6 },
+            { id: 'q8', cat: 2, name: {ru: 'Сердечки', by: 'Сэрцайкі', en: 'Heart cakes'}, price: 3.00, img: 'serdechki.png', min: 1 },
+            { id: 'q9', cat: 2, name: {ru: 'Кокосовое', by: 'Кокасавае', en: 'Coconut cake'}, price: 2.50, img: 'kokosovoe.jpg', min: 5 },
+            { id: 'q10', cat: 2, name: {ru: 'Орешки в глазури', by: 'Арэшкі ў глазуры', en: 'Glazed nuts'}, price: 1.90, img: 'orshki v glazuri.jpg', min: 10 },
+            { id: 'q11', cat: 2, name: {ru: 'Картошка', by: 'Бульба', en: 'Potato cake'}, price: 2.80, img: 'kartoshka.jpg', min: 4 },
+            { id: 'q12', cat: 2, name: {ru: 'Шоколадная колбаса', by: 'Шакаладная каўбаса', en: 'Chocolate sausage'}, price: 15.00, img: 'shokoladnaya kolbasa.jpg', min: 1 },
             /* Торты (cat: 3) */
             { id: 't1', cat: 3, name: {ru: 'Медовик 1.1кг', by: 'Мядовік 1.1кг', en: 'Honey cake 1.1kg'}, price: 65.00, img: 'tort 2.jpg', min: 1 },
             /* Наборы (cat: 4) */
@@ -197,65 +197,4 @@
                         <p>${i18n[lang].from} ${p.min} ${i18n[lang].unit}</p>
                         <div class="price">${p.price.toFixed(2)} BYN</div>
                         <div class="counter-controls">
-                            <button class="btn-qty" onclick="changeQty('${p.id}', ${p.price}, ${p.min}, -1)">−</button>
-                            <span class="qty-val" id="qty-${p.id}">${count}</span>
-                            <button class="btn-qty" onclick="changeQty('${p.id}', ${p.price}, ${p.min}, 1)">+</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function changeCat(i, el) {
-            document.querySelectorAll('.cat-item').forEach(c => c.classList.remove('active'));
-            el.classList.add('active');
-            renderProducts(i);
-        }
-
-        function changeQty(id, price, min, delta) {
-            let cur = cart[id] || 0;
-            if (cur === 0 && delta === 1) delta = min;
-            let next = cur + delta;
-            if (next < 0) return;
-            if (next < min && next > 0 && delta < 0) next = 0;
-            cart[id] = next;
-            total += (delta * price);
-            if (cart[id] <= 0) delete cart[id];
-            updateTotalDisplay();
-            updateUI(id);
-            tg.HapticFeedback.selectionChanged();
-        }
-
-        function updateUI(id) {
-            if (document.getElementById(`qty-${id}`)) document.getElementById(`qty-${id}`).innerText = cart[id] || 0;
-            let b = document.getElementById(`badge-${id}`);
-            if (b) { b.innerText = cart[id] || 0; b.style.display = cart[id]>0?'block':'none'; }
-        }
-
-        function updateTotalDisplay() {
-            document.getElementById('total-val').innerText = Math.max(0, total).toFixed(2);
-        }
-
-        function clearCart() {
-            cart = {}; total = 0;
-            updateTotalDisplay();
-            document.querySelectorAll('.qty-badge').forEach(b => b.style.display = 'none');
-            document.querySelectorAll('.qty-val').forEach(v => v.innerText = '0');
-            tg.HapticFeedback.notificationOccurred('success');
-        }
-
-        function showCart() {
-            const list = document.getElementById('cart-items-list');
-            const entries = Object.entries(cart);
-            list.innerHTML = entries.length ? entries.map(([id, q]) => {
-                const p = products.find(x => x.id === id);
-                return `<div class="cart-row"><span>${p.name[lang]}</span><b>${q} ${i18n[lang].unit}</b></div>`;
-            }).join('') : `<div style="text-align:center">${i18n[lang].empty}</div>`;
-            document.getElementById('cart-modal').style.display = 'flex';
-        }
-
-        function closeCart() { document.getElementById('cart-modal').style.display = 'none'; }
-        init();
-    </script>
-</body>
-</html>
+                            <button class="btn-qty" onclick="changeQty('${p.id}', ${p.
