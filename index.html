@@ -2,117 +2,176 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mara Shop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body {
-            font-family: sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #ffffff;
-            color: #000000;
-            text-align: center;
+        :root { 
+            --accent: #e67e22; --dark: #2c1a11; --bg: #fdfaf5; 
+            --mcd-green: #27ae60; --mcd-red: #db0007; --mcd-yellow: #ffbc0d; 
         }
-        .header {
-            padding: 20px;
-            font-size: 24px;
-            font-weight: bold;
+        body { 
+            font-family: 'Montserrat', sans-serif; background: var(--bg); 
+            margin: 0; padding: 0; display: flex; flex-direction: column; 
+            height: 100vh; overflow: hidden; 
         }
-        .banner img {
-            width: 100%;
-            height: auto;
+        
+        .promo-banner { width: 100%; height: 85px; background: var(--mcd-yellow); flex-shrink: 0; }
+        .promo-banner img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .brand-header { padding: 10px; text-align: center; background: white; border-bottom: 1px solid #eee; flex-shrink: 0; }
+        .brand-header h1 { margin: 0; font-size: 16px; color: var(--dark); font-weight: 900; text-transform: uppercase; }
+        
+        .main-area { flex-grow: 1; display: flex; overflow: hidden; }
+        
+        .sidebar { width: 85px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; align-items: center; padding-top: 10px; flex-shrink: 0; overflow-y: auto; }
+        .cat-item { margin-bottom: 15px; text-align: center; font-size: 8px; color: #555; width: 100%; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .cat-item img { width: 40px; height: 40px; border-radius: 50%; background: #eee; margin-bottom: 4px; border: 2px solid transparent; object-fit: cover; }
+        .cat-item.active { color: var(--mcd-red); transform: scale(1.05); }
+        .cat-item.active img { border-color: var(--mcd-red); box-shadow: 0 0 10px rgba(219, 0, 7, 0.2); }
+
+        .menu-grid { flex-grow: 1; overflow-y: auto; padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; padding-bottom: 220px; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .product-card { 
+            background: white; border-radius: 12px; padding: 10px; text-align: center; 
+            box-shadow: 0 3px 8px rgba(0,0,0,0.05); position: relative; 
+            display: flex; flex-direction: column; gap: 4px; animation: fadeIn 0.3s ease forwards;
         }
-        .item {
-            border: 1px solid #ccc;
-            margin: 10px;
-            padding: 10px;
-            border-radius: 10px;
-            display: inline-block;
-            width: 150px;
+        
+        .product-card img { width: 100%; height: 80px; object-fit: contain; margin-bottom: 4px; }
+        .product-card h3 { font-size: 9px; margin: 0; font-weight: 700; color: var(--dark); line-height: 1.2; min-height: 22px; display: flex; align-items: center; justify-content: center; }
+        .product-card p { font-size: 7.5px; color: #777; margin: 0; line-height: 1.1; min-height: 18px; display: flex; align-items: center; justify-content: center; }
+        .product-card .price { font-size: 11px; font-weight: 900; color: var(--accent); margin: 4px 0; }
+
+        .counter-controls { display: flex; align-items: center; justify-content: space-between; background: #f8f8f8; border-radius: 20px; padding: 2px; border: 1px solid #eee; margin-top: auto; }
+        .btn-qty { width: 28px; height: 28px; border-radius: 50%; border: none; background: white; color: var(--dark); font-weight: 900; font-size: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; transition: 0.1s; }
+        .qty-val { font-size: 12px; font-weight: 700; min-width: 20px; color: var(--dark); }
+        .qty-badge { position: absolute; top: -4px; right: -4px; background: var(--mcd-red); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; line-height: 18px; display: none; border: 2px solid white; font-weight: 900; z-index: 10; }
+
+        .payment-footer { 
+            position: fixed; bottom: 0; left: 0; right: 0; 
+            background: #1a1a1a; padding: 15px 15px 35px 15px; 
+            z-index: 100; border-radius: 20px 20px 0 0; 
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.3); 
         }
-        .item img {
-            width: 100%;
-            border-radius: 5px;
+        .total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .clear-cart { 
+            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.4); 
+            color: #ffffff; width: 40px; height: 40px; border-radius: 12px; font-size: 18px; 
+            display: flex; align-items: center; justify-content: center; 
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); transition: 0.2s; cursor: pointer; 
         }
-        .btn {
-            background-color: #31b545;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-            width: 100%;
+        .total-info { text-align: right; }
+        .total-label { font-size: 10px; color: #aaa; font-weight: 700; display: block; margin-bottom: -2px; text-transform: uppercase; }
+        .total-price { font-size: 22px; color: var(--mcd-yellow); font-weight: 900; }
+        .btn-pay { width: 100%; padding: 16px; border: none; border-radius: 14px; font-weight: 900; text-transform: uppercase; font-family: 'Montserrat', sans-serif; background: var(--mcd-green); color: white; font-size: 15px; box-shadow: 0 4px 0 #1e8449; transition: 0.1s; cursor: pointer; }
+
+        /* ОКНО ОФОРМЛЕНИЯ */
+        #order-form { 
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+            background: white; z-index: 1000; display: none; 
+            flex-direction: column; padding: 20px; overflow-y: auto;
         }
-        .cart-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #248bcf;
-            color: white;
-            padding: 15px;
-            border-radius: 50%;
-            display: none;
-            border: none;
-            font-size: 20px;
+        .form-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .form-header h2 { margin: 0; font-size: 18px; color: var(--dark); font-weight: 900; }
+        .close-form { font-size: 24px; cursor: pointer; padding: 5px; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 11px; font-weight: 700; color: #888; margin-bottom: 5px; text-transform: uppercase; }
+        .input-group input, .input-group select, .input-group textarea { 
+            width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 10px; 
+            font-family: 'Montserrat', sans-serif; font-size: 14px; box-sizing: border-box;
         }
+        .radio-group { display: flex; gap: 10px; margin-top: 5px; }
+        .radio-btn { flex: 1; border: 1px solid #eee; padding: 10px; border-radius: 10px; text-align: center; font-size: 12px; font-weight: 700; cursor: pointer; }
+        .radio-btn.active { border-color: var(--accent); background: var(--accent); color: white; }
     </style>
 </head>
 <body>
-    <div class="header">МАРА • VIKI VECHER</div>
-    <div class="banner">
-        <img src="tort 2.jpg" alt="Banner">
-    </div>
-    <div id="main">
+
+    <div id="order-form">
+        <div class="form-header">
+            <h2>ОФОРМЛЕНИЕ ЗАКАЗА</h2>
+            <div class="close-form" onclick="toggleForm(false)">✕</div>
         </div>
-    <button id="cart" class="cart-btn" onclick="sendOrder()">🛒</button>
+        <div class="input-group"><label>Ваше имя</label><input type="text" id="cust-name"></div>
+        <div class="input-group"><label>Телефон</label><input type="tel" id="cust-phone" placeholder="+375..."></div>
+        <div class="input-group">
+            <label>Способ получения</label>
+            <div class="radio-group">
+                <div class="radio-btn active" id="type-delivery" onclick="setDelivery('delivery')">Доставка</div>
+                <div class="radio-btn" id="type-pickup" onclick="setDelivery('pickup')">Самовывоз</div>
+            </div>
+        </div>
+        <div class="input-group" id="address-block"><label>Адрес</label><input type="text" id="cust-address"></div>
+        <div class="input-group">
+            <label>Оплата</label>
+            <select id="cust-pay"><option>Картой</option><option>Наличные</option></select>
+        </div>
+        <button class="btn-pay" onclick="submitOrder()">ОТПРАВИТЬ ЗАКАЗ</button>
+    </div>
+
+    <div class="promo-banner"><img src="shokoladnya oreshki.jpg"></div>
+    <div class="brand-header"><h1 id="welcome-title">САЛОДКАЯ МАРА</h1></div>
+
+    <div class="main-area">
+        <div class="sidebar">
+            <div class="cat-item active" onclick="filterCat('oreshki', this)"><img src="oreshki.png"><br>ОРЕШКИ</div>
+            <div class="cat-item" onclick="filterCat('tubes', this)"><img src="trubochka1.jpg"><br>ТРУБОЧКИ</div>
+            <div class="cat-item" onclick="filterCat('cakes', this)"><img src="muraveynik.jpg"><br>ПИРОЖНЫЕ</div>
+            <div class="cat-item" onclick="filterCat('tort', this)"><img src="tort 2.jpg"><br>ТОРТ</div>
+            <div class="cat-item" onclick="filterCat('nabory', this)"><img src="tort 2.jpg"><br>НАБОРЫ</div>
+        </div>
+        <div class="menu-grid" id="menu-grid"></div>
+    </div>
+
+    <div class="payment-footer">
+        <div class="total-row">
+            <button class="clear-cart" onclick="clearCart()">🗑️</button>
+            <div class="total-info">
+                <span class="total-label">К ОПЛАТЕ:</span>
+                <span class="total-price"><span id="total-val">0.00</span> BYN</span>
+            </div>
+        </div>
+        <button class="btn-pay" onclick="toggleForm(true)">Оформить заказ</button>
+    </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
+        let total = 0; let cart = {}; let dType = 'delivery';
 
-        let cart = [];
+        const MIN_LIMITS = {
+            'Орешки со сгущёнкой': 10, 'Орешки со сгущёнкой и орехом': 10,
+            'Орешки с кокосом и миндалём': 10, 'Шоколадные орешки с Nutella и фундуком': 10,
+            'Трубочки': 6, 'Муравейник': 8, 'Кокосовое': 8,
+            'Грибочек со сгущёнкой': 12, 'Картошка': 4,
+            'Шоколадная колбаса': 1, 'Торт Медовик (1.1 кг)': 1, 'Торт Медовик (2.2 кг)': 1
+        };
 
-        // Твои оригинальные товары и названия файлов
         const products = [
-            { id: 1, name: 'Орешки классик', price: 1.10, img: 'oreshki.png' },
-            { id: 2, name: 'Орешки с орехом', price: 1.50, img: 'oreshki sguchenka oreh.png' },
-            { id: 3, name: 'Трубочка', price: 2.20, img: 'trubochka1.jpg' },
-            { id: 4, name: 'Картошка', price: 1.80, img: 'kartoshka.jpg' },
-            { id: 5, name: 'Колбаса', price: 2.00, img: 'shokoladnaya kolbasa.jpg' }
+            { id: 'q1', cat: 'oreshki', name: 'Орешки со сгущёнкой', price: 1.10, img: 'oreshki.png', desc: 'Заказ от 10 шт' },
+            { id: 'q2', cat: 'oreshki', name: 'Орешки со сгущёнкой и орехом', price: 1.50, img: 'oreshki sguchenka oreh.png', desc: 'Заказ от 10 шт' },
+            { id: 'q3', cat: 'oreshki', name: 'Орешки с кокосом и миндалём', price: 1.80, img: 'oreshki kokos.jpg', desc: 'Заказ от 10 шт' },
+            { id: 'q4', cat: 'oreshki', name: 'Шоколадные орешки с Nutella и фундуком', price: 1.80, img: 'shokoladnya oreshki.jpg', desc: 'Заказ от 10 шт' },
+            { id: 'q5', cat: 'tubes', name: 'Трубочки', price: 4.00, img: 'trubochka1.jpg', desc: 'Заказ от 6 шт' },
+            { id: 'q6', cat: 'cakes', name: 'Муравейник', price: 2.50, img: 'muraveynik.jpg', desc: 'Заказ от 8 шт' },
+            { id: 'q7', cat: 'cakes', name: 'Кокосовое', price: 2.50, img: 'kokosovoe.jpg', desc: 'Заказ от 8 шт' },
+            { id: 'q8', cat: 'cakes', name: 'Грибочек со сгущёнкой', price: 2.50, img: 'grobochki.jpg', desc: 'Заказ от 12 шт' },
+            { id: 'q9', cat: 'cakes', name: 'Картошка', price: 4.00, img: 'kartoshka.jpg', desc: 'Заказ от 4 шт' },
+            { id: 'q10', cat: 'cakes', name: 'Шоколадная колбаса', price: 12.00, img: 'shokoladnaya kolbasa.jpg', desc: 'Заказ от 1 шт' },
+            { id: 't1', cat: 'tort', name: 'Торт Медовик (1.1 кг)', price: 65.00, img: 'tort 2.jpg', desc: 'Заказ от 1 шт' },
+            { id: 't2', cat: 'tort', name: 'Торт Медовик (2.2 кг)', price: 130.00, img: 'tort 2.jpg', desc: 'Заказ от 1 шт' },
+            { id: 'n1', cat: 'nabory', name: 'Набор Ассорти (20 шт)', price: 30.00, img: 'oreshki.png', desc: 'Заказ от 1 набора' }
         ];
 
-        const main = document.getElementById('main');
-        const cartBtn = document.getElementById('cart');
-
-        function render() {
-            main.innerHTML = '';
-            products.forEach(p => {
-                let div = document.createElement('div');
-                div.className = 'item';
-                div.innerHTML = `
-                    <img src="${p.img}">
-                    <p>${p.name}</p>
-                    <p><b>${p.price.toFixed(2)} BYN</b></p>
-                    <button class="btn" onclick="addToCart(${p.id})">Добавить</button>
-                `;
-                main.appendChild(div);
-            });
-        }
-
-        function addToCart(id) {
-            let product = products.find(p => p.id === id);
-            cart.push(product);
-            cartBtn.style.display = 'block';
-        }
-
-        function sendOrder() {
-            tg.sendData(JSON.stringify(cart));
-            tg.close();
-        }
-
-        render();
-    </script>
-</body>
-</html>
+        function renderProducts(cat) {
+            const grid = document.getElementById('menu-grid'); grid.innerHTML = '';
+            products.filter(p => p.cat === cat).forEach(p => {
+                const count = cart[p.name] || 0;
+                grid.innerHTML += `<div class="product-card">
+                    <div id="badge-${p.id}" class="qty-badge" style="display: ${count > 0 ? 'block' : 'none'}">${count}</div>
+                    <img src="${p.img}"><h3>${p.name}</h3><p>${p.desc}</p><div class="price">${p.price.toFixed(2)} BYN</div>
+                    <div class="counter-controls">
+                        <button class="btn-qty" onclick="changeQty('${p
