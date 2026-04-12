@@ -17,11 +17,38 @@
             height: 100vh; overflow: hidden; 
         }
 
-        .header-container { background: white; flex-shrink: 0; display: flex; flex-direction: column; }
-        .promo-banner { width: 100%; height: 180px; overflow: hidden; order: 1; }
+        /* КОНТЕЙНЕР ШАПКИ */
+        .header-container { background: white; flex-shrink: 0; position: relative; display: flex; flex-direction: column; }
+        
+        /* КНОПКА НАЗАД (Грамотное размещение) */
+        .back-floating-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(5px);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            cursor: pointer;
+            color: var(--dark);
+        }
+
+        /* БАННЕР (Первый по порядку) */
+        .promo-banner { width: 100%; height: 160px; overflow: hidden; order: 1; }
         .promo-banner img { width: 100%; height: 100%; object-fit: cover; }
-        .logo-area { padding: 15px 20px; order: 2; border-bottom: 1px solid #eee; }
-        .logo-area img { max-width: 140px; height: auto; display: block; }
+        
+        /* ЛОГОТИП (Второй по порядку) */
+        .logo-area { padding: 12px 20px; order: 2; border-bottom: 1px solid #eee; background: white; }
+        .logo-area img { max-width: 120px; height: auto; display: block; }
 
         .main-area { flex-grow: 1; display: flex; overflow: hidden; }
         
@@ -32,45 +59,43 @@
         .cat-item.active { color: var(--mcd-red); }
         .cat-item.active img { border-color: var(--mcd-red); box-shadow: 0 0 10px rgba(219, 0, 7, 0.2); }
 
-        /* СЕТКА ТОВАРОВ */
+        /* ТОВАРЫ */
         .menu-grid { flex-grow: 1; overflow-y: auto; padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; padding-bottom: 150px; }
         .product-card { background: white; border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 3px 8px rgba(0,0,0,0.05); position: relative; display: flex; flex-direction: column; gap: 4px; }
         .product-card img { width: 100%; height: 80px; object-fit: contain; margin-bottom: 4px; }
         .product-card h3 { font-size: 9px; margin: 0; font-weight: 700; color: var(--dark); min-height: 22px; display: flex; align-items: center; justify-content: center; }
         .product-card p { font-size: 7.5px; color: #777; margin: 0; min-height: 18px; }
         .product-card .price { font-size: 11px; font-weight: 900; color: var(--accent); margin: 4px 0; }
+        .product-card.disabled { opacity: 0.4; filter: grayscale(1); pointer-events: none; }
 
-        /* СТИЛЬ ДЛЯ НЕАКТИВНОГО ТОВАРА */
-        .product-card.disabled { opacity: 0.5; filter: grayscale(0.5); pointer-events: none; }
-        .disabled-msg { grid-column: 1 / -1; padding: 20px; text-align: center; background: #fff1f1; border-radius: 12px; font-size: 11px; color: var(--mcd-red); font-weight: 700; margin-bottom: 10px; border: 1px dashed var(--mcd-red); }
+        .disabled-msg { grid-column: 1 / -1; padding: 15px; text-align: center; background: #fff1f1; border-radius: 10px; font-size: 10px; color: var(--mcd-red); font-weight: 700; border: 1px dashed var(--mcd-red); margin-bottom: 5px; }
 
-        /* УПРАВЛЕНИЕ */
+        /* УПРАВЛЕНИЕ КОРЗИНОЙ */
         .counter-controls { display: flex; align-items: center; justify-content: space-between; background: #f8f8f8; border-radius: 20px; padding: 2px; border: 1px solid #eee; margin-top: auto; }
-        .btn-qty { width: 28px; height: 28px; border-radius: 50%; border: none; background: white; color: var(--dark); font-weight: 900; font-size: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; }
+        .btn-qty { width: 28px; height: 28px; border-radius: 50%; border: none; background: white; color: var(--dark); font-weight: 900; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .qty-val { font-size: 12px; font-weight: 700; min-width: 20px; }
         .qty-badge { position: absolute; top: -4px; right: -4px; background: var(--mcd-red); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; line-height: 18px; display: none; border: 2px solid white; font-weight: 900; z-index: 10; }
 
         /* ФУТЕР */
         .payment-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; padding: 10px 15px 25px 15px; z-index: 100; border-radius: 20px 20px 0 0; }
         .footer-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .btn-view-cart { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 8px 14px; border-radius: 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; cursor: pointer; }
+        .btn-view-cart { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 8px 14px; border-radius: 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
         .total-price { font-size: 20px; color: var(--mcd-yellow); font-weight: 900; }
         .total-label { font-size: 8px; color: #aaa; text-transform: uppercase; margin-right: 4px; }
-        .footer-buttons { display: flex; gap: 10px; }
-        .btn-action { flex: 1; padding: 12px; border: none; border-radius: 12px; font-weight: 900; font-size: 13px; text-transform: uppercase; font-family: 'Montserrat', sans-serif; cursor: pointer; }
-        .btn-cancel { background: #333; color: #bbb; }
-        .btn-pay { background: var(--mcd-green); color: white; }
+        .btn-pay { width: 100%; padding: 12px; border: none; border-radius: 12px; font-weight: 900; background: var(--mcd-green); color: white; text-transform: uppercase; cursor: pointer; }
 
+        /* МОДАЛКА */
         #cart-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 25px; }
         .modal-content { background: white; border-radius: 25px; padding: 25px; width: 100%; max-width: 300px; }
-        .cart-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; font-size: 13px; }
-        .item-name { flex: 1; padding-right: 10px; }
-        .item-qty { font-weight: 900; white-space: nowrap; }
     </style>
 </head>
 <body>
 
     <div class="header-container">
+        <button class="back-floating-btn" id="txt-back-btn" onclick="window.location.href='index.html'">
+            <span>←</span> <span id="txt-back-word">Назад</span>
+        </button>
+
         <div class="promo-banner">
             <img src="shokoladnya oreshki.jpg" alt="Promo">
         </div>
@@ -86,23 +111,20 @@
 
     <div class="payment-footer">
         <div class="footer-top">
-            <button class="btn-view-cart" id="txt-view-cart" onclick="showCart()">Ваш заказ</button>
+            <button class="btn-view-cart" id="txt-view-cart" onclick="showCart()">Заказ</button>
             <div class="total-info">
                 <span class="total-label" id="txt-total-label">итого:</span>
                 <span class="total-price"><span id="total-val">0.00</span> BYN</span>
             </div>
         </div>
-        <div class="footer-buttons">
-            <button class="btn-action btn-cancel" id="txt-clear" onclick="clearCart()">ОЧИСТИТЬ</button>
-            <button class="btn-action btn-pay" id="txt-order" onclick="tg.showAlert('Оформление...')">ОФОРМИТЬ</button>
-        </div>
+        <button class="btn-pay" id="txt-order" onclick="tg.showAlert('Оформление...')">ОФОРМИТЬ</button>
     </div>
 
     <div id="cart-modal" onclick="closeCart()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h2 id="txt-cart-title" style="text-align:center; font-size: 18px; margin: 0 0 15px 0;">ВАШ ЗАКАЗ</h2>
+            <h2 id="txt-cart-title" style="text-align:center; font-size: 18px; margin-bottom: 15px;">ВАШ ЗАКАЗ</h2>
             <div id="cart-items-list"></div>
-            <button class="btn-action btn-cancel" style="width:100%; margin-top:15px;" id="txt-close" onclick="closeCart()">ЗАКРЫТЬ</button>
+            <button class="btn-pay" style="margin-top:15px; background:#333;" onclick="closeCart()">ЗАКРЫТЬ</button>
         </div>
     </div>
 
@@ -112,9 +134,9 @@
         let city = localStorage.getItem('selectedCity') || 'Гомель';
         
         const i18n = {
-            ru: { cart: "Ваш заказ", total: "итого:", clear: "Очистить", order: "Оформить", close: "Закрыть", cartTitle: "ВАШ ЗАКАЗ", unit: "шт.", from: "от", empty: "Пусто", cakeWarning: "Торты доступны только для Гомеля (самовывоз/доставка)" },
-            by: { cart: "Ваша замова", total: "вынік:", clear: "Ачысціць", order: "Аформіць", close: "Закрыць", cartTitle: "ВАША ЗАМОВА", unit: "шт.", from: "ад", empty: "Пуста", cakeWarning: "Тарты даступныя толькі для Гомеля (самавываз/дастаўка)" },
-            en: { cart: "Your order", total: "total:", clear: "Clear", order: "Checkout", close: "Close", cartTitle: "YOUR ORDER", unit: "pcs.", from: "from", empty: "Empty", cakeWarning: "Cakes are only available for Gomel" }
+            ru: { back: "Назад", cart: "Заказ", total: "итого:", order: "Оформить", cakeWarning: "Торты доступны только для Гомеля", unit: "шт.", from: "от" },
+            by: { back: "Назад", cart: "Замова", total: "вынік:", order: "Аформіць", cakeWarning: "Тарты даступныя толькі для Гомеля", unit: "шт.", from: "ад" },
+            en: { back: "Back", cart: "Order", total: "total:", order: "Checkout", cakeWarning: "Cakes available for Gomel only", unit: "pcs.", from: "from" }
         };
 
         const categories = {
@@ -126,23 +148,17 @@
         const products = [
             { id: 'q1', cat: 0, name: {ru: 'Орешки со сгущёнкой', by: 'Арэшкі са згушчонкай', en: 'Nuts with condensed milk'}, price: 1.10, img: 'oreshki.png', min: 10 },
             { id: 'q2', cat: 0, name: {ru: 'Орешки с орехом', by: 'Арэшкі з арэхам', en: 'Nuts with walnuts'}, price: 1.50, img: 'oreshki sguchenka oreh.png', min: 10 },
-            { id: 'q3', cat: 0, name: {ru: 'Кокос и миндаль', by: 'Кокас і міндаль', en: 'Coconut & Almond'}, price: 1.80, img: 'oreshki kokos.jpg', min: 10 },
-            { id: 'q4', cat: 0, name: {ru: 'Nutella и фундук', by: 'Nutella і фундук', en: 'Nutella & Hazelnut'}, price: 1.80, img: 'shokoladnya oreshki.jpg', min: 10 },
-            { id: 'q5', cat: 1, name: {ru: 'Трубочки', by: 'Трубачкі', en: 'Sweet tubes'}, price: 4.00, img: 'trubochka1.jpg', min: 6 },
-            { id: 'q6', cat: 2, name: {ru: 'Муравейник', by: 'Мурашнік', en: 'Anthill cake'}, price: 2.50, img: 'muraveynik.jpg', min: 8 },
-            { id: 't1', cat: 3, name: {ru: 'Медовик 1.1кг', by: 'Мядовік 1.1кг', en: 'Honey cake 1.1kg'}, price: 65.00, img: 'tort 2.jpg', min: 1 },
-            { id: 'n1', cat: 4, name: {ru: 'Набор Ассорти', by: 'Набор Асарці', en: 'Assorted set'}, price: 30.00, img: 'oreshki.png', min: 1 }
+            { id: 'q3', cat: 1, name: {ru: 'Трубочки', by: 'Трубачкі', en: 'Sweet tubes'}, price: 4.00, img: 'trubochka1.jpg', min: 6 },
+            { id: 't1', cat: 3, name: {ru: 'Медовик 1.1кг', by: 'Мядовік 1.1кг', en: 'Honey cake 1.1kg'}, price: 65.00, img: 'tort 2.jpg', min: 1 }
         ];
 
         let cart = {}; let total = 0;
 
         function init() {
+            document.getElementById('txt-back-word').innerText = i18n[lang].back;
             document.getElementById('txt-view-cart').innerText = i18n[lang].cart;
             document.getElementById('txt-total-label').innerText = i18n[lang].total;
-            document.getElementById('txt-clear').innerText = i18n[lang].clear;
             document.getElementById('txt-order').innerText = i18n[lang].order;
-            document.getElementById('txt-close').innerText = i18n[lang].close;
-            document.getElementById('txt-cart-title').innerText = i18n[lang].cartTitle;
             renderSidebar();
             renderProducts(0);
         }
@@ -160,13 +176,8 @@
         function renderProducts(catIndex) {
             const grid = document.getElementById('menu-grid');
             grid.innerHTML = '';
-
-            // Если выбран другой город и категория ТОРТЫ (индекс 3)
             const isCakeRestricted = (city !== 'Гомель' && catIndex === 3);
-            
-            if (isCakeRestricted) {
-                grid.innerHTML = `<div class="disabled-msg">${i18n[lang].cakeWarning}</div>`;
-            }
+            if (isCakeRestricted) grid.innerHTML = `<div class="disabled-msg">${i18n[lang].cakeWarning}</div>`;
 
             grid.innerHTML += products.filter(p => p.cat === catIndex).map(p => {
                 const count = cart[p.id] || 0;
@@ -214,14 +225,12 @@
             const entries = Object.entries(cart);
             list.innerHTML = entries.length ? entries.map(([id, q]) => {
                 const p = products.find(x => x.id === id);
-                return `<div class="cart-row"><span class="item-name">${p.name[lang]}</span><span class="item-qty">${q}&nbsp;${i18n[lang].unit}</span></div>`;
-            }).join('') : `<div style="text-align:center">${i18n[lang].empty}</div>`;
+                return `<div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>${p.name[lang]}</span><b>${q} ${i18n[lang].unit}</b></div>`;
+            }).join('') : `<div style="text-align:center">Пусто</div>`;
             document.getElementById('cart-modal').style.display = 'flex';
         }
 
         function closeCart() { document.getElementById('cart-modal').style.display = 'none'; }
-        function clearCart() { cart = {}; total = 0; document.getElementById('total-val').innerText = "0.00"; renderProducts(0); }
-
         init();
     </script>
 </body>
