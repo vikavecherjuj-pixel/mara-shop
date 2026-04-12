@@ -21,6 +21,7 @@
 
         .header-container { background: white; flex-shrink: 0; position: relative; display: flex; flex-direction: column; }
         
+        /* ПЛАШКА НАЗАД (ПРОЗРАЧНАЯ) */
         .back-floating-btn {
             position: absolute; top: 15px; left: 15px; z-index: 100;
             background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(5px);
@@ -49,9 +50,10 @@
         .product-card p { font-size: 7.5px; color: #777; margin: 0; min-height: 18px; }
         .product-card .price { font-size: 11px; font-weight: 900; color: var(--accent); margin: 4px 0; }
         
-        /* Блокировка товаров */
         .product-card.disabled { opacity: 0.4; filter: grayscale(1); pointer-events: none; }
         .disabled-msg { grid-column: 1 / -1; padding: 20px; text-align: center; background: #fff1f1; border-radius: 12px; font-size: 11px; color: var(--burgundy); font-weight: 700; margin-bottom: 10px; border: 1px dashed var(--burgundy); }
+        
+        /* СКРЫТИЕ МИН. ЗАКАЗА ДЛЯ ТОРТОВ */
         .cat-3-hide-min { display: none !important; }
 
         .counter-controls { display: flex; align-items: center; justify-content: space-between; background: #f8f8f8; border-radius: 20px; padding: 2px; border: 1px solid #eee; margin-top: auto; }
@@ -122,14 +124,31 @@
             en: { back: "Back", cart: "View Order", total: "total:", order: "Checkout", clear: "Clear", unit: "pcs.", from: "from", empty: "Empty", cakeWarning: "Cakes for Gomel only" }
         };
 
+        const categories = {
+            ru: ["ОРЕШКИ", "ТРУБОЧКИ", "ПИРОЖНЫЕ", "ТОРТ", "НАБОРЫ"],
+            by: ["АРЭШКІ", "ТРУБАЧКІ", "ПІРОЖНЫЯ", "ТОРТ", "НАБОРЫ"],
+            en: ["NUTS", "TUBES", "CAKES", "CAKE", "SETS"]
+        };
+
         const products = [
             { id: 'q1', cat: 0, name: {ru: 'Орешки со сгущёнкой', by: 'Арэшкі са згушчонкай', en: 'Nuts'}, price: 1.10, img: 'oreshki.png', min: 10 },
-            { id: 'q2', cat: 0, name: {ru: 'Орешки с орехом', by: 'Арэшкі з арэхам', en: 'Nuts + walnut'}, price: 1.50, img: 'oreshki sguchenka oreh.png', min: 10 },
-            { id: 'q5', cat: 1, name: {ru: 'Трубочки', by: 'Трубачкі', en: 'Tubes'}, price: 4.00, img: 'trubochka1.jpg', min: 6 },
+            { id: 'q2', cat: 0, name: {ru: 'Орешки со сгущёнкой и орехом', by: 'Арэшкі са згушчонкай і арэхам', en: 'Nuts + walnut'}, price: 1.50, img: 'oreshki sguchenka oreh.png', min: 10 },
+            { id: 'q3', cat: 0, name: {ru: 'Кокос и миндаль', by: 'Кокас і миндаль', en: 'Coconut & Almond'}, price: 1.80, img: 'oreshki kokos.jpg', min: 10 },
+            { id: 'q4', cat: 0, name: {ru: 'Nutella и фундук', by: 'Nutella і фундук', en: 'Nutella & Hazelnut'}, price: 1.80, img: 'shokoladnya oreshki.jpg', min: 10 },
+            { id: 'q5', cat: 1, name: {ru: 'Трубочки со сгущенкой', by: 'Трубачкі са згушчонкай', en: 'Tubes'}, price: 4.00, img: 'trubochka1.jpg', min: 6 },
+            { id: 'q6', cat: 2, name: {ru: 'Муравейник', by: 'Мурашнік', en: 'Anthill cake'}, price: 2.50, img: 'muraveynik.jpg', min: 8 },
             { id: 'q7', cat: 2, name: {ru: 'Грибочки', by: 'Грыбочкі', en: 'Mushrooms'}, price: 2.50, img: 'grobochki.jpg', min: 12 },
+            { id: 'q8', cat: 2, name: {ru: 'Сердечки', by: 'Сэрцайкі', en: 'Hearts'}, price: 2.50, img: 'serdechki.png', min: 8 },
+            { id: 'q9', cat: 2, name: {ru: 'Кокосовое', by: 'Кокасавае', en: 'Coconut cake'}, price: 2.50, img: 'kokosovoe.jpg', min: 8 },
+            { id: 'q10', cat: 2, name: {ru: 'Орешки в глазури', by: 'Арэшкі ў глазуры', en: 'Glazed nuts'}, price: 2.50, img: 'orshki v glazuri.jpg', min: 12 },
+            { id: 'q11', cat: 2, name: {ru: 'Картошка', by: 'Бульба', en: 'Potato'}, price: 4.00, img: 'kartoshka.jpg', min: 4 },
+            { id: 'q12', cat: 2, name: {ru: 'Шоколадная колбаса', by: 'Шакаладная каўбаса', en: 'Choco sausage'}, price: 12.00, img: 'shokoladnaya kolbasa.jpg', min: 1 },
             { id: 't1', cat: 3, name: {ru: 'Медовик 1.1кг', by: 'Мядовік 1.1кг', en: 'Honey cake 1.1kg'}, price: 65.00, img: 'tort 2.jpg', min: 1 },
-            { id: 't2', cat: 3, name: {ru: 'Медовик 2.2кг', by: 'Мядовік 2.2кг', en: 'Honey cake 2.2kg'}, price: 130.00, img: 'tort 2.jpg', min: 1 }
+            { id: 't2', cat: 3, name: {ru: 'Медовик 2.2кг', by: 'Мядовік 2.2кг', en: 'Honey cake 2.2kg'}, price: 130.00, img: 'tort 2.jpg', min: 1 },
+            { id: 'n1', cat: 4, name: {ru: 'Набор Ассорти', by: 'Набор Асарці', en: 'Assorted set'}, price: 30.00, img: 'oreshki.png', min: 1 }
         ];
+
+        let cart = {}; let total = 0;
 
         function init() {
             document.getElementById('txt-back-word').innerText = i18n[lang].back;
@@ -140,9 +159,8 @@
 
         function renderSidebar() {
             const side = document.getElementById('sidebar');
-            const cats = ["ОРЕШКИ", "ТРУБОЧКИ", "ПИРОЖНЫЕ", "ТОРТ", "НАБОРЫ"];
-            const imgs = ['oreshki.png', 'trubochka1.jpg', 'grobochki.jpg', 'tort 2.jpg', 'oreshki.png'];
-            side.innerHTML = cats.map((name, i) => `
+            const imgs = ['oreshki.png', 'trubochka1.jpg', 'muraveynik.jpg', 'tort 2.jpg', 'oreshki.png'];
+            side.innerHTML = categories[lang].map((name, i) => `
                 <div class="cat-item ${i==0?'active':''}" onclick="changeCat(${i}, this)">
                     <img src="${imgs[i]}"><br>${name}
                 </div>
@@ -152,8 +170,6 @@
         function renderProducts(catIndex) {
             const grid = document.getElementById('menu-grid');
             grid.innerHTML = '';
-
-            // ЗАПРЕТ: Если город не Гомель и категория торты (cat 3)
             const isCakeRestricted = (city !== 'Гомель' && catIndex === 3);
             
             if (isCakeRestricted) {
@@ -186,7 +202,6 @@
             renderProducts(i);
         }
 
-        let cart = {}; let total = 0;
         function changeQty(id, price, min, delta) {
             let cur = cart[id] || 0;
             if (cur === 0 && delta === 1) delta = min;
