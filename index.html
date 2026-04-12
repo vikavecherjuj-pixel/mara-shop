@@ -3,96 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mara Shop - Welcome</title>
+    <title>Start Mara Shop</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --mcd-yellow: #ffbc0d; --mcd-green: #27ae60; --dark: #2c1a11; }
-        body { font-family: 'Montserrat', sans-serif; background: #fff; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; text-align: center; }
+        :root { 
+            --accent: #e67e22; 
+            --mcd-yellow: #ffbc0d; 
+            --mcd-green: #27ae60;
+        }
+        body { 
+            font-family: 'Montserrat', sans-serif; 
+            background: #fff; 
+            margin: 0; padding: 0; 
+            display: flex; flex-direction: column; 
+            height: 100vh; 
+            overflow: hidden; 
+            text-align: center;
+        }
         
-        .start-banner { width: 100%; height: 45%; background: var(--mcd-yellow); overflow: hidden; flex-shrink: 0; }
-        .start-banner img { width: 100%; height: 100%; object-fit: cover; }
+        /* ВЕРХНИЙ БАННЕР (Как в Макдональдсе) */
+        .start-banner { 
+            width: 100%; 
+            height: 55%; 
+            background: var(--mcd-yellow); 
+            overflow: hidden; 
+        }
+        .start-banner img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            display: block;
+        }
         
-        .content-block { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; padding: 20px 25px 30px 25px; }
+        /* БЛОК СОДЕРЖИМОГО СНИЗУ */
+        .content-block { 
+            flex-grow: 1; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            padding: 30px; 
+        }
         
-        .section-label { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #aaa; margin-bottom: 10px; letter-spacing: 1px; }
+        /* ЗАГОЛОВОК */
+        .start-title { 
+            font-size: 26px; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            color: #2c1a11; 
+            margin: 0 0 10px 0;
+            letter-spacing: -0.5px;
+        }
         
-        /* КНОПКИ ГОРОДА */
-        .city-group { display: flex; gap: 10px; margin-bottom: 25px; }
-        .option-btn { flex: 1; padding: 15px 10px; border: 2px solid #eee; border-radius: 14px; font-size: 13px; font-weight: 700; cursor: pointer; background: white; transition: 0.2s; color: var(--dark); }
-        .option-btn.selected { border-color: var(--dark); background: var(--dark); color: white; }
-
-        /* КНОПКИ ЯЗЫКА */
-        .lang-group { display: flex; gap: 8px; margin-bottom: 20px; }
-        .lang-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border: 2px solid #eee; padding: 10px 5px; border-radius: 12px; font-size: 11px; font-weight: 700; cursor: pointer; background: white; }
-        .lang-btn img { width: 22px; border-radius: 3px; }
-        .lang-btn.selected { border-color: var(--mcd-yellow); background: rgba(255, 188, 13, 0.1); }
+        /* ПОДЗАГОЛОВОК */
+        .start-subtitle {
+            font-size: 14px;
+            color: #777;
+            margin: 0 0 20px 0;
+        }
         
-        .btn-start { width: 100%; padding: 20px; border: none; border-radius: 16px; font-weight: 900; text-transform: uppercase; background: var(--mcd-green); color: white; font-size: 16px; box-shadow: 0 4px 0 #1e8449; cursor: pointer; }
+        /* ГРУППА КНОПОК ЯЗЫКА */
+        .lang-group { 
+            display: flex; 
+            gap: 10px; 
+            margin: 0 auto;
+            max-width: 400px;
+        }
+        .lang-btn { 
+            flex: 1; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            gap: 8px;
+            border: 1px solid #ddd; 
+            padding: 12px; 
+            border-radius: 10px; 
+            font-size: 13px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            transition: 0.2s;
+            color: #333;
+        }
+        .lang-btn img {
+            width: 18px; height: auto;
+        }
+        .lang-btn:active, .lang-btn.selected { 
+            border-color: var(--accent); 
+            background: rgba(230, 126, 34, 0.05);
+            color: var(--accent);
+        }
+        
+        /* БОЛЬШАЯ КНОПКА СТАРТА */
+        .start-action { margin-top: auto; }
+        .btn-start { 
+            width: 100%; 
+            padding: 16px; 
+            border: none; 
+            border-radius: 14px; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            font-family: 'Montserrat', sans-serif; 
+            background: var(--mcd-green); 
+            color: white; 
+            font-size: 15px; 
+            cursor: pointer; 
+            box-shadow: 0 4px 0 #1e8449; 
+            transition: 0.1s;
+        }
+        .btn-start:active { transform: translateY(2px); box-shadow: 0 2px 0 #1e8449; }
     </style>
 </head>
 <body>
-    <div class="start-banner"><img src="shokoladnya oreshki.jpg"></div>
-    
-    <div class="content-block">
-        <div>
-            <div class="section-label" id="label-city">Ваш город / Ваш горад</div>
-            <div class="city-group">
-                <div class="option-btn selected" id="city-gomel" onclick="selectCity('Гомель')">Гомель</div>
-                <div class="option-btn" id="city-other" onclick="selectCity('Другой город')">Другие города РБ</div>
-            </div>
 
-            <div class="section-label" id="label-lang">Язык / Мова</div>
-            <div class="lang-group">
-                <div class="lang-btn selected" id="btn-ru" onclick="changeLang('ru')"><img src="https://flagcdn.com/w40/ru.png">Русский</div>
-                <div class="lang-btn" id="btn-by" onclick="changeLang('by')"><img src="https://flagcdn.com/w40/by.png">Беларуская</div>
-                <div class="lang-btn" id="btn-en" onclick="changeLang('en')"><img src="https://flagcdn.com/w40/gb.png">English</div>
+    <div class="start-banner">
+        <img src="shokoladnya oreshki.jpg" alt="Салодкая Мара">
+    </div>
+
+    <div class="content-block">
+        <div class="text-top">
+            <h1 class="start-title">Попробуй десерт здесь!</h1>
+            <p class="start-subtitle">Выберите язык, чтобы продолжить заказ</p>
+        </div>
+
+        <div class="lang-group">
+            <div class="lang-btn selected" onclick="selectLang(this)">
+                <img src="https://flagcdn.com/w40/ru.png" alt="ru">Русский
+            </div>
+            <div class="lang-btn" onclick="selectLang(this)">
+                <img src="https://flagcdn.com/w40/by.png" alt="by">Беларуская
+            </div>
+            <div class="lang-btn" onclick="selectLang(this)">
+                <img src="https://flagcdn.com/w40/gb.png" alt="en">English
             </div>
         </div>
 
         <div class="start-action">
-            <button id="start-button" class="btn-start" onclick="goToCatalog()">Начать заказ</button>
+            <button class="btn-start" onclick="startShop()">Начать заказ</button>
         </div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
+        
+        // По умолчанию русский
+        let currentLang = 'ru'; 
 
-        let currentLang = 'ru';
-        let currentCity = 'Гомель';
-
-        const translations = {
-            ru: { labelCity: "Ваш город", cityGomel: "Гомель", cityOther: "Другие города РБ", labelLang: "Выберите язык", button: "Начать заказ" },
-            by: { labelCity: "Ваш горад", cityGomel: "Гомель", cityOther: "Іншыя гарады РБ", labelLang: "Абярыце мову", button: "Пачаць замову" },
-            en: { labelCity: "Your city", cityGomel: "Gomel", cityOther: "Other BY cities", labelLang: "Choose language", button: "Start Order" }
-        };
-
-        function selectCity(city) {
-            currentCity = city;
-            document.querySelectorAll('.city-group .option-btn').forEach(btn => btn.classList.remove('selected'));
-            event.target.classList.add('selected');
-            tg.HapticFeedback.impactOccurred('light');
+        // Функция выбора языка
+        function selectLang(el) {
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('selected'));
+            el.classList.add('selected');
+            
+            // Получаем язык из текста кнопки (для упрощения)
+            currentLang = el.innerText.trim(); 
+            
+            tg.HapticFeedback.selectionChanged();
         }
 
-        function changeLang(lang) {
-            currentLang = lang;
-            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('selected'));
-            document.getElementById(`btn-${lang}`).classList.add('selected');
+        // Функция начала заказа
+        function startShop() {
+            // Сохраняем выбранный язык в локальное хранилище (чтобы магазин знал, какой язык использовать)
+            localStorage.setItem('userLanguage', currentLang);
             
-            // Обновляем тексты
-            document.getElementById('label-city').innerText = translations[lang].labelCity;
-            document.getElementById('city-gomel').innerText = translations[lang].cityGomel;
-            document.getElementById('city-other').innerText = translations[lang].cityOther;
-            document.getElementById('label-lang').innerText = translations[lang].labelLang;
-            document.getElementById('start-button').innerText = translations[lang].button;
-            
-            tg.HapticFeedback.impactOccurred('light');
-        }
-
-        function goToCatalog() {
-            localStorage.setItem('selectedLang', currentLang);
-            localStorage.setItem('selectedCity', currentCity);
+            // Здесь перенаправляем на вашу основную страницу магазина.
+            // Предположим, что она называется 'shop.html'
             window.location.href = 'shop.html';
         }
     </script>
