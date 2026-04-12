@@ -21,7 +21,6 @@
 
         .header-container { background: white; flex-shrink: 0; position: relative; display: flex; flex-direction: column; }
         
-        /* ПЛАШКА НАЗАД (СДЕЛАЛ ПРОЗРАЧНЕЕ) */
         .back-floating-btn {
             position: absolute; top: 15px; left: 15px; z-index: 100;
             background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(5px);
@@ -50,7 +49,9 @@
         .product-card p { font-size: 7.5px; color: #777; margin: 0; min-height: 18px; }
         .product-card .price { font-size: 11px; font-weight: 900; color: var(--accent); margin: 4px 0; }
         
-        /* СКРЫТИЕ МИН. ЗАКАЗА У ТОРТОВ (cat_3) */
+        /* Блокировка товаров */
+        .product-card.disabled { opacity: 0.4; filter: grayscale(1); pointer-events: none; }
+        .disabled-msg { grid-column: 1 / -1; padding: 20px; text-align: center; background: #fff1f1; border-radius: 12px; font-size: 11px; color: var(--burgundy); font-weight: 700; margin-bottom: 10px; border: 1px dashed var(--burgundy); }
         .cat-3-hide-min { display: none !important; }
 
         .counter-controls { display: flex; align-items: center; justify-content: space-between; background: #f8f8f8; border-radius: 20px; padding: 2px; border: 1px solid #eee; margin-top: auto; }
@@ -116,9 +117,9 @@
         let city = localStorage.getItem('selectedCity') || 'Гомель';
         
         const i18n = {
-            ru: { back: "Назад", cart: "Просмотреть заказ", total: "итого:", order: "Оформить", clear: "Очистить", unit: "шт.", from: "от", empty: "Пусто" },
-            by: { back: "Назад", cart: "Прагляд замовы", total: "вынік:", order: "Аформіць", clear: "Ачысціць", unit: "шт.", from: "ад", empty: "Пуста" },
-            en: { back: "Back", cart: "View Order", total: "total:", order: "Checkout", clear: "Clear", unit: "pcs.", from: "from", empty: "Empty" }
+            ru: { back: "Назад", cart: "Просмотреть заказ", total: "итого:", order: "Оформить", clear: "Очистить", unit: "шт.", from: "от", empty: "Пусто", cakeWarning: "Торты доступны только для Гомеля" },
+            by: { back: "Назад", cart: "Прагляд замовы", total: "вынік:", order: "Аформіць", clear: "Ачысціць", unit: "шт.", from: "ад", empty: "Пуста", cakeWarning: "Тарты даступныя толькі для Гомеля" },
+            en: { back: "Back", cart: "View Order", total: "total:", order: "Checkout", clear: "Clear", unit: "pcs.", from: "from", empty: "Empty", cakeWarning: "Cakes for Gomel only" }
         };
 
         const products = [
@@ -126,12 +127,9 @@
             { id: 'q2', cat: 0, name: {ru: 'Орешки с орехом', by: 'Арэшкі з арэхам', en: 'Nuts + walnut'}, price: 1.50, img: 'oreshki sguchenka oreh.png', min: 10 },
             { id: 'q5', cat: 1, name: {ru: 'Трубочки', by: 'Трубачкі', en: 'Tubes'}, price: 4.00, img: 'trubochka1.jpg', min: 6 },
             { id: 'q7', cat: 2, name: {ru: 'Грибочки', by: 'Грыбочкі', en: 'Mushrooms'}, price: 2.50, img: 'grobochki.jpg', min: 12 },
-            /* ТОРТЫ */
             { id: 't1', cat: 3, name: {ru: 'Медовик 1.1кг', by: 'Мядовік 1.1кг', en: 'Honey cake 1.1kg'}, price: 65.00, img: 'tort 2.jpg', min: 1 },
             { id: 't2', cat: 3, name: {ru: 'Медовик 2.2кг', by: 'Мядовік 2.2кг', en: 'Honey cake 2.2kg'}, price: 130.00, img: 'tort 2.jpg', min: 1 }
         ];
-
-        let cart = {}; let total = 0;
 
         function init() {
             document.getElementById('txt-back-word').innerText = i18n[lang].back;
@@ -142,9 +140,9 @@
 
         function renderSidebar() {
             const side = document.getElementById('sidebar');
-            const cats = { ru: ["ОРЕШКИ", "ТРУБОЧКИ", "ПИРОЖНЫЕ", "ТОРТ", "НАБОРЫ"] };
+            const cats = ["ОРЕШКИ", "ТРУБОЧКИ", "ПИРОЖНЫЕ", "ТОРТ", "НАБОРЫ"];
             const imgs = ['oreshki.png', 'trubochka1.jpg', 'grobochki.jpg', 'tort 2.jpg', 'oreshki.png'];
-            side.innerHTML = cats.ru.map((name, i) => `
+            side.innerHTML = cats.map((name, i) => `
                 <div class="cat-item ${i==0?'active':''}" onclick="changeCat(${i}, this)">
                     <img src="${imgs[i]}"><br>${name}
                 </div>
@@ -153,12 +151,20 @@
 
         function renderProducts(catIndex) {
             const grid = document.getElementById('menu-grid');
-            grid.innerHTML = products.filter(p => p.cat === catIndex).map(p => {
+            grid.innerHTML = '';
+
+            // ЗАПРЕТ: Если город не Гомель и категория торты (cat 3)
+            const isCakeRestricted = (city !== 'Гомель' && catIndex === 3);
+            
+            if (isCakeRestricted) {
+                grid.innerHTML = `<div class="disabled-msg">${i18n[lang].cakeWarning}</div>`;
+            }
+
+            grid.innerHTML += products.filter(p => p.cat === catIndex).map(p => {
                 const count = cart[p.id] || 0;
-                // Прячем надпись "от... шт" для категории 3 (Торты)
                 const minClass = (p.cat === 3) ? 'cat-3-hide-min' : '';
                 return `
-                    <div class="product-card">
+                    <div class="product-card ${isCakeRestricted ? 'disabled' : ''}">
                         <div class="qty-badge" id="badge-${p.id}" style="display:${count>0?'block':'none'}">${count}</div>
                         <img src="${p.img}" onerror="this.src='oreshki.png'">
                         <h3>${p.name[lang]}</h3>
@@ -180,6 +186,7 @@
             renderProducts(i);
         }
 
+        let cart = {}; let total = 0;
         function changeQty(id, price, min, delta) {
             let cur = cart[id] || 0;
             if (cur === 0 && delta === 1) delta = min;
