@@ -10,7 +10,6 @@
         :root { 
             --accent: #e67e22; --dark: #2c1a11; --bg: #fdfaf5; 
             --mcd-green: #27ae60; --mcd-red: #db0007; --mcd-yellow: #ffbc0d; 
-            --gray: #7f8c8d;
         }
         body { 
             font-family: 'Montserrat', sans-serif; background: var(--bg); 
@@ -18,43 +17,47 @@
             height: 100vh; overflow: hidden; 
         }
         
-        .promo-banner { width: 100%; height: 165px; background: var(--mcd-yellow); flex-shrink: 0; }
+        /* БАННЕР (165px) */
+        .promo-banner { width: 100%; height: 165px; background: var(--mcd-yellow); flex-shrink: 0; overflow: hidden; }
         .promo-banner img { width: 100%; height: 100%; object-fit: cover; }
         
+        /* ЛОГО СЛЕВА */
         .brand-header { padding: 10px 0; text-align: left; background: white; border-bottom: 1px solid #eee; flex-shrink: 0; }
         .brand-header img.logo { max-width: 160px; height: auto; display: block; margin-left: 15px; }
         
         .main-area { flex-grow: 1; display: flex; overflow: hidden; }
         
+        /* КАТЕГОРИИ */
         .sidebar { width: 85px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; align-items: center; padding-top: 10px; flex-shrink: 0; overflow-y: auto; }
-        .cat-item { margin-bottom: 15px; text-align: center; font-size: 8px; color: #555; width: 100%; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .cat-item { margin-bottom: 15px; text-align: center; font-size: 8px; color: #555; width: 100%; font-weight: 700; cursor: pointer; }
         .cat-item img { width: 40px; height: 40px; border-radius: 50%; background: #eee; margin-bottom: 4px; border: 2px solid transparent; object-fit: cover; }
-        .cat-item.active { color: var(--mcd-red); transform: scale(1.05); }
+        .cat-item.active { color: var(--mcd-red); }
         .cat-item.active img { border-color: var(--mcd-red); box-shadow: 0 0 10px rgba(219, 0, 7, 0.2); }
 
+        /* СЕТКА ТОВАРОВ */
         .menu-grid { flex-grow: 1; overflow-y: auto; padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; padding-bottom: 220px; }
         
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .product-card { 
             background: white; border-radius: 12px; padding: 10px; text-align: center; 
             box-shadow: 0 3px 8px rgba(0,0,0,0.05); position: relative; 
-            display: flex; flex-direction: column; gap: 4px; animation: fadeIn 0.3s ease forwards;
+            display: flex; flex-direction: column; gap: 4px;
         }
-        
         .product-card img { width: 100%; height: 80px; object-fit: contain; margin-bottom: 4px; }
-        .product-card h3 { font-size: 9px; margin: 0; font-weight: 700; color: var(--dark); line-height: 1.2; min-height: 22px; display: flex; align-items: center; justify-content: center; }
-        .product-card p { font-size: 7.5px; color: #777; margin: 0; line-height: 1.1; min-height: 18px; display: flex; align-items: center; justify-content: center; }
+        .product-card h3 { font-size: 9px; margin: 0; font-weight: 700; color: var(--dark); min-height: 22px; display: flex; align-items: center; justify-content: center; }
+        .product-card p { font-size: 7.5px; color: #777; margin: 0; min-height: 18px; }
         .product-card .price { font-size: 11px; font-weight: 900; color: var(--accent); margin: 4px 0; }
 
+        /* СЧЕТЧИКИ */
         .counter-controls { display: flex; align-items: center; justify-content: space-between; background: #f8f8f8; border-radius: 20px; padding: 2px; border: 1px solid #eee; margin-top: auto; }
-        .btn-qty { width: 28px; height: 28px; border-radius: 50%; border: none; background: white; color: var(--dark); font-weight: 900; font-size: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; transition: 0.1s; }
-        .qty-val { font-size: 12px; font-weight: 700; min-width: 20px; color: var(--dark); }
+        .btn-qty { width: 28px; height: 28px; border-radius: 50%; border: none; background: white; color: var(--dark); font-weight: 900; font-size: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .qty-val { font-size: 12px; font-weight: 700; min-width: 20px; }
         .qty-badge { position: absolute; top: -4px; right: -4px; background: var(--mcd-red); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; line-height: 18px; display: none; border: 2px solid white; font-weight: 900; z-index: 10; }
 
+        /* НОВЫЙ ФУТЕР */
         .payment-footer { 
             position: fixed; bottom: 0; left: 0; right: 0; 
             background: #1a1a1a; padding: 15px 15px 35px 15px; 
-            z-index: 100; border-radius: 20px 20px 0 0; box-shadow: 0 -5px 15px rgba(0,0,0,0.3); 
+            z-index: 100; border-radius: 20px 20px 0 0; 
         }
         .footer-top { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px; }
         .btn-view-cart { 
@@ -63,14 +66,233 @@
             padding: 8px 14px; border-radius: 10px; font-size: 10px; 
             font-weight: 700; text-transform: uppercase; cursor: pointer;
         }
-        .total-info { text-align: right; }
-        .total-label { font-size: 9px; color: #aaa; font-weight: 700; display: block; }
         .total-price { font-size: 22px; color: var(--mcd-yellow); font-weight: 900; }
+        .total-label { font-size: 9px; color: #aaa; display: block; }
+        
         .footer-buttons { display: flex; gap: 10px; }
         .btn-action { 
             flex: 1; padding: 16px; border: none; border-radius: 14px; 
             font-weight: 900; font-size: 14px; text-transform: uppercase; 
-            cursor: pointer; transition: 0.1s; font-family: 'Montserrat', sans-serif;
+            cursor: pointer; font-family: 'Montserrat', sans-serif;
         }
         .btn-cancel { background: #333; color: #ccc; }
-        .btn-pay { background: var(--mcd-green); color:
+        .btn-pay { background: var(--mcd-green); color: white; box-shadow: 0 4px 0 #1e8449; }
+
+        /* МОДАЛКИ */
+        #cart-modal, #order-form { 
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+            background: white; z-index: 1000; display: none; 
+            flex-direction: column; padding: 20px; overflow-y: auto;
+        }
+        #cart-modal { background: rgba(0,0,0,0.85); justify-content: center; }
+        .modal-content { background: white; border-radius: 20px; padding: 25px; }
+        
+        .form-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 11px; font-weight: 700; color: #888; margin-bottom: 5px; }
+        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 10px; box-sizing: border-box; font-family: 'Montserrat'; }
+        
+        .radio-group { display: flex; gap: 10px; }
+        .radio-btn { flex: 1; border: 1px solid #eee; padding: 10px; border-radius: 10px; text-align: center; font-size: 12px; font-weight: 700; cursor: pointer; }
+        .radio-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+    </style>
+</head>
+<body>
+
+    <div id="cart-modal" onclick="closeCart()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h3 style="margin-top:0">ВАШ ЗАКАЗ</h3>
+            <div id="cart-items-list" style="margin-bottom: 20px;"></div>
+            <button class="btn-action btn-cancel" style="width:100%" onclick="closeCart()">Закрыть</button>
+        </div>
+    </div>
+
+    <div id="order-form">
+        <div class="form-header">
+            <h2 style="margin:0">ОФОРМЛЕНИЕ</h2>
+            <div onclick="toggleForm(false)" style="font-size:24px; cursor:pointer">✕</div>
+        </div>
+        <div class="input-group"><label>ИМЯ</label><input type="text" id="cust-name"></div>
+        <div class="input-group"><label>ТЕЛЕФОН</label><input type="tel" id="cust-phone"></div>
+        <div class="input-group">
+            <label>ДОСТАВКА / САМОВЫВОЗ</label>
+            <div class="radio-group">
+                <div class="radio-btn active" id="type-delivery" onclick="setDelivery('delivery')">Доставка</div>
+                <div class="radio-btn" id="type-pickup" onclick="setDelivery('pickup')">Самовывоз</div>
+            </div>
+        </div>
+        <div class="input-group" id="address-block"><label>АДРЕС</label><input type="text" id="cust-address"></div>
+        <div class="input-group">
+            <label>ОПЛАТА</label>
+            <select id="cust-pay"><option>Картой</option><option>Наличные</option></select>
+        </div>
+        <div class="input-group"><label>КОММЕНТАРИЙ</label><textarea id="cust-comment"></textarea></div>
+        <button class="btn-action btn-pay" onclick="submitOrder()">ЗАКАЗАТЬ</button>
+    </div>
+
+    <div class="promo-banner"><img src="shokoladnya oreshki.jpg"></div>
+    <div class="brand-header"><img src="Logo.png?v=6" class="logo"></div>
+
+    <div class="main-area">
+        <div class="sidebar">
+            <div class="cat-item active" onclick="filterCat('oreshki', this)"><img src="oreshki.png"><br>ОРЕШКИ</div>
+            <div class="cat-item" onclick="filterCat('tubes', this)"><img src="trubochka1.jpg"><br>ТРУБОЧКИ</div>
+            <div class="cat-item" onclick="filterCat('cakes', this)"><img src="muraveynik.jpg"><br>ПИРОЖНЫЕ</div>
+            <div class="cat-item" onclick="filterCat('tort', this)"><img src="tort 2.jpg"><br>ТОРТ</div>
+            <div class="cat-item" onclick="filterCat('nabory', this)"><img src="tort 2.jpg"><br>НАБОРЫ</div>
+        </div>
+        <div class="menu-grid" id="menu-grid"></div>
+    </div>
+
+    <div class="payment-footer">
+        <div class="footer-top">
+            <button class="btn-view-cart" onclick="showCart()">Ваш заказ</button>
+            <div class="total-info">
+                <span class="total-label">ИТОГО:</span>
+                <span class="total-price"><span id="total-val">0.00</span> BYN</span>
+            </div>
+        </div>
+        <div class="footer-buttons">
+            <button class="btn-action btn-cancel" onclick="clearCart()">Очистить</button>
+            <button class="btn-action btn-pay" onclick="toggleForm(true)">Оформить</button>
+        </div>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        
+        let total = 0; let cart = {}; let deliveryType = 'delivery';
+
+        const MIN_LIMITS = {
+            'Орешки со сгущёнкой': 10, 'Орешки со сгущёнкой и орехом': 10,
+            'Орешки с кокосом и миндалём': 10, 'Шоколадные орешки с Nutella и фундуком': 10,
+            'Трубочки': 6, 'Муравейник': 8, 'Кокосовое': 8,
+            'Грибочек со сгущёнкой': 12, 'Картошка': 4,
+            'Шоколадная колбаса': 1, 'Торт Медовик (1.1 кг)': 1, 'Торт Медовик (2.2 кг)': 1,
+            'Набор Ассорти (20 шт)': 1
+        };
+
+        const products = [
+            { id: 'q1', cat: 'oreshki', name: 'Орешки со сгущёнкой', price: 1.10, img: 'oreshki.png', desc: 'от 10 шт' },
+            { id: 'q2', cat: 'oreshki', name: 'Орешки со сгущёнкой и орехом', price: 1.50, img: 'oreshki sguchenka oreh.png', desc: 'от 10 шт' },
+            { id: 'q3', cat: 'oreshki', name: 'Орешки с кокосом и миндалём', price: 1.80, img: 'oreshki kokos.jpg', desc: 'от 10 шт' },
+            { id: 'q4', cat: 'oreshki', name: 'Шоколадные орешки с Nutella и фундуком', price: 1.80, img: 'shokoladnya oreshki.jpg', desc: 'от 10 шт' },
+            { id: 'q5', cat: 'tubes', name: 'Трубочки', price: 4.00, img: 'trubochka1.jpg', desc: 'от 6 шт' },
+            { id: 'q6', cat: 'cakes', name: 'Муравейник', price: 2.50, img: 'muraveynik.jpg', desc: 'от 8 шт' },
+            { id: 'q7', cat: 'cakes', name: 'Кокосовое', price: 2.50, img: 'kokosovoe.jpg', desc: 'от 8 шт' },
+            { id: 'q8', cat: 'cakes', name: 'Грибочек со сгущёнкой', price: 2.50, img: 'grobochki.jpg', desc: 'от 12 шт' },
+            { id: 'q9', cat: 'cakes', name: 'Картошка', price: 4.00, img: 'kartoshka.jpg', desc: 'от 4 шт' },
+            { id: 'q10', cat: 'cakes', name: 'Шоколадная колбаса', price: 12.00, img: 'shokoladnaya kolbasa.jpg', desc: 'от 1 шт' },
+            { id: 't1', cat: 'tort', name: 'Торт Медовик (1.1 кг)', price: 65.00, img: 'tort 2.jpg', desc: '1 шт' },
+            { id: 't2', cat: 'tort', name: 'Торт Медовик (2.2 кг)', price: 130.00, img: 'tort 2.jpg', desc: '1 шт' },
+            { id: 'n1', cat: 'nabory', name: 'Набор Ассорти (20 шт)', price: 30.00, img: 'oreshki.png', desc: '1 набор' }
+        ];
+
+        function renderProducts(cat) {
+            const grid = document.getElementById('menu-grid');
+            grid.innerHTML = '';
+            const filtered = products.filter(p => p.cat === cat);
+            filtered.forEach(p => {
+                const count = cart[p.name] || 0;
+                grid.innerHTML += `
+                    <div class="product-card">
+                        <div id="badge-${p.id}" class="qty-badge" style="display: ${count > 0 ? 'block' : 'none'}">${count}</div>
+                        <img src="${p.img}" onerror="this.src='oreshki.png'">
+                        <h3>${p.name}</h3>
+                        <p>${p.desc}</p>
+                        <div class="price">${p.price.toFixed(2)} BYN</div>
+                        <div class="counter-controls">
+                            <button class="btn-qty" onclick="changeQty('${p.name}', ${p.price}, '${p.id}', -1)">−</button>
+                            <span class="qty-val" id="qty-${p.id}">${count}</span>
+                            <button class="btn-qty" onclick="changeQty('${p.name}', ${p.price}, '${p.id}', 1)">+</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function filterCat(cat, el) {
+            document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+            renderProducts(cat);
+        }
+
+        function changeQty(name, price, id, delta) {
+            let current = cart[name] || 0;
+            if (current === 0 && delta === 1 && MIN_LIMITS[name] > 1) { delta = MIN_LIMITS[name]; }
+            let next = current + delta;
+            if (next < 0) return;
+            cart[name] = next;
+            total += (delta * price);
+            if (cart[name] <= 0) delete cart[name];
+            
+            document.getElementById('total-val').innerText = Math.max(0, total).toFixed(2);
+            let qtyEl = document.getElementById(`qty-${id}`);
+            if (qtyEl) qtyEl.innerText = cart[name] || 0;
+            let badge = document.getElementById(`badge-${id}`);
+            if (badge) {
+                badge.innerText = cart[name] || 0;
+                badge.style.display = cart[name] > 0 ? 'block' : 'none';
+            }
+            tg.HapticFeedback.selectionChanged();
+        }
+
+        function clearCart() {
+            tg.showConfirm("Очистить корзину?", (ok) => {
+                if (ok) {
+                    cart = {}; total = 0;
+                    document.getElementById('total-val').innerText = "0.00";
+                    const active = document.querySelector('.cat-item.active').getAttribute('onclick').match(/'([^']+)'/)[1];
+                    renderProducts(active);
+                }
+            });
+        }
+
+        function showCart() {
+            const list = document.getElementById('cart-items-list');
+            const items = Object.entries(cart);
+            list.innerHTML = items.length ? items.map(([n, q]) => `<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>${n}</span><b>${q} шт.</b></div>`).join('') : "Пусто";
+            document.getElementById('cart-modal').style.display = 'flex';
+        }
+
+        function closeCart() { document.getElementById('cart-modal').style.display = 'none'; }
+
+        function toggleForm(show) {
+            if (show) {
+                if (total <= 0) return tg.showAlert("Корзина пуста!");
+                // Проверка лимитов
+                let errors = []; let totalOreshki = 0;
+                for (let name in cart) {
+                    const p = products.find(i => i.name === name);
+                    if (p.cat === 'oreshki') totalOreshki += cart[name];
+                    if (cart[name] < MIN_LIMITS[name]) errors.push(`${name}: мин. ${MIN_LIMITS[name]} шт.`);
+                }
+                if (totalOreshki > 0 && totalOreshki < 20) errors.push("Всего орешков должно быть от 20 шт.");
+                if (errors.length) return tg.showAlert(errors.join('\n'));
+                
+                document.getElementById('order-form').style.display = 'flex';
+            } else {
+                document.getElementById('order-form').style.display = 'none';
+            }
+        }
+
+        function setDelivery(t) {
+            deliveryType = t;
+            document.getElementById('type-delivery').classList.toggle('active', t === 'delivery');
+            document.getElementById('type-pickup').classList.toggle('active', t === 'pickup');
+            document.getElementById('address-block').style.display = t === 'delivery' ? 'block' : 'none';
+        }
+
+        function submitOrder() {
+            const n = document.getElementById('cust-name').value;
+            const p = document.getElementById('cust-phone').value;
+            if (!n || !p) return tg.showAlert("Заполните имя и телефон!");
+            tg.sendData(JSON.stringify({ customer: { n, p, type: deliveryType }, cart, total: total.toFixed(2) }));
+        }
+
+        // Запуск
+        renderProducts('oreshki');
+    </script>
+</body>
+</html>
