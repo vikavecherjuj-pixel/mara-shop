@@ -17,7 +17,7 @@
             height: 100vh; overflow: hidden; 
         }
         
-        /* БАННЕР (165px) */
+        /* БАННЕР */
         .promo-banner { width: 100%; height: 165px; background: var(--mcd-yellow); flex-shrink: 0; overflow: hidden; }
         .promo-banner img { width: 100%; height: 100%; object-fit: cover; }
         
@@ -35,7 +35,7 @@
         .cat-item.active img { border-color: var(--mcd-red); box-shadow: 0 0 10px rgba(219, 0, 7, 0.2); }
 
         /* СЕТКА ТОВАРОВ */
-        .menu-grid { flex-grow: 1; overflow-y: auto; padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; padding-bottom: 220px; }
+        .menu-grid { flex-grow: 1; overflow-y: auto; padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; padding-bottom: 140px; }
         
         .product-card { 
             background: white; border-radius: 12px; padding: 10px; text-align: center; 
@@ -53,30 +53,26 @@
         .qty-val { font-size: 12px; font-weight: 700; min-width: 20px; }
         .qty-badge { position: absolute; top: -4px; right: -4px; background: var(--mcd-red); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; line-height: 18px; display: none; border: 2px solid white; font-weight: 900; z-index: 10; }
 
-        /* НОВЫЙ ФУТЕР */
+        /* ОБНОВЛЕННЫЙ КОМПАКТНЫЙ ФУТЕР */
         .payment-footer { 
             position: fixed; bottom: 0; left: 0; right: 0; 
-            background: #1a1a1a; padding: 15px 15px 35px 15px; 
-            z-index: 100; border-radius: 20px 20px 0 0; 
+            background: rgba(26, 26, 26, 0.98); padding: 10px 15px 25px 15px; 
+            z-index: 100; border-radius: 20px 20px 0 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.2); 
         }
-        .footer-top { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px; }
+        .footer-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .btn-view-cart { 
-            background: rgba(255,255,255,0.1); color: #fff; 
-            border: 1px solid rgba(255,255,255,0.2); 
-            padding: 8px 14px; border-radius: 10px; font-size: 10px; 
-            font-weight: 700; text-transform: uppercase; cursor: pointer;
+            background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); 
+            padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 700; text-transform: uppercase; cursor: pointer;
         }
-        .total-price { font-size: 22px; color: var(--mcd-yellow); font-weight: 900; }
-        .total-label { font-size: 9px; color: #aaa; display: block; }
-        
-        .footer-buttons { display: flex; gap: 10px; }
+        .total-price { font-size: 18px; color: var(--mcd-yellow); font-weight: 900; }
+        .total-label { font-size: 8px; color: #aaa; text-transform: uppercase; }
+        .footer-buttons { display: flex; gap: 8px; }
         .btn-action { 
-            flex: 1; padding: 16px; border: none; border-radius: 14px; 
-            font-weight: 900; font-size: 14px; text-transform: uppercase; 
-            cursor: pointer; font-family: 'Montserrat', sans-serif;
+            flex: 1; padding: 12px; border: none; border-radius: 10px; 
+            font-weight: 900; font-size: 13px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat', sans-serif;
         }
-        .btn-cancel { background: #333; color: #ccc; }
-        .btn-pay { background: var(--mcd-green); color: white; box-shadow: 0 4px 0 #1e8449; }
+        .btn-cancel { background: #333; color: #bbb; }
+        .btn-pay { background: var(--mcd-green); color: white; }
 
         /* МОДАЛКИ */
         #cart-modal, #order-form { 
@@ -102,7 +98,7 @@
     <div id="cart-modal" onclick="closeCart()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <h3 style="margin-top:0">ВАШ ЗАКАЗ</h3>
-            <div id="cart-items-list" style="margin-bottom: 20px;"></div>
+            <div id="cart-items-list" style="margin-bottom: 20px; font-size: 14px;"></div>
             <button class="btn-action btn-cancel" style="width:100%" onclick="closeCart()">Закрыть</button>
         </div>
     </div>
@@ -131,7 +127,7 @@
     </div>
 
     <div class="promo-banner"><img src="shokoladnya oreshki.jpg"></div>
-    <div class="brand-header"><img src="Logo.png?v=6" class="logo"></div>
+    <div class="brand-header"><img src="Logo.png?v=7" class="logo"></div>
 
     <div class="main-area">
         <div class="sidebar">
@@ -192,8 +188,7 @@
         function renderProducts(cat) {
             const grid = document.getElementById('menu-grid');
             grid.innerHTML = '';
-            const filtered = products.filter(p => p.cat === cat);
-            filtered.forEach(p => {
+            products.filter(p => p.cat === cat).forEach(p => {
                 const count = cart[p.name] || 0;
                 grid.innerHTML += `
                     <div class="product-card">
@@ -226,7 +221,6 @@
             cart[name] = next;
             total += (delta * price);
             if (cart[name] <= 0) delete cart[name];
-            
             document.getElementById('total-val').innerText = Math.max(0, total).toFixed(2);
             let qtyEl = document.getElementById(`qty-${id}`);
             if (qtyEl) qtyEl.innerText = cart[name] || 0;
@@ -240,19 +234,16 @@
 
         function clearCart() {
             tg.showConfirm("Очистить корзину?", (ok) => {
-                if (ok) {
-                    cart = {}; total = 0;
-                    document.getElementById('total-val').innerText = "0.00";
-                    const active = document.querySelector('.cat-item.active').getAttribute('onclick').match(/'([^']+)'/)[1];
-                    renderProducts(active);
-                }
+                if (ok) { cart = {}; total = 0; document.getElementById('total-val').innerText = "0.00"; 
+                const act = document.querySelector('.cat-item.active').getAttribute('onclick').match(/'([^']+)'/)[1];
+                renderProducts(act); }
             });
         }
 
         function showCart() {
             const list = document.getElementById('cart-items-list');
             const items = Object.entries(cart);
-            list.innerHTML = items.length ? items.map(([n, q]) => `<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>${n}</span><b>${q} шт.</b></div>`).join('') : "Пусто";
+            list.innerHTML = items.length ? items.map(([n, q]) => `<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>${n}</span><b>${q} шт.</b></div>`).join('') : "В корзине пусто";
             document.getElementById('cart-modal').style.display = 'flex';
         }
 
@@ -261,7 +252,6 @@
         function toggleForm(show) {
             if (show) {
                 if (total <= 0) return tg.showAlert("Корзина пуста!");
-                // Проверка лимитов
                 let errors = []; let totalOreshki = 0;
                 for (let name in cart) {
                     const p = products.find(i => i.name === name);
@@ -270,7 +260,6 @@
                 }
                 if (totalOreshki > 0 && totalOreshki < 20) errors.push("Всего орешков должно быть от 20 шт.");
                 if (errors.length) return tg.showAlert(errors.join('\n'));
-                
                 document.getElementById('order-form').style.display = 'flex';
             } else {
                 document.getElementById('order-form').style.display = 'none';
@@ -286,12 +275,11 @@
 
         function submitOrder() {
             const n = document.getElementById('cust-name').value;
-            const p = document.getElementById('cust-phone').value;
-            if (!n || !p) return tg.showAlert("Заполните имя и телефон!");
-            tg.sendData(JSON.stringify({ customer: { n, p, type: deliveryType }, cart, total: total.toFixed(2) }));
+            const ph = document.getElementById('cust-phone').value;
+            if (!n || !ph) return tg.showAlert("Заполните контакты!");
+            tg.sendData(JSON.stringify({ customer: { n, ph, type: deliveryType }, cart, total: total.toFixed(2) }));
         }
 
-        // Запуск
         renderProducts('oreshki');
     </script>
 </body>
