@@ -17,36 +17,22 @@
             height: 100vh; overflow: hidden; 
         }
 
-        /* КОНТЕЙНЕР ШАПКИ */
+        /* ШАПКА */
         .header-container { background: white; flex-shrink: 0; position: relative; display: flex; flex-direction: column; }
         
-        /* КНОПКА НАЗАД (Грамотное размещение) */
+        /* КНОПКА НАЗАД (Плавающая) */
         .back-floating-btn {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            z-index: 100;
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(5px);
-            border: none;
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-            font-size: 11px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            cursor: pointer;
-            color: var(--dark);
+            position: absolute; top: 15px; left: 15px; z-index: 100;
+            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(5px);
+            border: none; padding: 8px 14px; border-radius: 20px;
+            font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 11px;
+            display: flex; align-items: center; gap: 5px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; color: var(--dark);
         }
 
-        /* БАННЕР (Первый по порядку) */
         .promo-banner { width: 100%; height: 160px; overflow: hidden; order: 1; }
         .promo-banner img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* ЛОГОТИП (Второй по порядку) */
         .logo-area { padding: 12px 20px; order: 2; border-bottom: 1px solid #eee; background: white; }
         .logo-area img { max-width: 120px; height: auto; display: block; }
 
@@ -78,21 +64,26 @@
 
         /* ФУТЕР */
         .payment-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; padding: 10px 15px 25px 15px; z-index: 100; border-radius: 20px 20px 0 0; }
-        .footer-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .footer-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .btn-view-cart { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 8px 14px; border-radius: 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
         .total-price { font-size: 20px; color: var(--mcd-yellow); font-weight: 900; }
         .total-label { font-size: 8px; color: #aaa; text-transform: uppercase; margin-right: 4px; }
-        .btn-pay { width: 100%; padding: 12px; border: none; border-radius: 12px; font-weight: 900; background: var(--mcd-green); color: white; text-transform: uppercase; cursor: pointer; }
+        
+        .footer-btns-row { display: flex; gap: 10px; }
+        .btn-footer { flex: 1; padding: 14px; border: none; border-radius: 12px; font-weight: 900; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; font-size: 12px; }
+        .btn-clear { background: #333; color: #aaa; }
+        .btn-pay { background: var(--mcd-green); color: white; }
 
-        /* МОДАЛКА */
+        /* МОДАЛКА КОРЗИНЫ */
         #cart-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 25px; }
         .modal-content { background: white; border-radius: 25px; padding: 25px; width: 100%; max-width: 300px; }
+        .cart-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
     </style>
 </head>
 <body>
 
     <div class="header-container">
-        <button class="back-floating-btn" id="txt-back-btn" onclick="window.location.href='index.html'">
+        <button class="back-floating-btn" onclick="window.location.href='index.html'">
             <span>←</span> <span id="txt-back-word">Назад</span>
         </button>
 
@@ -117,14 +108,17 @@
                 <span class="total-price"><span id="total-val">0.00</span> BYN</span>
             </div>
         </div>
-        <button class="btn-pay" id="txt-order" onclick="tg.showAlert('Оформление...')">ОФОРМИТЬ</button>
+        <div class="footer-btns-row">
+            <button class="btn-footer btn-clear" id="txt-clear" onclick="clearCart()">Очистить</button>
+            <button class="btn-footer btn-pay" id="txt-order" onclick="tg.showAlert('Заказ отправлен!')">Оформить</button>
+        </div>
     </div>
 
     <div id="cart-modal" onclick="closeCart()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <h2 id="txt-cart-title" style="text-align:center; font-size: 18px; margin-bottom: 15px;">ВАШ ЗАКАЗ</h2>
             <div id="cart-items-list"></div>
-            <button class="btn-pay" style="margin-top:15px; background:#333;" onclick="closeCart()">ЗАКРЫТЬ</button>
+            <button class="btn-pay" style="width: 100%; margin-top:15px; background:#333;" onclick="closeCart()">ЗАКРЫТЬ</button>
         </div>
     </div>
 
@@ -134,9 +128,9 @@
         let city = localStorage.getItem('selectedCity') || 'Гомель';
         
         const i18n = {
-            ru: { back: "Назад", cart: "Заказ", total: "итого:", order: "Оформить", cakeWarning: "Торты доступны только для Гомеля", unit: "шт.", from: "от" },
-            by: { back: "Назад", cart: "Замова", total: "вынік:", order: "Аформіць", cakeWarning: "Тарты даступныя толькі для Гомеля", unit: "шт.", from: "ад" },
-            en: { back: "Back", cart: "Order", total: "total:", order: "Checkout", cakeWarning: "Cakes available for Gomel only", unit: "pcs.", from: "from" }
+            ru: { back: "Назад", cart: "Заказ", total: "итого:", order: "Оформить", clear: "Очистить", cakeWarning: "Торты доступны только для Гомеля", unit: "шт.", from: "от", empty: "Пусто" },
+            by: { back: "Назад", cart: "Замова", total: "вынік:", order: "Аформіць", clear: "Ачысціць", cakeWarning: "Тарты даступныя толькі для Гомеля", unit: "шт.", from: "ад", empty: "Пуста" },
+            en: { back: "Back", cart: "Order", total: "total:", order: "Checkout", clear: "Clear", cakeWarning: "Cakes for Gomel only", unit: "pcs.", from: "from", empty: "Empty" }
         };
 
         const categories = {
@@ -148,8 +142,12 @@
         const products = [
             { id: 'q1', cat: 0, name: {ru: 'Орешки со сгущёнкой', by: 'Арэшкі са згушчонкай', en: 'Nuts with condensed milk'}, price: 1.10, img: 'oreshki.png', min: 10 },
             { id: 'q2', cat: 0, name: {ru: 'Орешки с орехом', by: 'Арэшкі з арэхам', en: 'Nuts with walnuts'}, price: 1.50, img: 'oreshki sguchenka oreh.png', min: 10 },
-            { id: 'q3', cat: 1, name: {ru: 'Трубочки', by: 'Трубачкі', en: 'Sweet tubes'}, price: 4.00, img: 'trubochka1.jpg', min: 6 },
-            { id: 't1', cat: 3, name: {ru: 'Медовик 1.1кг', by: 'Мядовік 1.1кг', en: 'Honey cake 1.1kg'}, price: 65.00, img: 'tort 2.jpg', min: 1 }
+            { id: 'q3', cat: 0, name: {ru: 'Кокос и миндаль', by: 'Кокас і міндаль', en: 'Coconut & Almond'}, price: 1.80, img: 'oreshki kokos.jpg', min: 10 },
+            { id: 'q4', cat: 0, name: {ru: 'Nutella и фундук', by: 'Nutella і фундук', en: 'Nutella & Hazelnut'}, price: 1.80, img: 'shokoladnya oreshki.jpg', min: 10 },
+            { id: 'q5', cat: 1, name: {ru: 'Трубочки', by: 'Трубачкі', en: 'Sweet tubes'}, price: 4.00, img: 'trubochka1.jpg', min: 6 },
+            { id: 'q6', cat: 2, name: {ru: 'Муравейник', by: 'Мурашнік', en: 'Anthill cake'}, price: 2.50, img: 'muraveynik.jpg', min: 8 },
+            { id: 't1', cat: 3, name: {ru: 'Медовик 1.1кг', by: 'Мядовік 1.1кг', en: 'Honey cake 1.1kg'}, price: 65.00, img: 'tort 2.jpg', min: 1 },
+            { id: 'n1', cat: 4, name: {ru: 'Набор Ассорти', by: 'Набор Асарці', en: 'Assorted set'}, price: 30.00, img: 'oreshki.png', min: 1 }
         ];
 
         let cart = {}; let total = 0;
@@ -159,13 +157,14 @@
             document.getElementById('txt-view-cart').innerText = i18n[lang].cart;
             document.getElementById('txt-total-label').innerText = i18n[lang].total;
             document.getElementById('txt-order').innerText = i18n[lang].order;
+            document.getElementById('txt-clear').innerText = i18n[lang].clear;
             renderSidebar();
             renderProducts(0);
         }
 
         function renderSidebar() {
             const side = document.getElementById('sidebar');
-            const imgs = ['oreshki.png', 'trubochka1.jpg', 'muraveynik.jpg', 'tort 2.jpg', 'tort 2.jpg'];
+            const imgs = ['oreshki.png', 'trubochka1.jpg', 'muraveynik.jpg', 'tort 2.jpg', 'oreshki.png'];
             side.innerHTML = categories[lang].map((name, i) => `
                 <div class="cat-item ${i==0?'active':''}" onclick="changeCat(${i}, this)">
                     <img src="${imgs[i]}"><br>${name}
@@ -213,11 +212,28 @@
             cart[id] = next;
             total += (delta * price);
             if (cart[id] <= 0) delete cart[id];
-            document.getElementById('total-val').innerText = Math.max(0, total).toFixed(2);
+            updateTotalDisplay();
+            updateUI(id);
+            tg.HapticFeedback.selectionChanged();
+        }
+
+        function updateUI(id) {
             if (document.getElementById(`qty-${id}`)) document.getElementById(`qty-${id}`).innerText = cart[id] || 0;
             let b = document.getElementById(`badge-${id}`);
             if (b) { b.innerText = cart[id] || 0; b.style.display = cart[id]>0?'block':'none'; }
-            tg.HapticFeedback.selectionChanged();
+        }
+
+        function updateTotalDisplay() {
+            document.getElementById('total-val').innerText = Math.max(0, total).toFixed(2);
+        }
+
+        function clearCart() {
+            cart = {}; total = 0;
+            updateTotalDisplay();
+            // Обнуляем все видимые бейджи и счетчики
+            document.querySelectorAll('.qty-badge').forEach(b => b.style.display = 'none');
+            document.querySelectorAll('.qty-val').forEach(v => v.innerText = '0');
+            tg.HapticFeedback.notificationOccurred('success');
         }
 
         function showCart() {
@@ -225,8 +241,8 @@
             const entries = Object.entries(cart);
             list.innerHTML = entries.length ? entries.map(([id, q]) => {
                 const p = products.find(x => x.id === id);
-                return `<div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>${p.name[lang]}</span><b>${q} ${i18n[lang].unit}</b></div>`;
-            }).join('') : `<div style="text-align:center">Пусто</div>`;
+                return `<div class="cart-row"><span>${p.name[lang]}</span><b>${q} ${i18n[lang].unit}</b></div>`;
+            }).join('') : `<div style="text-align:center">${i18n[lang].empty}</div>`;
             document.getElementById('cart-modal').style.display = 'flex';
         }
 
