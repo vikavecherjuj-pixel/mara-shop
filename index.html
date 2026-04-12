@@ -7,177 +7,59 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { 
-            --accent: #c5a059; 
-            --burgundy: #630d16; 
-        }
-        body { 
-            font-family: 'Montserrat', sans-serif; 
-            background: #fff; 
-            margin: 0; padding: 0; 
-            display: flex; flex-direction: column; 
-            height: 100vh; 
-            overflow: hidden; 
-            text-align: center;
-        }
-        
-        .start-banner { 
-            width: 100%; 
-            height: 50%; 
-            background: var(--burgundy); 
-            overflow: hidden; 
-        }
-        .start-banner img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-            display: block;
-        }
-        
-        .content-block { 
-            flex-grow: 1; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between; 
-            padding: 20px 25px; 
-            background: white;
-        }
-        
-        .start-title { 
-            font-size: 22px; 
-            font-weight: 900; 
-            text-transform: uppercase; 
-            color: #2c1a11; 
-            margin: 0;
-        }
-        
-        .section-label {
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: #bbb;
-            margin: 15px 0 8px 0;
-            letter-spacing: 1px;
-        }
-
-        .select-group { 
-            display: flex; 
-            gap: 8px; 
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .opt-btn { 
-            flex: 1; 
-            border: 1px solid #eee; 
-            padding: 10px; 
-            border-radius: 12px; 
-            font-size: 11px; 
-            font-weight: 700; 
-            cursor: pointer; 
-            transition: 0.2s;
-            color: #555;
-            background: #fdfdfd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .opt-btn.selected { 
-            border-color: var(--accent); 
-            background: rgba(197, 160, 89, 0.05);
-            color: var(--accent);
-        }
-        
-        .start-action { margin-top: auto; padding-top: 20px; }
-        .btn-start { 
-            width: 100%; 
-            padding: 18px; 
-            border: none; 
-            border-radius: 16px; 
-            font-weight: 900; 
-            text-transform: uppercase; 
-            font-family: 'Montserrat', sans-serif; 
-            background: var(--burgundy); 
-            color: white; 
-            font-size: 15px; 
-            cursor: pointer; 
-            box-shadow: 0 4px 15px rgba(99, 13, 22, 0.2);
-        }
-        .btn-start:active { transform: translateY(2px); }
+        :root { --accent: #c5a059; --burgundy: #630d16; }
+        body { font-family: 'Montserrat', sans-serif; background: #fff; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; text-align: center; }
+        .start-banner { width: 100%; height: 50%; background: var(--burgundy); overflow: hidden; }
+        .start-banner img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .content-block { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; padding: 20px 25px; background: white; }
+        .start-title { font-size: 22px; font-weight: 900; text-transform: uppercase; color: #2c1a11; margin: 0; }
+        .section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #bbb; margin: 15px 0 8px 0; letter-spacing: 1px; }
+        .select-group { display: flex; gap: 8px; width: 100%; }
+        .opt-btn { flex: 1; border: 1px solid #eee; padding: 10px; border-radius: 12px; font-size: 10px; font-weight: 700; cursor: pointer; color: #555; transition: 0.2s; }
+        .opt-btn.selected { border-color: var(--accent); background: rgba(197, 160, 89, 0.05); color: var(--accent); }
+        .btn-start { width: 100%; padding: 18px; border: none; border-radius: 16px; font-weight: 900; text-transform: uppercase; background: var(--burgundy); color: white; font-size: 15px; cursor: pointer; }
     </style>
 </head>
 <body>
-
-    <div class="start-banner">
-        <img src="shokoladnya oreshki.jpg" alt="Mara">
-    </div>
-
+    <div class="start-banner"><img src="shokoladnya oreshki.jpg"></div>
     <div class="content-block">
-        <div class="text-top">
-            <h1 class="start-title">Салодкая Мара</h1>
-        </div>
-
+        <h1 class="start-title">Салодкая Мара</h1>
         <div>
-            <div class="section-label" id="lbl-lang">Выберите язык / Мова</div>
-            <div class="select-group" id="lang-btns">
-                <div class="opt-btn selected" onclick="setLang('ru', this)">Русский</div>
-                <div class="opt-btn" onclick="setLang('by', this)">Беларуская</div>
-            </div>
-
             <div class="section-label" id="lbl-city">Ваш город / Ваш горад</div>
             <div class="select-group" id="city-btns">
                 <div class="opt-btn selected" onclick="setCity('Гомель', this)">Гомель</div>
                 <div class="opt-btn" onclick="setCity('Другой', this)">Другие города РБ</div>
             </div>
+            <div class="section-label" id="lbl-lang">Выберите язык / Мова</div>
+            <div class="select-group" id="lang-btns">
+                <div class="opt-btn selected" onclick="setLang('ru', this)">Русский</div>
+                <div class="opt-btn" onclick="setLang('by', this)">Беларуская</div>
+                <div class="opt-btn" onclick="setLang('en', this)">English</div>
+            </div>
         </div>
-
-        <div class="start-action">
-            <button class="btn-start" id="main-start-btn" onclick="startShop()">Начать заказ</button>
-        </div>
+        <button class="btn-start" id="main-start-btn" onclick="window.location.href='shop.html'">Начать заказ</button>
     </div>
-
     <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-        
-        let selectedLang = 'ru';
-        let selectedCity = 'Гомель';
-
-        const translations = {
-            ru: { start: "Начать заказ", cityLabel: "Ваш город", langLabel: "Выберите язык" },
-            by: { start: "Пачаць замова", cityLabel: "Ваш горад", langLabel: "Абярыце мову" }
+        let tg = window.Telegram.WebApp; tg.expand();
+        const i18n = { 
+            ru: { start: "Начать заказ", city: "Ваш город", lang: "Выберите язык" },
+            by: { start: "Пачаць замова", city: "Ваш горад", lang: "Абярыце мову" },
+            en: { start: "Start Order", city: "Your City", lang: "Select Language" }
         };
-
-        function setLang(lang, el) {
-            selectedLang = lang;
-            localStorage.setItem('selectedLang', lang);
-            
+        function setLang(l, el) {
+            localStorage.setItem('selectedLang', l);
             document.querySelectorAll('#lang-btns .opt-btn').forEach(b => b.classList.remove('selected'));
             el.classList.add('selected');
-            
-            document.getElementById('main-start-btn').innerText = translations[lang].start;
-            document.getElementById('lbl-lang').innerText = translations[lang].langLabel;
-            document.getElementById('lbl-city').innerText = translations[lang].cityLabel;
-
-            tg.HapticFeedback.selectionChanged();
+            document.getElementById('main-start-btn').innerText = i18n[l].start;
+            document.getElementById('lbl-lang').innerText = i18n[l].lang;
+            document.getElementById('lbl-city').innerText = i18n[l].city;
         }
-
-        function setCity(city, el) {
-            selectedCity = city;
-            localStorage.setItem('selectedCity', city);
+        function setCity(c, el) {
+            localStorage.setItem('selectedCity', c);
             document.querySelectorAll('#city-btns .opt-btn').forEach(b => b.classList.remove('selected'));
             el.classList.add('selected');
-            tg.HapticFeedback.selectionChanged();
         }
-
-        function startShop() {
-            window.location.href = 'shop.html';
-        }
-
-        // Дефолтные значения
-        localStorage.setItem('selectedLang', 'ru');
-        localStorage.setItem('selectedCity', 'Гомель');
+        localStorage.setItem('selectedLang', 'ru'); localStorage.setItem('selectedCity', 'Гомель');
     </script>
 </body>
 </html>
