@@ -197,4 +197,65 @@
                         <p>${i18n[lang].from} ${p.min} ${i18n[lang].unit}</p>
                         <div class="price">${p.price.toFixed(2)} BYN</div>
                         <div class="counter-controls">
-                            <button class="btn-qty" onclick="changeQty('${p.id}', ${p.
+                            <button class="btn-qty" onclick="changeQty('${p.id}', ${p.price}, ${p.min}, -1)">−</button>
+                            <span class="qty-val" id="qty-${p.id}">${count}</span>
+                            <button class="btn-qty" onclick="changeQty('${p.id}', ${p.price}, ${p.min}, 1)">+</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function changeCat(i, el) {
+            document.querySelectorAll('.cat-item').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            renderProducts(i);
+        }
+
+        function changeQty(id, price, min, delta) {
+            let cur = cart[id] || 0;
+            if (cur === 0 && delta === 1) delta = min;
+            let next = cur + delta;
+            if (next < 0) return;
+            if (next < min && next > 0 && delta < 0) next = 0;
+            cart[id] = next;
+            total += (delta * price);
+            if (cart[id] <= 0) delete cart[id];
+            updateTotalDisplay();
+            updateUI(id);
+            tg.HapticFeedback.selectionChanged();
+        }
+
+        function updateUI(id) {
+            if (document.getElementById(`qty-${id}`)) document.getElementById(`qty-${id}`).innerText = cart[id] || 0;
+            let b = document.getElementById(`badge-${id}`);
+            if (b) { b.innerText = cart[id] || 0; b.style.display = cart[id]>0?'block':'none'; }
+        }
+
+        function updateTotalDisplay() {
+            document.getElementById('total-val').innerText = Math.max(0, total).toFixed(2);
+        }
+
+        function clearCart() {
+            cart = {}; total = 0;
+            updateTotalDisplay();
+            document.querySelectorAll('.qty-badge').forEach(b => b.style.display = 'none');
+            document.querySelectorAll('.qty-val').forEach(v => v.innerText = '0');
+            tg.HapticFeedback.notificationOccurred('success');
+        }
+
+        function showCart() {
+            const list = document.getElementById('cart-items-list');
+            const entries = Object.entries(cart);
+            list.innerHTML = entries.length ? entries.map(([id, q]) => {
+                const p = products.find(x => x.id === id);
+                return `<div class="cart-row"><span>${p.name[lang]}</span><b>${q} ${i18n[lang].unit}</b></div>`;
+            }).join('') : `<div style="text-align:center">${i18n[lang].empty}</div>`;
+            document.getElementById('cart-modal').style.display = 'flex';
+        }
+
+        function closeCart() { document.getElementById('cart-modal').style.display = 'none'; }
+        init();
+    </script>
+</body>
+</html>
