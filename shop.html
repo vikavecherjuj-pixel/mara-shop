@@ -20,7 +20,6 @@
         /* ШАПКА */
         .header-container { background: white; flex-shrink: 0; position: relative; display: flex; flex-direction: column; }
         
-        /* КНОПКА НАЗАД (Плавающая) */
         .back-floating-btn {
             position: absolute; top: 15px; left: 15px; z-index: 100;
             background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(5px);
@@ -74,7 +73,6 @@
         .btn-clear { background: #333; color: #aaa; }
         .btn-pay { background: var(--mcd-green); color: white; }
 
-        /* МОДАЛКА КОРЗИНЫ */
         #cart-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 25px; }
         .modal-content { background: white; border-radius: 25px; padding: 25px; width: 100%; max-width: 300px; }
         .cart-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
@@ -139,14 +137,20 @@
             en: ["NUTS", "TUBES", "CAKES", "CAKE", "SETS"]
         };
 
+        // ВОССТАНОВЛЕННЫЙ ПОЛНЫЙ СПИСОК ТОВАРОВ
         const products = [
+            /* Орешки (cat: 0) */
             { id: 'q1', cat: 0, name: {ru: 'Орешки со сгущёнкой', by: 'Арэшкі са згушчонкай', en: 'Nuts with condensed milk'}, price: 1.10, img: 'oreshki.png', min: 10 },
-            { id: 'q2', cat: 0, name: {ru: 'Орешки с орехом', by: 'Арэшкі з арэхам', en: 'Nuts with walnuts'}, price: 1.50, img: 'oreshki sguchenka oreh.png', min: 10 },
+            { id: 'q2', cat: 0, name: {ru: 'Орешки с грецким орехом', by: 'Арэшкі з арэхам', en: 'Nuts with walnuts'}, price: 1.50, img: 'oreshki sguchenka oreh.png', min: 10 },
             { id: 'q3', cat: 0, name: {ru: 'Кокос и миндаль', by: 'Кокас і міндаль', en: 'Coconut & Almond'}, price: 1.80, img: 'oreshki kokos.jpg', min: 10 },
             { id: 'q4', cat: 0, name: {ru: 'Nutella и фундук', by: 'Nutella і фундук', en: 'Nutella & Hazelnut'}, price: 1.80, img: 'shokoladnya oreshki.jpg', min: 10 },
-            { id: 'q5', cat: 1, name: {ru: 'Трубочки', by: 'Трубачкі', en: 'Sweet tubes'}, price: 4.00, img: 'trubochka1.jpg', min: 6 },
-            { id: 'q6', cat: 2, name: {ru: 'Муравейник', by: 'Мурашнік', en: 'Anthill cake'}, price: 2.50, img: 'muraveynik.jpg', min: 8 },
+            /* Трубочки (cat: 1) */
+            { id: 'q5', cat: 1, name: {ru: 'Трубочки со сгущенкой', by: 'Трубачкі са згушчонкай', en: 'Sweet tubes'}, price: 4.00, img: 'trubochka1.jpg', min: 6 },
+            /* Пирожные (cat: 2) */
+            { id: 'q6', cat: 2, name: {ru: 'Муравейник классический', by: 'Мурашнік класічны', en: 'Anthill cake'}, price: 2.50, img: 'muraveynik.jpg', min: 8 },
+            /* Торты (cat: 3) */
             { id: 't1', cat: 3, name: {ru: 'Медовик 1.1кг', by: 'Мядовік 1.1кг', en: 'Honey cake 1.1kg'}, price: 65.00, img: 'tort 2.jpg', min: 1 },
+            /* Наборы (cat: 4) */
             { id: 'n1', cat: 4, name: {ru: 'Набор Ассорти', by: 'Набор Асарці', en: 'Assorted set'}, price: 30.00, img: 'oreshki.png', min: 1 }
         ];
 
@@ -230,7 +234,6 @@
         function clearCart() {
             cart = {}; total = 0;
             updateTotalDisplay();
-            // Обнуляем все видимые бейджи и счетчики
             document.querySelectorAll('.qty-badge').forEach(b => b.style.display = 'none');
             document.querySelectorAll('.qty-val').forEach(v => v.innerText = '0');
             tg.HapticFeedback.notificationOccurred('success');
