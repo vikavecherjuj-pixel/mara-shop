@@ -17,13 +17,11 @@
             height: 100vh; overflow: hidden; 
         }
 
-        /* ВЕРХНИЙ БЛОК: ЛОГО И БАННЕР */
-        .header-container { background: white; flex-shrink: 0; }
-        .logo-area { padding: 15px 20px; }
-        .logo-area img { max-width: 140px; height: auto; display: block; }
-        
-        .promo-banner { width: 100%; height: 180px; overflow: hidden; }
+        .header-container { background: white; flex-shrink: 0; display: flex; flex-direction: column; }
+        .promo-banner { width: 100%; height: 180px; overflow: hidden; order: 1; }
         .promo-banner img { width: 100%; height: 100%; object-fit: cover; }
+        .logo-area { padding: 15px 20px; order: 2; border-bottom: 1px solid #eee; }
+        .logo-area img { max-width: 140px; height: auto; display: block; }
 
         .main-area { flex-grow: 1; display: flex; overflow: hidden; }
         
@@ -42,7 +40,11 @@
         .product-card p { font-size: 7.5px; color: #777; margin: 0; min-height: 18px; }
         .product-card .price { font-size: 11px; font-weight: 900; color: var(--accent); margin: 4px 0; }
 
-        /* УПРАВЛЕНИЕ КОРЗИННОЙ */
+        /* СТИЛЬ ДЛЯ НЕАКТИВНОГО ТОВАРА */
+        .product-card.disabled { opacity: 0.5; filter: grayscale(0.5); pointer-events: none; }
+        .disabled-msg { grid-column: 1 / -1; padding: 20px; text-align: center; background: #fff1f1; border-radius: 12px; font-size: 11px; color: var(--mcd-red); font-weight: 700; margin-bottom: 10px; border: 1px dashed var(--mcd-red); }
+
+        /* УПРАВЛЕНИЕ */
         .counter-controls { display: flex; align-items: center; justify-content: space-between; background: #f8f8f8; border-radius: 20px; padding: 2px; border: 1px solid #eee; margin-top: auto; }
         .btn-qty { width: 28px; height: 28px; border-radius: 50%; border: none; background: white; color: var(--dark); font-weight: 900; font-size: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; }
         .qty-val { font-size: 12px; font-weight: 700; min-width: 20px; }
@@ -59,7 +61,6 @@
         .btn-cancel { background: #333; color: #bbb; }
         .btn-pay { background: var(--mcd-green); color: white; }
 
-        /* МОДАЛКА */
         #cart-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 25px; }
         .modal-content { background: white; border-radius: 25px; padding: 25px; width: 100%; max-width: 300px; }
         .cart-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; font-size: 13px; }
@@ -70,11 +71,11 @@
 <body>
 
     <div class="header-container">
-        <div class="logo-area">
-            <img src="Logo.png" alt="Logo">
-        </div>
         <div class="promo-banner">
             <img src="shokoladnya oreshki.jpg" alt="Promo">
+        </div>
+        <div class="logo-area">
+            <img src="Logo.png" alt="Logo">
         </div>
     </div>
 
@@ -108,11 +109,12 @@
     <script>
         let tg = window.Telegram.WebApp;
         let lang = localStorage.getItem('selectedLang') || 'ru';
+        let city = localStorage.getItem('selectedCity') || 'Гомель';
         
         const i18n = {
-            ru: { cart: "Ваш заказ", total: "итого:", clear: "Очистить", order: "Оформить", close: "Закрыть", cartTitle: "ВАШ ЗАКАЗ", unit: "шт.", from: "от", empty: "Пусто" },
-            by: { cart: "Ваша замова", total: "вынік:", clear: "Ачысціць", order: "Аформіць", close: "Закрыць", cartTitle: "ВАША ЗАМОВА", unit: "шт.", from: "ад", empty: "Пуста" },
-            en: { cart: "Your order", total: "total:", clear: "Clear", order: "Checkout", close: "Close", cartTitle: "YOUR ORDER", unit: "pcs.", from: "from", empty: "Empty" }
+            ru: { cart: "Ваш заказ", total: "итого:", clear: "Очистить", order: "Оформить", close: "Закрыть", cartTitle: "ВАШ ЗАКАЗ", unit: "шт.", from: "от", empty: "Пусто", cakeWarning: "Торты доступны только для Гомеля (самовывоз/доставка)" },
+            by: { cart: "Ваша замова", total: "вынік:", clear: "Ачысціць", order: "Аформіць", close: "Закрыць", cartTitle: "ВАША ЗАМОВА", unit: "шт.", from: "ад", empty: "Пуста", cakeWarning: "Тарты даступныя толькі для Гомеля (самавываз/дастаўка)" },
+            en: { cart: "Your order", total: "total:", clear: "Clear", order: "Checkout", close: "Close", cartTitle: "YOUR ORDER", unit: "pcs.", from: "from", empty: "Empty", cakeWarning: "Cakes are only available for Gomel" }
         };
 
         const categories = {
@@ -141,7 +143,6 @@
             document.getElementById('txt-order').innerText = i18n[lang].order;
             document.getElementById('txt-close').innerText = i18n[lang].close;
             document.getElementById('txt-cart-title').innerText = i18n[lang].cartTitle;
-            
             renderSidebar();
             renderProducts(0);
         }
@@ -158,10 +159,19 @@
 
         function renderProducts(catIndex) {
             const grid = document.getElementById('menu-grid');
-            grid.innerHTML = products.filter(p => p.cat === catIndex).map(p => {
+            grid.innerHTML = '';
+
+            // Если выбран другой город и категория ТОРТЫ (индекс 3)
+            const isCakeRestricted = (city !== 'Гомель' && catIndex === 3);
+            
+            if (isCakeRestricted) {
+                grid.innerHTML = `<div class="disabled-msg">${i18n[lang].cakeWarning}</div>`;
+            }
+
+            grid.innerHTML += products.filter(p => p.cat === catIndex).map(p => {
                 const count = cart[p.id] || 0;
                 return `
-                    <div class="product-card">
+                    <div class="product-card ${isCakeRestricted ? 'disabled' : ''}">
                         <div class="qty-badge" id="badge-${p.id}" style="display:${count>0?'block':'none'}">${count}</div>
                         <img src="${p.img}" onerror="this.src='oreshki.png'">
                         <h3>${p.name[lang]}</h3>
@@ -189,11 +199,9 @@
             let next = cur + delta;
             if (next < 0) return;
             if (next < min && next > 0 && delta < 0) next = 0;
-            
             cart[id] = next;
             total += (delta * price);
             if (cart[id] <= 0) delete cart[id];
-            
             document.getElementById('total-val').innerText = Math.max(0, total).toFixed(2);
             if (document.getElementById(`qty-${id}`)) document.getElementById(`qty-${id}`).innerText = cart[id] || 0;
             let b = document.getElementById(`badge-${id}`);
@@ -212,12 +220,7 @@
         }
 
         function closeCart() { document.getElementById('cart-modal').style.display = 'none'; }
-        
-        function clearCart() { 
-            cart = {}; total = 0; 
-            document.getElementById('total-val').innerText = "0.00"; 
-            renderProducts(0); 
-        }
+        function clearCart() { cart = {}; total = 0; document.getElementById('total-val').innerText = "0.00"; renderProducts(0); }
 
         init();
     </script>
