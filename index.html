@@ -17,7 +17,8 @@
             height: 100vh; overflow: hidden; 
         }
         
-        .promo-banner { width: 100%; height: 85px; background: var(--mcd-yellow); flex-shrink: 0; }
+        /* УВЕЛИЧЕННЫЙ БАННЕР */
+        .promo-banner { width: 100%; height: 220px; background: var(--mcd-yellow); flex-shrink: 0; }
         .promo-banner img { width: 100%; height: 100%; object-fit: cover; }
         
         .brand-header { padding: 10px; text-align: center; background: white; border-bottom: 1px solid #eee; flex-shrink: 0; }
@@ -58,7 +59,6 @@
         .total-price { font-size: 22px; color: var(--mcd-yellow); font-weight: 900; }
         .btn-pay { width: 100%; padding: 16px; border: none; border-radius: 14px; font-weight: 900; text-transform: uppercase; font-family: 'Montserrat', sans-serif; background: var(--mcd-green); color: white; font-size: 15px; box-shadow: 0 4px 0 #1e8449; transition: 0.1s; cursor: pointer; }
 
-        /* ОКНО ОФОРМЛЕНИЯ */
         #order-form { 
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
             background: white; z-index: 1000; display: none; 
@@ -248,11 +248,9 @@
             });
         }
 
-        // Логика переключения формы
         function toggleForm(show) {
             if (show) {
                 if (total <= 0) return tg.showAlert("Корзина пуста!");
-                // Проверка минимумов перед открытием формы
                 let errors = []; let totalOreshki = 0; let hasOreshki = false;
                 for (let name in cart) {
                     const product = products.find(p => p.name === name);
