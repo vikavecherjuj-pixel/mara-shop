@@ -8,11 +8,18 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { 
-            --accent: #e67e22; --dark: #2c1a11; --bg: #fdfaf5; 
-            --mcd-green: #27ae60; --mcd-red: #db0007; --mcd-yellow: #ffbc0d; 
+            /* НОВАЯ ПАЛИТРА */
+            --burgundy: #630d16; /* Глубокий винный */
+            --cream: #fdfaf5;    /* Сливочный фон */
+            --gold: #c5a059;     /* Золотистый песок */
+            --dark-brown: #2c1a11; /* Натуральный темный */
+            --accent-soft: #8b2d35; /* Мягкий бордовый для градиентов */
         }
+        
         body { 
-            font-family: 'Montserrat', sans-serif; background: var(--bg); 
+            font-family: 'Montserrat', sans-serif; 
+            background: var(--cream); 
+            color: var(--dark-brown);
             margin: 0; padding: 0; display: flex; flex-direction: column; 
             height: 100vh; overflow: hidden; 
         }
@@ -22,14 +29,14 @@
         
         .back-floating-btn {
             position: absolute; top: 15px; left: 15px; z-index: 100;
-            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(5px);
-            border: none; padding: 8px 14px; border-radius: 20px;
-            font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 11px;
+            background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(5px);
+            border: 1px solid #eee; padding: 8px 14px; border-radius: 20px;
+            font-weight: 700; font-size: 11px; color: var(--burgundy);
             display: flex; align-items: center; gap: 5px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; color: var(--dark);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer;
         }
 
-        .promo-banner { width: 100%; height: 160px; overflow: hidden; order: 1; }
+        .promo-banner { width: 100%; height: 160px; overflow: hidden; order: 1; border-bottom: 2px solid var(--burgundy); }
         .promo-banner img { width: 100%; height: 100%; object-fit: cover; }
         
         .logo-area { padding: 12px 20px; order: 2; border-bottom: 1px solid #eee; background: white; }
@@ -37,45 +44,47 @@
 
         .main-area { flex-grow: 1; display: flex; overflow: hidden; }
         
-        /* КАТЕГОРИИ */
-        .sidebar { width: 85px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; align-items: center; padding-top: 10px; flex-shrink: 0; overflow-y: auto; }
-        .cat-item { margin-bottom: 15px; text-align: center; font-size: 8px; color: #555; width: 100%; font-weight: 700; cursor: pointer; text-transform: uppercase; }
-        .cat-item img { width: 40px; height: 40px; border-radius: 50%; background: #eee; margin-bottom: 4px; border: 2px solid transparent; object-fit: cover; }
-        .cat-item.active { color: var(--mcd-red); }
-        .cat-item.active img { border-color: var(--mcd-red); box-shadow: 0 0 10px rgba(219, 0, 7, 0.2); }
-
-        /* ТОВАРЫ */
-        .menu-grid { flex-grow: 1; overflow-y: auto; padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; padding-bottom: 150px; }
-        .product-card { background: white; border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 3px 8px rgba(0,0,0,0.05); position: relative; display: flex; flex-direction: column; gap: 4px; }
-        .product-card img { width: 100%; height: 80px; object-fit: contain; margin-bottom: 4px; }
-        .product-card h3 { font-size: 9px; margin: 0; font-weight: 700; color: var(--dark); min-height: 22px; display: flex; align-items: center; justify-content: center; }
-        .product-card p { font-size: 7.5px; color: #777; margin: 0; min-height: 18px; }
-        .product-card .price { font-size: 11px; font-weight: 900; color: var(--accent); margin: 4px 0; }
-        .product-card.disabled { opacity: 0.4; filter: grayscale(1); pointer-events: none; }
-
-        .disabled-msg { grid-column: 1 / -1; padding: 15px; text-align: center; background: #fff1f1; border-radius: 10px; font-size: 10px; color: var(--mcd-red); font-weight: 700; border: 1px dashed var(--mcd-red); margin-bottom: 5px; }
-
-        /* УПРАВЛЕНИЕ КОРЗИНОЙ */
-        .counter-controls { display: flex; align-items: center; justify-content: space-between; background: #f8f8f8; border-radius: 20px; padding: 2px; border: 1px solid #eee; margin-top: auto; }
-        .btn-qty { width: 28px; height: 28px; border-radius: 50%; border: none; background: white; color: var(--dark); font-weight: 900; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .qty-val { font-size: 12px; font-weight: 700; min-width: 20px; }
-        .qty-badge { position: absolute; top: -4px; right: -4px; background: var(--mcd-red); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; line-height: 18px; display: none; border: 2px solid white; font-weight: 900; z-index: 10; }
-
-        /* ФУТЕР */
-        .payment-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; padding: 10px 15px 25px 15px; z-index: 100; border-radius: 20px 20px 0 0; }
-        .footer-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .btn-view-cart { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 8px 14px; border-radius: 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
-        .total-price { font-size: 20px; color: var(--mcd-yellow); font-weight: 900; }
-        .total-label { font-size: 8px; color: #aaa; text-transform: uppercase; margin-right: 4px; }
+        /* КАТЕГОРИИ (Sidebar) */
+        .sidebar { width: 85px; background: white; border-right: 1px solid #eee; display: flex; flex-direction: column; align-items: center; padding-top: 10px; flex-shrink: 0; overflow-y: auto; }
+        .cat-item { margin-bottom: 15px; text-align: center; font-size: 8px; color: #888; width: 100%; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; }
+        .cat-item img { width: 44px; height: 44px; border-radius: 50%; background: var(--cream); margin-bottom: 4px; border: 2px solid transparent; object-fit: cover; transition: 0.3s; }
         
-        .footer-btns-row { display: flex; gap: 10px; }
-        .btn-footer { flex: 1; padding: 14px; border: none; border-radius: 12px; font-weight: 900; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; font-size: 12px; }
-        .btn-clear { background: #333; color: #aaa; }
-        .btn-pay { background: var(--mcd-green); color: white; }
+        /* Активная категория в цвете Бургунди */
+        .cat-item.active { color: var(--burgundy); }
+        .cat-item.active img { border-color: var(--burgundy); box-shadow: 0 4px 12px rgba(99, 13, 22, 0.2); transform: scale(1.05); }
 
-        #cart-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 25px; }
-        .modal-content { background: white; border-radius: 25px; padding: 25px; width: 100%; max-width: 300px; }
-        .cart-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+        /* КАРТОЧКИ ТОВАРОВ */
+        .menu-grid { flex-grow: 1; overflow-y: auto; padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; padding-bottom: 160px; }
+        .product-card { background: white; border-radius: 16px; padding: 12px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.03); position: relative; border: 1px solid rgba(0,0,0,0.02); }
+        .product-card img { width: 100%; height: 90px; object-fit: contain; margin-bottom: 8px; border-radius: 8px; }
+        .product-card h3 { font-size: 10px; margin: 0; font-weight: 700; color: var(--dark-brown); min-height: 24px; line-height: 1.2; }
+        .product-card p { font-size: 8px; color: #999; margin: 4px 0; }
+        .product-card .price { font-size: 12px; font-weight: 900; color: var(--gold); margin: 6px 0; }
+        
+        /* СЧЕТЧИК (Стиль под крафт) */
+        .counter-controls { display: flex; align-items: center; justify-content: space-between; background: var(--cream); border-radius: 25px; padding: 3px; margin-top: 8px; border: 1px solid #ede8e0; }
+        .btn-qty { width: 30px; height: 30px; border-radius: 50%; border: none; background: white; color: var(--burgundy); font-weight: 900; font-size: 18px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .qty-val { font-size: 13px; font-weight: 700; color: var(--dark-brown); }
+        
+        .qty-badge { position: absolute; top: -5px; right: -5px; background: var(--burgundy); color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 10px; line-height: 20px; border: 2px solid white; font-weight: 900; z-index: 10; }
+
+        /* ФУТЕР (Темный бургунди) */
+        .payment-footer { position: fixed; bottom: 0; left: 0; right: 0; background: var(--dark-brown); padding: 12px 16px 28px 16px; z-index: 100; border-radius: 24px 24px 0 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.2); }
+        .footer-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .btn-view-cart { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.15); padding: 8px 16px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .total-price { font-size: 22px; color: var(--gold); font-weight: 900; }
+        .total-label { font-size: 9px; color: #bbb; text-transform: uppercase; margin-right: 6px; }
+        
+        .footer-btns-row { display: flex; gap: 12px; }
+        .btn-footer { flex: 1; padding: 16px; border: none; border-radius: 14px; font-weight: 900; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; font-size: 13px; letter-spacing: 0.5px; transition: 0.2s; }
+        .btn-clear { background: #3d2b21; color: #a18e84; }
+        .btn-pay { background: var(--burgundy); color: white; box-shadow: 0 4px 15px rgba(99, 13, 22, 0.3); }
+        .btn-pay:active { transform: scale(0.97); }
+
+        /* МОДАЛКА */
+        #cart-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(44, 26, 17, 0.8); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
+        .modal-content { background: var(--cream); border-radius: 30px; padding: 25px; width: 100%; max-width: 320px; border: 1px solid var(--gold); }
+        .cart-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; border-bottom: 1px solid #ede8e0; padding-bottom: 6px; color: var(--dark-brown); }
     </style>
 </head>
 <body>
@@ -114,9 +123,9 @@
 
     <div id="cart-modal" onclick="closeCart()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h2 id="txt-cart-title" style="text-align:center; font-size: 18px; margin-bottom: 15px;">ВАШ ЗАКАЗ</h2>
+            <h2 id="txt-cart-title" style="text-align:center; font-size: 18px; margin-bottom: 20px; color: var(--burgundy); font-weight: 900;">ВАШ ЗАКАЗ</h2>
             <div id="cart-items-list"></div>
-            <button class="btn-pay" style="width: 100%; margin-top:15px; background:#333;" onclick="closeCart()">ЗАКРЫТЬ</button>
+            <button class="btn-pay" style="width: 100%; margin-top:20px;" onclick="closeCart()">ЗАКРЫТЬ</button>
         </div>
     </div>
 
@@ -138,14 +147,11 @@
         };
 
         const products = [
-            /* Орешки (cat: 0) */
             { id: 'q1', cat: 0, name: {ru: 'Орешки со сгущёнкой', by: 'Арэшкі са згушчонкай', en: 'Nuts with condensed milk'}, price: 1.10, img: 'oreshki.png', min: 10 },
             { id: 'q2', cat: 0, name: {ru: 'Орешки со сгущёнкой и орехом', by: 'Арэшкі са згушчонкай і арэхам', en: 'Nuts with walnuts'}, price: 1.50, img: 'oreshki sguchenka oreh.png', min: 10 },
             { id: 'q3', cat: 0, name: {ru: 'Кокос и миндаль', by: 'Кокас і міндаль', en: 'Coconut & Almond'}, price: 1.80, img: 'oreshki kokos.jpg', min: 10 },
             { id: 'q4', cat: 0, name: {ru: 'Nutella и фундук', by: 'Nutella і фундук', en: 'Nutella & Hazelnut'}, price: 1.80, img: 'shokoladnya oreshki.jpg', min: 10 },
-            /* Трубочки (cat: 1) */
             { id: 'q5', cat: 1, name: {ru: 'Трубочки со сгущенкой', by: 'Трубачкі са згушчонкай', en: 'Sweet tubes'}, price: 4.00, img: 'trubochka1.jpg', min: 6 },
-            /* Пирожные (cat: 2) */
             { id: 'q6', cat: 2, name: {ru: 'Муравейник', by: 'Мурашнік', en: 'Anthill cake'}, price: 2.50, img: 'muraveynik.jpg', min: 8 },
             { id: 'q7', cat: 2, name: {ru: 'Грибочки', by: 'Грыбочкі', en: 'Mushroom cakes'}, price: 2.50, img: 'grobochki.jpg', min: 12 },
             { id: 'q8', cat: 2, name: {ru: 'Сердечки', by: 'Сэрцайкі', en: 'Heart cakes'}, price: 2.50, img: 'serdechki.png', min: 8 },
@@ -153,9 +159,7 @@
             { id: 'q10', cat: 2, name: {ru: 'Орешки в глазури', by: 'Арэшкі ў глазуры', en: 'Glazed nuts'}, price: 2.50, img: 'orshki v glazuri.jpg', min: 12 },
             { id: 'q11', cat: 2, name: {ru: 'Картошка', by: 'Бульба', en: 'Potato cake'}, price: 4.00, img: 'kartoshka.jpg', min: 4 },
             { id: 'q12', cat: 2, name: {ru: 'Шоколадная колбаса', by: 'Шакаладная каўбаса', en: 'Chocolate sausage'}, price: 12.00, img: 'shokoladnaya kolbasa.jpg', min: 1 },
-            /* Торты (cat: 3) */
             { id: 't1', cat: 3, name: {ru: 'Медовик 1.1кг', by: 'Мядовік 1.1кг', en: 'Honey cake 1.1kg'}, price: 65.00, img: 'tort 2.jpg', min: 1 },
-            /* Наборы (cat: 4) */
             { id: 'n1', cat: 4, name: {ru: 'Набор Ассорти', by: 'Набор Асарці', en: 'Assorted set'}, price: 30.00, img: 'oreshki.png', min: 1 }
         ];
 
@@ -185,7 +189,7 @@
             const grid = document.getElementById('menu-grid');
             grid.innerHTML = '';
             const isCakeRestricted = (city !== 'Гомель' && catIndex === 3);
-            if (isCakeRestricted) grid.innerHTML = `<div class="disabled-msg">${i18n[lang].cakeWarning}</div>`;
+            if (isCakeRestricted) grid.innerHTML = `<div class="disabled-msg" style="color: var(--burgundy); border-color: var(--burgundy);">${i18n[lang].cakeWarning}</div>`;
 
             grid.innerHTML += products.filter(p => p.cat === catIndex).map(p => {
                 const count = cart[p.id] || 0;
