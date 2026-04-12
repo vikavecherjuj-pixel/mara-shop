@@ -108,7 +108,7 @@
         </div>
         <div class="footer-btns-row">
             <button class="btn-footer btn-clear" id="txt-clear" onclick="clearCart()">Очистить</button>
-            <button class="btn-footer btn-pay" id="txt-order" onclick="tg.showAlert('Заказ отправлен!')">Оформить</button>
+            <button class="btn-footer btn-pay" id="txt-order" onclick="tg.showAlert('Заказ оформлен!')">Оформить</button>
         </div>
     </div>
 
@@ -137,7 +137,6 @@
             en: ["NUTS", "TUBES", "CAKES", "CAKE", "SETS"]
         };
 
-        // ВОССТАНОВЛЕННЫЙ ПОЛНЫЙ СПИСОК ТОВАРОВ
         const products = [
             /* Орешки (cat: 0) */
             { id: 'q1', cat: 0, name: {ru: 'Орешки со сгущёнкой', by: 'Арэшкі са згушчонкай', en: 'Nuts with condensed milk'}, price: 1.10, img: 'oreshki.png', min: 10 },
@@ -147,7 +146,13 @@
             /* Трубочки (cat: 1) */
             { id: 'q5', cat: 1, name: {ru: 'Трубочки со сгущенкой', by: 'Трубачкі са згушчонкай', en: 'Sweet tubes'}, price: 4.00, img: 'trubochka1.jpg', min: 6 },
             /* Пирожные (cat: 2) */
-            { id: 'q6', cat: 2, name: {ru: 'Муравейник классический', by: 'Мурашнік класічны', en: 'Anthill cake'}, price: 2.50, img: 'muraveynik.jpg', min: 8 },
+            { id: 'q6', cat: 2, name: {ru: 'Муравейник', by: 'Мурашнік', en: 'Anthill cake'}, price: 2.50, img: 'muraveynik.jpg', min: 8 },
+            { id: 'q7', cat: 2, name: {ru: 'Грибочки', by: 'Грыбочкі', en: 'Mushroom cakes'}, price: 2.00, img: 'muraveynik.jpg', min: 6 },
+            { id: 'q8', cat: 2, name: {ru: 'Сердечки', by: 'Сэрцайкі', en: 'Heart cakes'}, price: 3.00, img: 'muraveynik.jpg', min: 1 },
+            { id: 'q9', cat: 2, name: {ru: 'Кокосовое', by: 'Кокасавае', en: 'Coconut cake'}, price: 2.50, img: 'muraveynik.jpg', min: 5 },
+            { id: 'q10', cat: 2, name: {ru: 'Орешки в глазури', by: 'Арэшкі ў глазуры', en: 'Glazed nuts'}, price: 1.90, img: 'shokoladnya oreshki.jpg', min: 10 },
+            { id: 'q11', cat: 2, name: {ru: 'Картошка', by: 'Бульба', en: 'Potato cake'}, price: 2.80, img: 'muraveynik.jpg', min: 4 },
+            { id: 'q12', cat: 2, name: {ru: 'Шоколадная колбаса', by: 'Шакаладная каўбаса', en: 'Chocolate sausage'}, price: 15.00, img: 'muraveynik.jpg', min: 1 },
             /* Торты (cat: 3) */
             { id: 't1', cat: 3, name: {ru: 'Медовик 1.1кг', by: 'Мядовік 1.1кг', en: 'Honey cake 1.1kg'}, price: 65.00, img: 'tort 2.jpg', min: 1 },
             /* Наборы (cat: 4) */
