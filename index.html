@@ -3,163 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mara Shop - Главная</title>
+    <title>Start Mara Shop</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { 
-            --accent: #c5a059; 
-            --burgundy: #630d16; 
-            --dark: #2c1a11; 
-            --bg: #fdfaf5; 
-        }
-        body { 
-            font-family: 'Montserrat', sans-serif; 
-            background: var(--bg); 
-            margin: 0; padding: 0; 
-            display: flex; flex-direction: column; 
-            height: 100vh; overflow: hidden; 
-        }
-
-        /* Баннер увеличен на 15% (было 180px -> стало 210px) */
-        .promo-banner { 
-            width: 100%; 
-            height: 210px; 
-            overflow: hidden; 
-            position: relative;
-        }
-        .promo-banner img { 
-            width: 100%; height: 100%; object-fit: cover; 
-        }
-
-        .content-area { 
-            flex-grow: 1; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            padding: 20px; 
-            gap: 25px; /* Увеличенный зазор между блоками для чистоты */
-        }
-
-        .city-selection { 
-            width: 100%; 
-            max-width: 300px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 12px; 
-        }
-
-        .city-btn {
-            background: white;
-            border: 2px solid #eee;
-            padding: 15px;
-            border-radius: 15px;
-            font-weight: 700;
-            font-size: 14px;
-            color: var(--dark);
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: 'Montserrat';
-        }
-        .city-btn.active {
-            border-color: var(--burgundy);
-            background: #fffafa;
-            color: var(--burgundy);
-        }
-
-        .start-btn {
-            width: 100%;
-            max-width: 300px;
-            background: var(--burgundy);
-            color: white;
-            border: none;
-            padding: 18px;
-            border-radius: 15px;
-            font-weight: 900;
-            font-size: 16px;
-            text-transform: uppercase;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(99, 13, 22, 0.2);
-            font-family: 'Montserrat';
-        }
-
-        .lang-switcher {
-            display: flex;
-            gap: 15px;
-            margin-top: 10px;
-        }
-        .lang-btn {
-            background: none; border: none; font-weight: 700; color: #aaa; cursor: pointer; font-size: 12px;
-        }
-        .lang-btn.active { color: var(--burgundy); border-bottom: 2px solid var(--burgundy); }
+        :root { --accent: #c5a059; --burgundy: #630d16; }
+        body { font-family: 'Montserrat', sans-serif; background: #fff; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; text-align: center; }
+        /* Баннер увеличен на 15% (от изначальных 50% высоты экрана) */
+        .start-banner { width: 100%; height: 65%; background: var(--burgundy); overflow: hidden; }
+        .start-banner img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        /* Удален заголовок, контент центрирован */
+        .content-block { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-around; padding: 15px 25px 25px 25px; background: white; }
+        .section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #bbb; margin: 0 0 8px 0; letter-spacing: 1px; }
+        .select-group { display: flex; gap: 8px; width: 100%; margin-bottom: 5px; }
+        .opt-btn { flex: 1; border: 1px solid #eee; padding: 10px; border-radius: 12px; font-size: 10px; font-weight: 700; cursor: pointer; color: #555; transition: 0.2s; }
+        .opt-btn.selected { border-color: var(--accent); background: rgba(197, 160, 89, 0.05); color: var(--accent); }
+        .btn-start { width: 100%; padding: 18px; border: none; border-radius: 16px; font-weight: 900; text-transform: uppercase; background: var(--burgundy); color: white; font-size: 15px; cursor: pointer; margin-top: 5px; }
     </style>
 </head>
 <body>
-
-    <div class="promo-banner">
-        <img src="shokoladnya oreshki.jpg" alt="Mara Promo">
-    </div>
-
-    <div class="content-area">
-        <div class="city-selection">
-            <button class="city-btn" id="btn-gomel" onclick="selectCity('Гомель')">ГОМЕЛЬ</button>
-            <button class="city-btn" id="btn-others" onclick="selectCity('Другие города')">ДРУГИЕ ГОРОДА</button>
+    <div class="start-banner"><img src="shokoladnya oreshki.jpg"></div>
+    <div class="content-block">
+        <div>
+            <div class="section-label" id="lbl-city">Ваш город / Ваш горад</div>
+            <div class="select-group" id="city-btns">
+                <div class="opt-btn selected" onclick="setCity('Гомель', this)">Гомель</div>
+                <div class="opt-btn" onclick="setCity('Другой', this)">Другие города РБ</div>
+            </div>
+            <div class="section-label" id="lbl-lang">Выберите язык / Мова</div>
+            <div class="select-group" id="lang-btns">
+                <div class="opt-btn selected" onclick="setLang('ru', this)">Русский</div>
+                <div class="opt-btn" onclick="setLang('by', this)">Беларуская</div>
+                <div class="opt-btn" onclick="setLang('en', this)">English</div>
+            </div>
         </div>
-
-        <button class="start-btn" id="txt-start" onclick="goToShop()">Начать заказ</button>
-
-        <div class="lang-switcher">
-            <button class="lang-btn" id="lang-ru" onclick="setLang('ru')">RU</button>
-            <button class="lang-btn" id="lang-by" onclick="setLang('by')">BY</button>
-            <button class="lang-btn" id="lang-en" onclick="setLang('en')">EN</button>
-        </div>
+        <button class="btn-start" id="main-start-btn" onclick="window.location.href='shop.html'">Начать заказ</button>
     </div>
-
     <script>
-        let currentLang = localStorage.getItem('selectedLang') || 'ru';
-        let currentCity = localStorage.getItem('selectedCity') || 'Гомель';
-
-        const i18n = {
-            ru: { start: "Начать заказ", gomel: "ГОМЕЛЬ", others: "ДРУГИЕ ГОРОДА" },
-            by: { start: "Пачаць замову", gomel: "ГОМЕЛЬ", others: "ІНШЫЯ ГАРАДЫ" },
-            en: { start: "Start Order", gomel: "GOMEL", others: "OTHER CITIES" }
+        let tg = window.Telegram.WebApp; tg.expand();
+        const i18n = { 
+            ru: { start: "Начать заказ", city: "Ваш город", lang: "Выберите язык" },
+            by: { start: "Пачаць замова", city: "Ваш горад", lang: "Абярыце мову" },
+            en: { start: "Start Order", city: "Your City", lang: "Select Language" }
         };
-
-        function selectCity(city) {
-            currentCity = city;
-            localStorage.setItem('selectedCity', city);
-            updateUI();
+        function setLang(l, el) {
+            localStorage.setItem('selectedLang', l);
+            document.querySelectorAll('#lang-btns .opt-btn').forEach(b => b.classList.remove('selected'));
+            el.classList.add('selected');
+            document.getElementById('main-start-btn').innerText = i18n[l].start;
+            document.getElementById('lbl-lang').innerText = i18n[l].lang;
+            document.getElementById('lbl-city').innerText = i18n[l].city;
         }
-
-        function setLang(lang) {
-            currentLang = lang;
-            localStorage.setItem('selectedLang', lang);
-            updateUI();
+        function setCity(c, el) {
+            localStorage.setItem('selectedCity', c);
+            document.querySelectorAll('#city-btns .opt-btn').forEach(b => b.classList.remove('selected'));
+            el.classList.add('selected');
         }
-
-        function updateUI() {
-            // Тексты
-            document.getElementById('txt-start').innerText = i18n[currentLang].start;
-            document.getElementById('btn-gomel').innerText = i18n[currentLang].gomel;
-            document.getElementById('btn-others').innerText = i18n[currentLang].others;
-
-            // Активные кнопки города
-            document.getElementById('btn-gomel').classList.toggle('active', currentCity === 'Гомель');
-            document.getElementById('btn-others').classList.toggle('active', currentCity === 'Другие города');
-
-            // Активные кнопки языка
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.id === 'lang-' + currentLang);
-            });
-        }
-
-        function goToShop() {
-            window.location.href = 'shop.html';
-        }
-
-        // Инициализация при загрузке
-        updateUI();
+        localStorage.setItem('selectedLang', 'ru'); localStorage.setItem('selectedCity', 'Гомель');
     </script>
 </body>
 </html>
