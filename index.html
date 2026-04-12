@@ -1,173 +1,87 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Салодкая Мара</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        :root {
-            --main-bg: var(--tg-theme-bg-color, #ffffff);
-            --main-text: var(--tg-theme-text-color, #222222);
-            --hint-color: var(--tg-theme-hint-color, #999999);
-            --button-color: var(--tg-theme-button-color, #31b545);
-            --button-text: var(--tg-theme-button-text-color, #ffffff);
-        }
+const tg = window.Telegram.WebApp;
+tg.expand();
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--main-bg);
-            color: var(--main-text);
-            user-select: none;
-        }
+const grid = document.getElementById('grid');
+const footer = document.getElementById('footer');
+const totalSum = document.getElementById('total-sum');
 
-        /* 1. ЛОГОТИП (Пункт 1) */
-        .header {
-            padding: 10px 0;
-            text-align: center;
-            background: var(--main-bg);
-        }
-        .header img {
-            max-width: 120px; /* Размер твоего логотипа */
-            height: auto;
-        }
+let cart = {};
 
-        /* 2. ШИРОКИЙ БАННЕР (Пункт 2) */
-        .banner-container {
-            width: 100%;
-            overflow: hidden;
-        }
-        .banner-container img {
-            width: 100%;
-            display: block;
-            height: auto;
-        }
+// Твои товары СТРОГО по списку из GitHub
+const products = [
+    { id: 1, name: 'Орешки со сгущенкой', price: 1.10, min: 10, img: 'oreshki.png' },
+    { id: 2, name: 'Орешки с орехом', price: 1.50, min: 10, img: 'oreshki sguchenka oreh.png' },
+    { id: 3, name: 'Трубочка', price: 2.20, min: 5, img: 'trubochka1.jpg' },
+    { id: 4, name: 'Картошка', price: 1.80, min: 5, img: 'kartoshka.jpg' },
+    { id: 5, name: 'Шок. колбаса', price: 2.00, min: 1, img: 'shokoladnaya kolbasa.jpg' }
+];
 
-        .container { padding: 15px; }
-
-        .products-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .product-card {
-            background: rgba(0,0,0,0.03);
-            border-radius: 15px;
-            padding: 10px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .product-card img {
-            width: 100%;
-            border-radius: 10px;
-            margin-bottom: 8px;
-        }
-
-        .product-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-        .product-min { font-size: 11px; color: var(--hint-color); margin-bottom: 8px; }
-        .product-price { font-weight: bold; margin-bottom: 10px; }
-
-        /* УПРАВЛЕНИЕ КОЛИЧЕСТВОМ (Пункт 4) */
-        .controls {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #eee;
-            border-radius: 10px;
-            padding: 5px;
-        }
-        .btn-minus, .btn-plus {
-            background: none;
-            border: none;
-            font-size: 20px;
-            font-weight: bold;
-            width: 30px;
-            cursor: pointer;
-        }
-        .count { width: 30px; font-weight: bold; }
-
-        /* 3. НИЖНЯЯ ПАНЕЛЬ С КНОПКАМИ (Пункт 3) */
-        .footer {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background: var(--main-bg);
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            padding: 15px;
-            box-sizing: border-box;
-            display: none; /* Прячем, пока корзина пуста */
-            z-index: 100;
-        }
-        .footer.active { display: block; }
-
-        .footer-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        .total-label { font-size: 14px; color: var(--hint-color); }
-        .total-sum { font-weight: bold; font-size: 18px; }
-        .view-cart { color: #248bcf; font-size: 14px; font-weight: 500; }
-
-        .footer-btns { display: flex; gap: 10px; }
-        .btn-cancel {
-            flex: 1;
-            background: #f1f1f1;
-            color: #333;
-            border: none;
-            padding: 12px;
-            border-radius: 12px;
-            font-weight: 600;
-        }
-        .btn-order {
-            flex: 2;
-            background: var(--button-color);
-            color: var(--button-text);
-            border: none;
-            padding: 12px;
-            border-radius: 12px;
-            font-weight: 600;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="header">
-        <img src="img/Logo.PNG" alt="Логотип">
-    </div>
-
-    <div class="banner-container">
-        <img src="img/banner.jpg" alt="Реклама">
-    </div>
-
-    <div class="container">
-        <div class="products-grid" id="grid"></div>
-    </div>
-
-    <div style="height: 120px;"></div>
-
-    <div class="footer" id="footer">
-        <div class="footer-info">
-            <div>
-                <span class="total-label">Итого: </span>
-                <span class="total-sum" id="total-sum">0.00 BYN</span>
+function render() {
+    if (!grid) return;
+    grid.innerHTML = '';
+    
+    products.forEach(p => {
+        const count = cart[p.id] || 0;
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+            <img src="${p.img}" onerror="this.src='https://via.placeholder.com/150?text=Ошибка'">
+            <div class="product-title">${p.name}</div>
+            <div class="product-min">Заказ от ${p.min} шт.</div>
+            <div class="product-price">${p.price.toFixed(2)} BYN</div>
+            <div class="controls">
+                <button class="btn-minus" onclick="change(${p.id}, -1)">-</button>
+                <div class="count">${count}</div>
+                <button class="btn-plus" onclick="change(${p.id}, 1)">+</button>
             </div>
-            <div class="view-cart" onclick="alert('Здесь будет список корзины')">Корзина</div>
-        </div>
-        <div class="footer-btns">
-            <button class="btn-cancel" onclick="clearCart()">Отменить</button>
-            <button class="btn-order" onclick="sendOrder()">Оформить заказ</button>
-        </div>
-    </div>
+        `;
+        grid.appendChild(card);
+    });
+}
 
-    <script src="app.js"></script>
-</body>
-</html>
+window.change = (id, delta) => {
+    const p = products.find(x => x.id === id);
+    let count = cart[id] || 0;
+
+    if (delta === 1) {
+        count = (count === 0) ? p.min : count + 1;
+    } else {
+        if (count === p.min) count = 0;
+        else if (count > p.min) count -= 1;
+    }
+
+    if (count <= 0) delete cart[id];
+    else cart[id] = count;
+
+    render();
+    updateFooter();
+};
+
+function updateFooter() {
+    let sum = 0;
+    Object.keys(cart).forEach(id => {
+        const p = products.find(x => x.id == id);
+        sum += p.price * cart[id];
+    });
+
+    if (sum > 0) {
+        footer.style.display = 'block';
+        totalSum.innerText = sum.toFixed(2) + ' BYN';
+    } else {
+        footer.style.display = 'none';
+    }
+}
+
+window.clearCart = () => {
+    cart = {};
+    render();
+    updateFooter();
+};
+
+window.sendOrder = () => {
+    if (Object.keys(cart).length === 0) return;
+    tg.sendData(JSON.stringify(cart));
+    tg.close();
+};
+
+render();
