@@ -8,10 +8,8 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { 
-            --accent: #e67e22; 
-            --mcd-yellow: #ffbc0d; 
-            /* ЗАМЕНА: Зеленый заменен на Бургунди */
-            --mcd-green: #630d16; 
+            --accent: #c5a059; 
+            --burgundy: #630d16; 
         }
         body { 
             font-family: 'Montserrat', sans-serif; 
@@ -23,11 +21,10 @@
             text-align: center;
         }
         
-        /* ВЕРХНИЙ БАННЕР */
         .start-banner { 
             width: 100%; 
-            height: 55%; 
-            background: var(--mcd-yellow); 
+            height: 50%; 
+            background: var(--burgundy); 
             overflow: hidden; 
         }
         .start-banner img { 
@@ -37,111 +34,106 @@
             display: block;
         }
         
-        /* БЛОК СОДЕРЖИМОГО СНИЗУ */
         .content-block { 
             flex-grow: 1; 
             display: flex; 
             flex-direction: column; 
             justify-content: space-between; 
-            padding: 30px; 
+            padding: 20px 25px; 
+            background: white;
         }
         
-        /* ЗАГОЛОВОК */
         .start-title { 
-            font-size: 26px; 
+            font-size: 22px; 
             font-weight: 900; 
             text-transform: uppercase; 
             color: #2c1a11; 
-            margin: 0 0 10px 0;
-            letter-spacing: -0.5px;
+            margin: 0;
         }
         
-        /* ПОДЗАГОЛОВОК */
-        .start-subtitle {
-            font-size: 14px;
-            color: #777;
-            margin: 0 0 20px 0;
+        .section-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #bbb;
+            margin: 15px 0 8px 0;
+            letter-spacing: 1px;
         }
-        
-        /* ГРУППА КНОПОК ЯЗЫКА */
-        .lang-group { 
+
+        .select-group { 
             display: flex; 
-            gap: 10px; 
+            gap: 8px; 
             margin: 0 auto;
-            max-width: 400px;
+            width: 100%;
         }
-        .lang-btn { 
+
+        .opt-btn { 
             flex: 1; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            gap: 8px;
-            border: 1px solid #ddd; 
-            padding: 12px; 
-            border-radius: 10px; 
-            font-size: 13px; 
+            border: 1px solid #eee; 
+            padding: 10px; 
+            border-radius: 12px; 
+            font-size: 11px; 
             font-weight: 700; 
             cursor: pointer; 
             transition: 0.2s;
-            color: #333;
+            color: #555;
+            background: #fdfdfd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .lang-btn img {
-            width: 18px; height: auto;
-        }
-        .lang-btn:active, .lang-btn.selected { 
+
+        .opt-btn.selected { 
             border-color: var(--accent); 
-            background: rgba(230, 126, 34, 0.05);
+            background: rgba(197, 160, 89, 0.05);
             color: var(--accent);
         }
         
-        /* БОЛЬШАЯ КНОПКА СТАРТА */
-        .start-action { margin-top: auto; }
+        .start-action { margin-top: auto; padding-top: 20px; }
         .btn-start { 
             width: 100%; 
-            padding: 16px; 
+            padding: 18px; 
             border: none; 
-            border-radius: 14px; 
+            border-radius: 16px; 
             font-weight: 900; 
             text-transform: uppercase; 
             font-family: 'Montserrat', sans-serif; 
-            /* Применяем переменную, которая теперь хранит Бургунди */
-            background: var(--mcd-green); 
+            background: var(--burgundy); 
             color: white; 
             font-size: 15px; 
             cursor: pointer; 
-            /* Тень тоже делаем темнее под новый цвет */
-            box-shadow: 0 4px 0 #3d070b; 
-            transition: 0.1s;
+            box-shadow: 0 4px 15px rgba(99, 13, 22, 0.2);
         }
-        .btn-start:active { transform: translateY(2px); box-shadow: 0 2px 0 #3d070b; }
+        .btn-start:active { transform: translateY(2px); }
     </style>
 </head>
 <body>
 
     <div class="start-banner">
-        <img src="shokoladnya oreshki.jpg" alt="Салодкая Мара">
+        <img src="shokoladnya oreshki.jpg" alt="Mara">
     </div>
 
     <div class="content-block">
         <div class="text-top">
-            <h1 class="start-title">Попробуй десерт здесь!</h1>
-            <p class="start-subtitle">Выберите язык, чтобы продолжить заказ</p>
+            <h1 class="start-title">Салодкая Мара</h1>
         </div>
 
-        <div class="lang-group">
-            <div class="lang-btn selected" onclick="selectLang(this)">
-                <img src="https://flagcdn.com/w40/ru.png" alt="ru">Русский
+        <div>
+            <div class="section-label" id="lbl-lang">Выберите язык / Мова</div>
+            <div class="select-group" id="lang-btns">
+                <div class="opt-btn selected" onclick="setLang('ru', this)">Русский</div>
+                <div class="opt-btn" onclick="setLang('by', this)">Беларуская</div>
             </div>
-            <div class="lang-btn" onclick="selectLang(this)">
-                <img src="https://flagcdn.com/w40/by.png" alt="by">Беларуская
-            </div>
-            <div class="lang-btn" onclick="selectLang(this)">
-                <img src="https://flagcdn.com/w40/gb.png" alt="en">English
+
+            <div class="section-label" id="lbl-city">Ваш город / Ваш горад</div>
+            <div class="select-group" id="city-btns">
+                <div class="opt-btn selected" onclick="setCity('Гомель', this)">Гомель</div>
+                <div class="opt-btn" onclick="setCity('Другой', this)">Другие города РБ</div>
             </div>
         </div>
 
         <div class="start-action">
-            <button class="btn-start" onclick="startShop()">Начать заказ</button>
+            <button class="btn-start" id="main-start-btn" onclick="startShop()">Начать заказ</button>
         </div>
     </div>
 
@@ -149,19 +141,43 @@
         let tg = window.Telegram.WebApp;
         tg.expand();
         
-        let currentLang = 'ru'; 
+        let selectedLang = 'ru';
+        let selectedCity = 'Гомель';
 
-        function selectLang(el) {
-            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('selected'));
+        const translations = {
+            ru: { start: "Начать заказ", cityLabel: "Ваш город", langLabel: "Выберите язык" },
+            by: { start: "Пачаць замова", cityLabel: "Ваш горад", langLabel: "Абярыце мову" }
+        };
+
+        function setLang(lang, el) {
+            selectedLang = lang;
+            localStorage.setItem('selectedLang', lang);
+            
+            document.querySelectorAll('#lang-btns .opt-btn').forEach(b => b.classList.remove('selected'));
             el.classList.add('selected');
-            currentLang = el.innerText.trim(); 
+            
+            document.getElementById('main-start-btn').innerText = translations[lang].start;
+            document.getElementById('lbl-lang').innerText = translations[lang].langLabel;
+            document.getElementById('lbl-city').innerText = translations[lang].cityLabel;
+
+            tg.HapticFeedback.selectionChanged();
+        }
+
+        function setCity(city, el) {
+            selectedCity = city;
+            localStorage.setItem('selectedCity', city);
+            document.querySelectorAll('#city-btns .opt-btn').forEach(b => b.classList.remove('selected'));
+            el.classList.add('selected');
             tg.HapticFeedback.selectionChanged();
         }
 
         function startShop() {
-            localStorage.setItem('userLanguage', currentLang);
             window.location.href = 'shop.html';
         }
+
+        // Дефолтные значения
+        localStorage.setItem('selectedLang', 'ru');
+        localStorage.setItem('selectedCity', 'Гомель');
     </script>
 </body>
 </html>
