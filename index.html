@@ -3,120 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mara Shop - Welcome</title>
+    <title>Start Mara Shop</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { 
-            --burgundy: #630d16;
-            --cream: #fdfaf5;
-            --gold: #c5a059;
-            --dark-brown: #2c1a11;
+            --accent: #e67e22; 
+            --mcd-yellow: #ffbc0d; 
+            /* ЗАМЕНА: Зеленый заменен на Бургунди */
+            --mcd-green: #630d16; 
         }
-
         body { 
             font-family: 'Montserrat', sans-serif; 
-            background-color: var(--cream); 
-            color: var(--dark-brown);
+            background: #fff; 
             margin: 0; padding: 0; 
-            display: flex; flex-direction: column; align-items: center; 
-            min-height: 100vh;
+            display: flex; flex-direction: column; 
+            height: 100vh; 
+            overflow: hidden; 
+            text-align: center;
         }
-
-        .welcome-container {
-            width: 100%; max-width: 400px; padding: 40px 20px;
-            display: flex; flex-direction: column; align-items: center; text-align: center;
+        
+        /* ВЕРХНИЙ БАННЕР */
+        .start-banner { 
+            width: 100%; 
+            height: 55%; 
+            background: var(--mcd-yellow); 
+            overflow: hidden; 
         }
-
-        .logo-main { width: 180px; height: auto; margin-bottom: 30px; }
-
-        h1 { font-weight: 900; font-size: 24px; color: var(--burgundy); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        p { font-size: 14px; color: #777; margin-bottom: 40px; line-height: 1.5; }
-
-        .btn-start {
-            background-color: var(--burgundy);
-            color: white;
-            border: none;
-            padding: 18px 40px;
-            border-radius: 16px;
-            font-size: 16px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            width: 100%;
-            box-shadow: 0 6px 20px rgba(99, 13, 22, 0.3);
-            transition: transform 0.2s, box-shadow 0.2s;
-            text-decoration: none;
-            display: inline-block;
+        .start-banner img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            display: block;
         }
-
-        .btn-start:active {
-            transform: scale(0.96);
-            box-shadow: 0 3px 10px rgba(99, 13, 22, 0.2);
+        
+        /* БЛОК СОДЕРЖИМОГО СНИЗУ */
+        .content-block { 
+            flex-grow: 1; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            padding: 30px; 
         }
-
-        .lang-switcher {
-            margin-top: auto; padding-bottom: 30px;
-            display: flex; gap: 15px;
+        
+        /* ЗАГОЛОВОК */
+        .start-title { 
+            font-size: 26px; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            color: #2c1a11; 
+            margin: 0 0 10px 0;
+            letter-spacing: -0.5px;
         }
-
-        .lang-btn {
-            background: white; border: 1px solid #ddd;
-            padding: 8px 15px; border-radius: 10px;
-            font-size: 12px; font-weight: 700; color: #888; cursor: pointer;
+        
+        /* ПОДЗАГОЛОВОК */
+        .start-subtitle {
+            font-size: 14px;
+            color: #777;
+            margin: 0 0 20px 0;
         }
-
-        .lang-btn.active {
-            border-color: var(--gold); color: var(--gold); background: #fffcf5;
+        
+        /* ГРУППА КНОПОК ЯЗЫКА */
+        .lang-group { 
+            display: flex; 
+            gap: 10px; 
+            margin: 0 auto;
+            max-width: 400px;
         }
+        .lang-btn { 
+            flex: 1; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            gap: 8px;
+            border: 1px solid #ddd; 
+            padding: 12px; 
+            border-radius: 10px; 
+            font-size: 13px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            transition: 0.2s;
+            color: #333;
+        }
+        .lang-btn img {
+            width: 18px; height: auto;
+        }
+        .lang-btn:active, .lang-btn.selected { 
+            border-color: var(--accent); 
+            background: rgba(230, 126, 34, 0.05);
+            color: var(--accent);
+        }
+        
+        /* БОЛЬШАЯ КНОПКА СТАРТА */
+        .start-action { margin-top: auto; }
+        .btn-start { 
+            width: 100%; 
+            padding: 16px; 
+            border: none; 
+            border-radius: 14px; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            font-family: 'Montserrat', sans-serif; 
+            /* Применяем переменную, которая теперь хранит Бургунди */
+            background: var(--mcd-green); 
+            color: white; 
+            font-size: 15px; 
+            cursor: pointer; 
+            /* Тень тоже делаем темнее под новый цвет */
+            box-shadow: 0 4px 0 #3d070b; 
+            transition: 0.1s;
+        }
+        .btn-start:active { transform: translateY(2px); box-shadow: 0 2px 0 #3d070b; }
     </style>
 </head>
 <body>
 
-    <div class="welcome-container">
-        <img src="Logo.png" alt="Mara Logo" class="logo-main">
-        
-        <h1 id="txt-welcome">Добро пожаловать</h1>
-        <p id="txt-sub">Натуральные десерты ручной работы с душой и историей</p>
-
-        <a href="shop.html" class="btn-start" id="btn-order-start">Начать заказ</a>
+    <div class="start-banner">
+        <img src="shokoladnya oreshki.jpg" alt="Салодкая Мара">
     </div>
 
-    <div class="lang-switcher">
-        <button class="lang-btn active" onclick="setLang('ru', this)">RU</button>
-        <button class="lang-btn" onclick="setLang('by', this)">BY</button>
-        <button class="lang-btn" onclick="setLang('en', this)">EN</button>
+    <div class="content-block">
+        <div class="text-top">
+            <h1 class="start-title">Попробуй десерт здесь!</h1>
+            <p class="start-subtitle">Выберите язык, чтобы продолжить заказ</p>
+        </div>
+
+        <div class="lang-group">
+            <div class="lang-btn selected" onclick="selectLang(this)">
+                <img src="https://flagcdn.com/w40/ru.png" alt="ru">Русский
+            </div>
+            <div class="lang-btn" onclick="selectLang(this)">
+                <img src="https://flagcdn.com/w40/by.png" alt="by">Беларуская
+            </div>
+            <div class="lang-btn" onclick="selectLang(this)">
+                <img src="https://flagcdn.com/w40/gb.png" alt="en">English
+            </div>
+        </div>
+
+        <div class="start-action">
+            <button class="btn-start" onclick="startShop()">Начать заказ</button>
+        </div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
+        
+        let currentLang = 'ru'; 
 
-        const translations = {
-            ru: { welcome: "Добро пожаловать", sub: "Натуральные десерты ручной работы с душой и историей", start: "Начать заказ" },
-            by: { welcome: "Сардэчна запрашаем", sub: "Натуральныя дэсерты ручной працы з душой і гісторыяй", start: "Пачаць замова" },
-            en: { welcome: "Welcome", sub: "Handmade natural desserts with soul and history", start: "Start Order" }
-        };
-
-        function setLang(lang, el) {
-            localStorage.setItem('selectedLang', lang);
-            document.getElementById('txt-welcome').innerText = translations[lang].welcome;
-            document.getElementById('txt-sub').innerText = translations[lang].sub;
-            document.getElementById('btn-order-start').innerText = translations[lang].start;
-
-            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-            el.classList.add('active');
+        function selectLang(el) {
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('selected'));
+            el.classList.add('selected');
+            currentLang = el.innerText.trim(); 
             tg.HapticFeedback.selectionChanged();
         }
 
-        // Инициализация языка при загрузке
-        const savedLang = localStorage.getItem('selectedLang') || 'ru';
-        // Находим нужную кнопку и имитируем нажатие для применения перевода
-        const btns = document.querySelectorAll('.lang-btn');
-        btns.forEach(b => {
-            if(b.innerText.toLowerCase() === savedLang) setLang(savedLang, b);
-        });
+        function startShop() {
+            localStorage.setItem('userLanguage', currentLang);
+            window.location.href = 'shop.html';
+        }
     </script>
 </body>
 </html>
