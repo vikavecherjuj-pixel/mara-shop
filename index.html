@@ -17,12 +17,13 @@
             height: 100vh; overflow: hidden; 
         }
         
-        /* УВЕЛИЧЕННЫЙ БАННЕР */
         .promo-banner { width: 100%; height: 220px; background: var(--mcd-yellow); flex-shrink: 0; }
         .promo-banner img { width: 100%; height: 100%; object-fit: cover; }
         
+        /* ОБНОВЛЕННЫЙ ХЕДЕР С ЛОГОТИПОМ */
         .brand-header { padding: 10px; text-align: center; background: white; border-bottom: 1px solid #eee; flex-shrink: 0; }
-        .brand-header h1 { margin: 0; font-size: 16px; color: var(--dark); font-weight: 900; text-transform: uppercase; }
+        /* Стили для картинки логотипа */
+        .brand-header img.logo { max-width: 140px; height: auto; display: block; margin: 0 auto; }
         
         .main-area { flex-grow: 1; display: flex; overflow: hidden; }
         
@@ -129,7 +130,10 @@
     </div>
 
     <div class="promo-banner"><img src="shokoladnya oreshki.jpg"></div>
-    <div class="brand-header"><h1 id="welcome-title">САЛОДКАЯ МАРА</h1></div>
+    
+    <div class="brand-header">
+        <img src="Logo.PNG" alt="Салодкая Мара" class="logo">
+    </div>
 
     <div class="main-area">
         <div class="sidebar">
@@ -157,10 +161,12 @@
         let tg = window.Telegram.WebApp;
         tg.expand();
         
+        // Убираем логику приветствия с именем пользователя в заголовке,
+        // так как заголовка больше нет. Имя оставляем только в поле формы.
         const user = tg.initDataUnsafe?.user;
         if (user && user.first_name) {
-            document.getElementById('welcome-title').innerText = `МАРА • ${user.first_name.toUpperCase()}`;
-            document.getElementById('cust-name').value = user.first_name;
+            const custNameInput = document.getElementById('cust-name');
+            if (custNameInput) custNameInput.value = user.first_name;
         }
 
         let total = 0; let cart = {}; let deliveryType = 'delivery';
