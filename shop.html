@@ -45,14 +45,32 @@
         .footer-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .total-price { font-size: 20px; color: var(--accent); font-weight: 900; }
         .btn-footer { flex: 1; padding: 14px; border: none; border-radius: 12px; font-weight: 900; text-transform: uppercase; cursor: pointer; font-size: 12px; font-family: 'Montserrat'; }
+        
+        /* КНОПКА ПРОСМОТРЕТЬ (ТОЛЬКО ОДНА СТРОКА, ТОНКИЙ ШРИФТ) */
+        .btn-view-order {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 9px;
+            font-weight: 500;
+            text-transform: uppercase;
+            cursor: pointer;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+            max-width: 150px;
+        }
+
         .btn-clear { background: var(--btn-clear); color: white; margin-right: 10px; }
         .btn-pay { background: var(--btn-order); color: white; }
         .btn-pay:disabled { background: #555; opacity: 0.6; }
 
-        /* КОРЗИНА (MODAL) */
+        /* ОКНО КОРЗИНЫ */
         #cart-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 2000; display: none; justify-content: center; align-items: flex-end; }
         .modal-content { background: #fdfaf5; width: 100%; border-radius: 25px 25px 0 0; padding: 20px; max-height: 80vh; overflow-y: auto; box-sizing: border-box; }
-        .cart-item-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #eee; }
+        .cart-item-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
@@ -70,7 +88,7 @@
 
     <div class="payment-footer">
         <div class="footer-top">
-            <button onclick="showCart()" class="btn-footer" style="background: rgba(255,255,255,0.1); color: white; font-size: 10px; max-width: 140px;">🛒 Просмотреть заказ</button>
+            <button onclick="showCart()" class="btn-view-order">🛒 Просмотреть заказ</button>
             <span class="total-price"><span id="total-val">0.00</span> BYN</span>
         </div>
         <div style="display: flex;">
@@ -81,7 +99,7 @@
 
     <div id="cart-modal">
         <div class="modal-content">
-            <h2 style="text-align: center; color: var(--burgundy); font-weight: 900; margin-top: 0;">ВАШ ЗАКАЗ</h2>
+            <h2 style="text-align: center; color: var(--burgundy); font-weight: 900; margin-top: 0; font-size: 18px;">ВАШ ЗАКАЗ</h2>
             <div id="cart-items-list"></div>
             <div id="cart-total-modal" style="text-align: right; font-weight: 900; font-size: 18px; margin: 15px 0; color: var(--accent);"></div>
             <button class="btn-footer btn-pay" style="width: 100%;" onclick="goToCheckout()">ОФОРМИТЬ</button>
@@ -165,12 +183,10 @@
                 let b = document.getElementById(`badge-${k}`);
                 if(b) { b.innerText = cart[k]; b.style.display = 'block'; }
             }
-            // Очистка старых бейджей
             products.forEach(p => { if(!cart[p.id]) {
                 if(document.getElementById(`qty-${p.id}`)) document.getElementById(`qty-${p.id}`).innerText = 0;
                 if(document.getElementById(`badge-${p.id}`)) document.getElementById(`badge-${p.id}`).style.display = 'none';
             }});
-
             document.getElementById('total-val').innerText = total.toFixed(2);
             document.getElementById('main-pay-btn').disabled = (total < (hasPotato ? 16 : 20));
             if (document.getElementById('cart-modal').style.display === 'flex') showCart();
@@ -187,11 +203,11 @@
                     const p = products.find(x => x.id === id);
                     return `
                         <div class="cart-item-row">
-                            <span style="flex:1; font-weight:700; font-size:12px; color:var(--dark);">${p.name.ru}</span>
+                            <span style="flex:1; font-weight:700; font-size:11px; color:var(--dark);">${p.name.ru}</span>
                             <div class="counter-controls" style="border:none; background:transparent;">
-                                <button class="btn-qty" onclick="changeQty('${id}', -1)">-</button>
-                                <span style="margin:0 12px; font-weight:900;">${q}</span>
-                                <button class="btn-qty" onclick="changeQty('${id}', 1)">+</button>
+                                <button class="btn-qty" style="width:24px; height:24px;" onclick="changeQty('${id}', -1)">-</button>
+                                <span style="margin:0 10px; font-weight:900; font-size:13px;">${q}</span>
+                                <button class="btn-qty" style="width:24px; height:24px;" onclick="changeQty('${id}', 1)">+</button>
                             </div>
                         </div>`;
                 }).join('');
@@ -209,7 +225,6 @@
 
         function clearCart() { cart = {}; updateTotal(); }
         function changeCat(i, el) { document.querySelectorAll('.cat-item').forEach(c => c.classList.remove('active')); el.classList.add('active'); renderProducts(i); }
-
         init();
     </script>
 </body>
