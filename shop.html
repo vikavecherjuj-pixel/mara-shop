@@ -49,6 +49,10 @@
         .btn-pay { background: var(--btn-order); color: white; }
         .btn-pay:disabled { background: #555; opacity: 0.6; }
 
+        /* MODAL QUICK VIEW (Твоя функция showCart) */
+        #cart-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 25px; }
+        .modal-content { background: white; border-radius: 25px; padding: 25px; width: 100%; max-width: 320px; }
+
         /* CHECKOUT SCREEN */
         #checkout-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); z-index: 1000; display: none; flex-direction: column; overflow-y: auto; padding: 20px; }
         .checkout-card { background: white; border-radius: 20px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
@@ -58,7 +62,6 @@
         .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
         .time-btn { padding: 10px 5px; border: 1px solid #eee; border-radius: 8px; font-size: 11px; background: white; cursor: pointer; font-weight: 700; }
         .time-btn.active { background: var(--burgundy); color: white; }
-        .preview-row { display: flex; justify-content: space-between; font-size: 12px; padding: 5px 0; border-bottom: 1px solid #f9f9f9; }
     </style>
 </head>
 <body>
@@ -76,7 +79,7 @@
 
     <div class="payment-footer">
         <div class="footer-top">
-            <button onclick="openCheckout()" class="btn-footer" style="background: rgba(255,255,255,0.1); color: white; font-size: 10px; max-width: 140px;">🛒 Просмотреть</button>
+            <button onclick="showCart()" class="btn-footer" style="background: rgba(255,255,255,0.1); color: white; font-size: 10px; max-width: 160px;">Просмотреть заказ</button>
             <span class="total-price"><span id="total-val">0.00</span> BYN</span>
         </div>
         <div style="display: flex;">
@@ -85,15 +88,17 @@
         </div>
     </div>
 
+    <div id="cart-modal" onclick="this.style.display='none'">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h2 style="text-align:center; font-size: 18px; margin-bottom: 15px; color: var(--burgundy);">ВАШ ЗАКАЗ</h2>
+            <div id="cart-items-list" style="max-height: 250px; overflow-y: auto;"></div>
+            <div id="cart-total-modal" style="text-align:right; font-weight:900; margin-top:10px; color:var(--accent);"></div>
+            <button class="btn-footer" style="width: 100%; margin-top: 15px; background: #333; color: white;" onclick="document.getElementById('cart-modal').style.display='none'">ЗАКРЫТЬ</button>
+        </div>
+    </div>
+
     <div id="checkout-screen">
         <h2 style="text-align: center; font-weight: 900; margin-top: 0;">Оформление</h2>
-        
-        <div class="checkout-card">
-            <div class="checkout-title">Ваш заказ</div>
-            <div id="cart-items-preview"></div>
-            <div style="text-align: right; font-weight: 900; color: var(--accent); margin-top: 10px;" id="final-sum">0.00 BYN</div>
-        </div>
-
         <div class="checkout-card">
             <div class="checkout-title">Контактные данные</div>
             <label>ИМЯ</label>
@@ -138,7 +143,7 @@
             <div class="checkout-title">Оплата (ЕРИП)</div>
             <div style="font-size: 11px; line-height: 1.4; background: #f9f9f9; padding: 10px; border-radius: 10px;">
                 Система Расчета ЕРИП/ Банковские, Финансовые услуги / Банки, НКФО / АЛЬФА-БАНК / Пополнение счета / указать номер телефона:
-                <div style="font-size: 15px; font-weight: 900; margin: 8px 0;" id="phone-copy-val">+375296514403</div>
+                <div style="font-size: 15px; font-weight: 900; margin: 8px 0;">+375296514403</div>
                 <button onclick="copyNum()" style="background: var(--accent); color:white; border:none; padding:8px; border-radius:8px; width:100%; font-weight:700;">СКОПИРОВАТЬ НОМЕР</button>
             </div>
         </div>
@@ -154,7 +159,6 @@
         let lang = localStorage.getItem('selectedLang') || 'ru';
         let city = localStorage.getItem('selectedCity') || 'Гомель';
 
-        // ТВОЙ ОРИГИНАЛЬНЫЙ СПИСОК ТОВАРОВ
         const products = [
             { id: 'q1', cat: 0, name: {ru: 'Орешки со сгущёнкой', by: 'Арэшкі са згушчонкай', en: 'Nuts'}, price: 1.10, img: 'oreshki.png', min: 20 },
             { id: 'q2', cat: 0, name: {ru: 'Орешки со сгущёнкой и орехом', by: 'Арэшкі са згушчонкай і арэхам', en: 'Nuts + walnut'}, price: 1.50, img: 'oreshki sguchenka oreh.png', min: 20 },
@@ -179,6 +183,32 @@
             document.getElementById('order-date').min = d.toISOString().split('T')[0];
             d.setDate(d.getDate()+60);
             document.getElementById('order-date').max = d.toISOString().split('T')[0];
+        }
+
+        // ТВОЯ ФУНКЦИЯ showCart
+        function showCart() {
+            const list = document.getElementById('cart-items-list');
+            const entries = Object.entries(cart);
+            if (!entries.length) {
+                list.innerHTML = `<div style="text-align:center; color:#999;">Пусто</div>`;
+                document.getElementById('cart-total-modal').innerText = "";
+            } else {
+                list.innerHTML = entries.map(([id, q]) => {
+                    const p = products.find(x => x.id === id);
+                    return `
+                        <div class="cart-item-row" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; font-size: 11px; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px;">
+                            <span style="flex:1;">${p.name.ru}</span>
+                            <div class="counter-controls" style="display: flex; align-items: center; margin: 0 10px; border:none; background:transparent;">
+                                <button class="btn-qty" style="width:22px; height:22px; font-size:12px; cursor:pointer;" onclick="changeQty('${id}', -1)">-</button>
+                                <span style="margin:0 15px; font-weight:700; font-size:14px;">${q}</span>
+                                <button class="btn-qty" style="width:22px; height:22px; font-size:12px; cursor:pointer;" onclick="changeQty('${id}', 1)">+</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                document.getElementById('cart-total-modal').innerText = "ИТОГО: " + total.toFixed(2) + " BYN";
+            }
+            document.getElementById('cart-modal').style.display = 'flex';
         }
 
         function renderSidebar() {
@@ -236,23 +266,16 @@
             document.getElementById('total-val').innerText = total.toFixed(2);
             document.getElementById(`qty-${id}`).innerText = cart[id] || 0;
             let b = document.getElementById(`badge-${id}`);
-            b.innerText = cart[id]; b.style.display = cart[id]>0?'block':'none';
+            if (b) { b.innerText = cart[id]; b.style.display = cart[id]>0?'block':'none'; }
             document.getElementById('main-pay-btn').disabled = (total < (hasPotato ? 16 : 20));
+            if(document.getElementById('cart-modal').style.display === 'flex') showCart();
         }
 
         function openCheckout() {
-            if (total === 0) return;
             document.getElementById('checkout-screen').style.display = 'flex';
-            let html = '';
-            for (let id in cart) {
-                let p = products.find(x => x.id === id);
-                html += `<div class="preview-row"><span>${p.name.ru}</span><span>${cart[id]} шт</span></div>`;
-            }
-            document.getElementById('cart-items-preview').innerHTML = html;
             document.getElementById('gomel-fields').style.display = city === 'Гомель' ? 'block' : 'none';
             document.getElementById('rb-fields').style.display = city !== 'Гомель' ? 'block' : 'none';
-            let final = city === 'Гомель' ? total : total + 10;
-            document.getElementById('final-sum').innerText = final.toFixed(2) + " BYN" + (city !== 'Гомель' ? ' (с дост.)' : '');
+            document.getElementById('final-sum').innerText = (city === 'Гомель' ? total : total + 10).toFixed(2) + " BYN";
         }
 
         function updateTimeSlots() {
