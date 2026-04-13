@@ -12,6 +12,8 @@
             --burgundy: #630d16; 
             --dark: #2c1a11; 
             --bg: #fdfaf5; 
+            --red-action: #dc3545;
+            --green-action: #28a745;
         }
         body { 
             font-family: 'Montserrat', sans-serif; background: var(--bg); 
@@ -25,8 +27,7 @@
             background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(5px);
             border: none; padding: 8px 14px; border-radius: 20px;
             font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 11px;
-            display: flex; align-items: center; gap: 5px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; color: var(--burgundy);
+            display: flex; align-items: center; gap: 5px; color: var(--burgundy); cursor: pointer;
         }
 
         .promo-banner { width: 100%; height: 160px; overflow: hidden; order: 1; }
@@ -48,27 +49,22 @@
         .product-card p { font-size: 7.5px; color: #777; margin: 0; min-height: 18px; }
         .product-card .price { font-size: 11px; font-weight: 900; color: var(--accent); margin: 4px 0; }
         
-        .product-card.disabled { opacity: 0.4; filter: grayscale(1); pointer-events: none; }
-        .disabled-msg { grid-column: 1 / -1; padding: 20px; text-align: center; background: #fff1f1; border-radius: 12px; font-size: 11px; color: var(--burgundy); font-weight: 700; margin-bottom: 10px; border: 1px dashed var(--burgundy); }
-        
-        .cat-3-hide-min { display: none !important; }
-
         .counter-controls { display: flex; align-items: center; justify-content: space-between; background: #f8f8f8; border-radius: 20px; padding: 2px; border: 1px solid #eee; margin-top: auto; }
-        .btn-qty { width: 28px; height: 28px; border-radius: 50%; border: none; background: white; color: var(--burgundy); font-weight: 900; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .qty-val { font-size: 12px; font-weight: 700; min-width: 20px; }
+        .btn-qty { width: 28px; height: 28px; border-radius: 50%; border: none; background: white; color: var(--burgundy); font-weight: 900; font-size: 16px; cursor: pointer; }
         .qty-badge { position: absolute; top: -4px; right: -4px; background: var(--burgundy); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; line-height: 18px; display: none; border: 2px solid white; font-weight: 900; z-index: 10; }
 
+        /* ФУТЕР И КНОПКИ */
         .payment-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1512; padding: 10px 15px 25px 15px; z-index: 100; border-radius: 20px 20px 0 0; }
         .footer-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .btn-view-cart { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 8px 14px; border-radius: 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .btn-view-cart { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 8px 14px; border-radius: 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; cursor: pointer; }
         .total-price { font-size: 20px; color: var(--accent); font-weight: 900; }
-        .total-label { font-size: 8px; color: #888; text-transform: uppercase; margin-right: 4px; }
         
         .footer-btns-row { display: flex; gap: 10px; }
         .btn-footer { flex: 1; padding: 14px; border: none; border-radius: 12px; font-weight: 900; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; font-size: 12px; }
-        .btn-clear { background: #333; color: #888; }
-        .btn-pay { background: var(--burgundy); color: white; }
+        .btn-clear { background: var(--red-action) !important; color: white !important; }
+        .btn-pay { background: var(--green-action) !important; color: white !important; }
 
+        /* КОРЗИНА */
         #cart-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 25px; }
         .modal-content { background: white; border-radius: 25px; padding: 25px; width: 100%; max-width: 320px; }
         .cart-item-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; font-size: 11px; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
@@ -77,11 +73,9 @@
 <body>
 
     <div class="header-container">
-        <button class="back-floating-btn" onclick="window.location.href='index.html'">
-            <span>←</span> <span id="txt-back-word">Назад</span>
-        </button>
-        <div class="promo-banner"><img src="shokoladnya oreshki.jpg" alt="Promo"></div>
-        <div class="logo-area"><img src="Logo.png" alt="Logo"></div>
+        <button class="back-floating-btn" onclick="window.location.href='index.html'"><span>←</span> Назад</button>
+        <div class="promo-banner"><img src="shokoladnya oreshki.jpg"></div>
+        <div class="logo-area"><img src="Logo.png"></div>
     </div>
 
     <div class="main-area">
@@ -91,109 +85,76 @@
 
     <div class="payment-footer">
         <div class="footer-top">
-            <button class="btn-view-cart" id="txt-view-cart" onclick="showCart()">Просмотреть заказ</button>
+            <button class="btn-view-cart" onclick="showCart()">Просмотреть заказ</button>
             <div class="total-info">
-                <span class="total-label" id="txt-total-label">итого:</span>
                 <span class="total-price"><span id="total-val">0.00</span> BYN</span>
             </div>
         </div>
         <div class="footer-btns-row">
-            <button class="btn-footer btn-clear" id="txt-clear" onclick="clearCart()">Очистить</button>
-            <button class="btn-footer btn-pay" id="txt-order" onclick="tg.showAlert('Заказ оформлен!')">Оформить</button>
+            <button class="btn-footer btn-clear" onclick="clearCart()">Очистить</button>
+            <button class="btn-footer btn-pay" onclick="tg.showAlert('Заказ оформлен!')">Оформить</button>
         </div>
     </div>
 
     <div id="cart-modal" onclick="closeCart()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h2 id="txt-cart-title" style="text-align:center; font-size: 18px; margin-bottom: 15px; color: var(--burgundy);">ВАШ ЗАКАЗ</h2>
+            <h2 style="text-align:center; font-size: 18px; margin-bottom: 15px; color: var(--burgundy);">ВАШ ЗАКАЗ</h2>
             <div id="cart-items-list" style="max-height: 250px; overflow-y: auto;"></div>
-            <div id="cart-total-modal" style="text-align:right; font-weight:900; margin-top:10px; font-size:14px; color:var(--accent);"></div>
-            <button class="btn-pay" style="width: 100%; margin-top:15px; background:#333;" onclick="closeCart()">ЗАКРЫТЬ</button>
+            <div id="cart-total-modal" style="text-align:right; font-weight:900; margin-top:10px; color:var(--accent);"></div>
+            <button class="btn-footer" style="width: 100%; margin-top: 15px; background: #333; color: white;" onclick="closeCart()">ЗАКРЫТЬ</button>
         </div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
+        let cart = {}; let total = 0;
         let lang = localStorage.getItem('selectedLang') || 'ru';
-        let city = localStorage.getItem('selectedCity') || 'Гомель';
-        
-        const i18n = {
-            ru: { back: "Назад", cart: "Просмотреть заказ", total: "итого:", order: "Оформить", clear: "Очистить", unit: "шт.", from: "от", empty: "Пусто", cakeWarning: "Торты доступны только для Гомеля" },
-            by: { back: "Назад", cart: "Прагляд замовы", total: "вынік:", order: "Аформіць", clear: "Ачысціць", unit: "шт.", from: "ад", empty: "Пуста", cakeWarning: "Тарты даступныя толькі для Гомеля" },
-            en: { back: "Back", cart: "View Order", total: "total:", order: "Checkout", clear: "Clear", unit: "pcs.", from: "from", empty: "Empty", cakeWarning: "Cakes for Gomel only" }
-        };
 
-        const categories = {
-            ru: ["ОРЕШКИ", "ТРУБОЧКИ", "ПИРОЖНЫЕ", "ТОРТ", "НАБОРЫ"],
-            by: ["АРЭШКІ", "ТРУБАЧКІ", "ПІРОЖНЫЯ", "ТОРТ", "НАБОРЫ"],
-            en: ["NUTS", "TUBES", "CAKES", "CAKE", "SETS"]
-        };
-
+        // ПОЛНЫЙ СПИСОК ТОВАРОВ ИЗ ВАШЕГО КОДА
         const products = [
-            /* Орешки - теперь min 20 */
-            { id: 'q1', cat: 0, name: {ru: 'Орешки со сгущёнкой', by: 'Арэшкі са згушчонкай', en: 'Nuts'}, price: 1.10, img: 'oreshki.png', min: 20 },
-            { id: 'q2', cat: 0, name: {ru: 'Орешки со сгущёнкой и орехом', by: 'Арэшкі са згушчонкай і арэхам', en: 'Nuts + walnut'}, price: 1.50, img: 'oreshki sguchenka oreh.png', min: 20 },
-            { id: 'q3', cat: 0, name: {ru: 'Кокос и миндаль', by: 'Кокас і миндаль', en: 'Coconut & Almond'}, price: 1.80, img: 'oreshki kokos.jpg', min: 20 },
-            { id: 'q4', cat: 0, name: {ru: 'Nutella и фундук', by: 'Nutella і фундук', en: 'Nutella & Hazelnut'}, price: 1.80, img: 'shokoladnya oreshki.jpg', min: 20 },
-            /* Трубочки */
-            { id: 'q5', cat: 1, name: {ru: 'Трубочки со сгущенкой', by: 'Трубачкі са згушчонкай', en: 'Tubes'}, price: 4.00, img: 'trubochka1.jpg', min: 6 },
-            /* Пирожные */
-            { id: 'q6', cat: 2, name: {ru: 'Муравейник', by: 'Мурашнік', en: 'Anthill cake'}, price: 2.50, img: 'muraveynik.jpg', min: 8 },
-            { id: 'q7', cat: 2, name: {ru: 'Грибочки', by: 'Грыбочкі', en: 'Mushrooms'}, price: 2.50, img: 'grobochki.jpg', min: 12 },
-            { id: 'q8', cat: 2, name: {ru: 'Сердечки', by: 'Сэрцайкі', en: 'Hearts'}, price: 2.50, img: 'serdechki.png', min: 8 },
-            { id: 'q9', cat: 2, name: {ru: 'Кокосовое', by: 'Кокасавае', en: 'Coconut cake'}, price: 2.50, img: 'kokosovoe.jpg', min: 8 },
-            { id: 'q10', cat: 2, name: {ru: 'Орешки в глазури', by: 'Арэшкі ў глазуры', en: 'Glazed nuts'}, price: 2.50, img: 'orshki v glazuri.jpg', min: 12 },
-            { id: 'q11', cat: 2, name: {ru: 'Картошка', by: 'Бульба', en: 'Potato'}, price: 4.00, img: 'kartoshka.jpg', min: 4 },
-            { id: 'q12', cat: 2, name: {ru: 'Шоколадная колбаса', by: 'Шакаладная каўбаса', en: 'Choco sausage'}, price: 12.00, img: 'shokoladnaya kolbasa.jpg', min: 1 },
-            /* Торты */
-            { id: 't1', cat: 3, name: {ru: 'Медовик 1.1кг', by: 'Мядовік 1.1кг', en: 'Honey cake 1.1kg'}, price: 65.00, img: 'tort 2.jpg', min: 1 },
-            { id: 't2', cat: 3, name: {ru: 'Медовик 2.2кг', by: 'Мядовік 2.2кг', en: 'Honey cake 2.2kg'}, price: 130.00, img: 'tort 2.jpg', min: 1 },
-            /* Наборы */
-            { id: 'n1', cat: 4, name: {ru: 'Набор Ассорти', by: 'Набор Асарці', en: 'Assorted set'}, price: 30.00, img: 'oreshki.png', min: 1 }
+            { id: 'q1', cat: 0, name: {ru: 'Орешки со сгущёнкой'}, price: 1.10, img: 'oreshki.png', min: 20 },
+            { id: 'q2', cat: 0, name: {ru: 'Орешки + орех'}, price: 1.50, img: 'oreshki sguchenka oreh.png', min: 20 },
+            { id: 'q3', cat: 0, name: {ru: 'Кокос и миндаль'}, price: 1.80, img: 'oreshki kokos.jpg', min: 20 },
+            { id: 'q4', cat: 0, name: {ru: 'Nutella и фундук'}, price: 1.80, img: 'shokoladnya oreshki.jpg', min: 20 },
+            { id: 'q5', cat: 1, name: {ru: 'Трубочки'}, price: 4.00, img: 'trubochka1.jpg', min: 6 },
+            { id: 'q6', cat: 2, name: {ru: 'Муравейник'}, price: 2.50, img: 'muraveynik.jpg', min: 8 },
+            { id: 'q7', cat: 2, name: {ru: 'Грибочки'}, price: 2.50, img: 'grobochki.jpg', min: 12 },
+            { id: 'q11', cat: 2, name: {ru: 'Картошка'}, price: 4.00, img: 'kartoshka.jpg', min: 4 },
+            { id: 't1', cat: 3, name: {ru: 'Медовик 1.1кг'}, price: 65.00, img: 'tort 2.jpg', min: 1 },
+            { id: 't2', cat: 3, name: {ru: 'Медовик 2.2кг'}, price: 130.00, img: 'tort 2.jpg', min: 1 },
+            { id: 'n1', cat: 4, name: {ru: 'Набор Ассорти'}, price: 30.00, img: 'oreshki.png', min: 1 }
         ];
 
-        let cart = {}; let total = 0;
-
         function init() {
-            document.getElementById('txt-back-word').innerText = i18n[lang].back;
-            document.getElementById('txt-view-cart').innerText = i18n[lang].cart;
             renderSidebar();
             renderProducts(0);
         }
 
         function renderSidebar() {
+            const categories = ["ОРЕШКИ", "ТРУБОЧКИ", "ПИРОЖНЫЕ", "ТОРТ", "НАБОРЫ"];
             const side = document.getElementById('sidebar');
-            const imgs = ['oreshki.png', 'trubochka1.jpg', 'muraveynik.jpg', 'tort 2.jpg', 'oreshki.png'];
-            side.innerHTML = categories[lang].map((name, i) => `
+            side.innerHTML = categories.map((name, i) => `
                 <div class="cat-item ${i==0?'active':''}" onclick="changeCat(${i}, this)">
-                    <img src="${imgs[i]}"><br>${name}
+                    <img src="oreshki.png"><br>${name}
                 </div>
             `).join('');
         }
 
         function renderProducts(catIndex) {
             const grid = document.getElementById('menu-grid');
-            grid.innerHTML = '';
-            const isCakeRestricted = (city !== 'Гомель' && catIndex === 3);
-            
-            if (isCakeRestricted) {
-                grid.innerHTML = `<div class="disabled-msg">${i18n[lang].cakeWarning}</div>`;
-            }
-
-            grid.innerHTML += products.filter(p => p.cat === catIndex).map(p => {
+            grid.innerHTML = products.filter(p => p.cat === catIndex).map(p => {
                 const count = cart[p.id] || 0;
-                const minClass = (p.cat === 3) ? 'cat-3-hide-min' : '';
                 return `
-                    <div class="product-card ${isCakeRestricted ? 'disabled' : ''}">
+                    <div class="product-card">
                         <div class="qty-badge" id="badge-${p.id}" style="display:${count>0?'block':'none'}">${count}</div>
                         <img src="${p.img}" onerror="this.src='oreshki.png'">
-                        <h3>${p.name[lang]}</h3>
-                        <p class="${minClass}">${i18n[lang].from} ${p.min} ${i18n[lang].unit}</p>
+                        <h3>${p.name.ru}</h3>
+                        <p>от ${p.min} шт.</p>
                         <div class="price">${p.price.toFixed(2)} BYN</div>
                         <div class="counter-controls">
-                            <button class="btn-qty" onclick="changeQty('${p.id}', ${p.price}, ${p.min}, -1)">−</button>
+                            <button class="btn-qty" onclick="changeQty('${p.id}', -1)">−</button>
                             <span class="qty-val" id="qty-${p.id}">${count}</span>
-                            <button class="btn-qty" onclick="changeQty('${p.id}', ${p.price}, ${p.min}, 1)">+</button>
+                            <button class="btn-qty" onclick="changeQty('${p.id}', 1)">+</button>
                         </div>
                     </div>
                 `;
@@ -206,20 +167,18 @@
             renderProducts(i);
         }
 
-        function changeQty(id, price, min, delta) {
+        function changeQty(id, delta) {
+            const p = products.find(x => x.id === id);
             let cur = cart[id] || 0;
-            if (cur === 0 && delta === 1) delta = min;
+            if (cur === 0 && delta === 1) delta = p.min;
             let next = cur + delta;
             if (next < 0) return;
-            if (next < min && next > 0 && delta < 0) next = 0;
-            
+            if (next < p.min && next > 0 && delta < 0) next = 0;
             cart[id] = next;
             if (cart[id] <= 0) delete cart[id];
-            
             calculateTotal();
             updateUI(id);
             if(document.getElementById('cart-modal').style.display === 'flex') showCart();
-            tg.HapticFeedback.selectionChanged();
         }
 
         function calculateTotal() {
@@ -237,31 +196,24 @@
             if (b) { b.innerText = cart[id] || 0; b.style.display = cart[id]>0?'block':'none'; }
         }
 
-        function clearCart() {
-            cart = {}; total = 0;
-            document.getElementById('total-val').innerText = "0.00";
-            document.querySelectorAll('.qty-badge').forEach(b => b.style.display = 'none');
-            document.querySelectorAll('.qty-val').forEach(v => v.innerText = '0');
-        }
-
         function showCart() {
             const list = document.getElementById('cart-items-list');
             const entries = Object.entries(cart);
             if (!entries.length) {
-                list.innerHTML = `<div style="text-align:center; color:#999;">${i18n[lang].empty}</div>`;
+                list.innerHTML = `<div style="text-align:center; color:#999;">Пусто</div>`;
                 document.getElementById('cart-total-modal').innerText = "";
             } else {
                 list.innerHTML = entries.map(([id, q]) => {
                     const p = products.find(x => x.id === id);
                     return `
                         <div class="cart-item-row">
-                            <span style="flex:1;">${p.name[lang]}</span>
+                            <span style="flex:1;">${p.name.ru}</span>
                             <div class="counter-controls" style="margin: 0 10px; border:none; background:transparent;">
-                                <button class="btn-qty" style="width:22px; height:22px; font-size:12px;" onclick="changeQty('${p.id}', ${p.price}, ${p.min}, -1)">-</button>
+                                <button class="btn-qty" style="width:22px; height:22px; font-size:12px;" onclick="changeQty('${id}', -1)">-</button>
                                 <span style="margin:0 8px; font-weight:700;">${q}</span>
-                                <button class="btn-qty" style="width:22px; height:22px; font-size:12px;" onclick="changeQty('${p.id}', ${p.price}, ${p.min}, 1)">+</button>
+                                <button class="btn-qty" style="width:22px; height:22px; font-size:12px;" onclick="changeQty('${id}', 1)">+</button>
                             </div>
-                            <span style="min-width:60px; text-align:right; font-weight:700;">${(p.price * q).toFixed(2)}</span>
+                            <span style="min-width:60px; text-align:right;">${(p.price * q).toFixed(2)}</span>
                         </div>
                     `;
                 }).join('');
@@ -270,6 +222,7 @@
             document.getElementById('cart-modal').style.display = 'flex';
         }
 
+        function clearCart() { cart = {}; total = 0; document.getElementById('total-val').innerText = "0.00"; renderProducts(0); }
         function closeCart() { document.getElementById('cart-modal').style.display = 'none'; }
         init();
     </script>
