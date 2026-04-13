@@ -1,1 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mara Shop - Оформление</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root { 
+            --accent: #c5a059; --burgundy: #630d16; --dark: #2c1a11; --bg: #fdfaf5; 
+        }
+        body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--dark); }
+        
+        .checkout-container { max-width: 500px; margin: 0 auto; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h2 { color: var(--burgundy); font-weight: 900; text-align: center; margin-top: 0; }
+        
+        .order-summary { background: #f9f9f9; padding: 15px; border-radius: 12px; margin-bottom: 20px; }
+        .summary-item { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; border-bottom: 1px dashed #ddd; padding-bottom: 4px; }
+        
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 5px; color: #666; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-family: 'Montserrat'; box-sizing: border-box; font-size: 14px; }
+        
+        .btn-send { width: 100%; padding: 16px; background: var(--burgundy); color: white; border: none; border-radius: 12px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; margin-top: 10px; }
+        .btn-back { width: 100%; padding: 10px; background: transparent; color: #888; border: none; font-size: 12px; cursor: pointer; margin-top: 5px; }
+        
+        .erip-info { background: #eef7ee; padding: 12px; border-radius: 10px; font-size: 11px; margin-top: 10px; border-left: 4px solid #21a252; }
+    </style>
+</head>
+<body>
 
+    <div class="checkout-container">
+        <h2>ВАШ ЗАКАЗ</h2>
+        
+        <div id="order-list" class="order-summary"></div>
+        
+        <div class="form-group">
+            <label>ВАШЕ ИМЯ</label>
+            <input type="text" id="cust-name" placeholder="Как к вам обращаться?">
+        </div>
+
+        <div class="form-group">
+            <label>ТЕЛЕФОН</label>
+            <input type="tel" id="cust-phone" placeholder="+375 (__) ___-__-__">
+        </div>
+
+        <div class="form-group">
+            <label>СПОСОБ ПОЛУЧЕНИЯ</label>
+            <select id="delivery-type">
+                <option value="Самовывоз">Самовывоз (ул. Советская)</option>
+                <option value="Доставка">Доставка по городу</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>КОММЕНТАРИЙ К ЗАКАЗУ</label>
+            <textarea id="cust-comment" rows="2" placeholder="Уточнения по времени или адресу..."></textarea>
+        </div>
+
+        <div class="erip-info">
+            <b>Оплата через ЕРИП:</b><br>
+            После подтверждения заказа администратором, вам будет выслан номер счета для оплаты.
+        </div>
+
+        <button class="btn-send" onclick="sendOrder()">ПОДТВЕРДИТЬ И ЗАКАЗАТЬ</button>
+        <button class="btn-back" onclick="window.location.href='shop.html'">← Вернуться в каталог</button>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+
+        const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
+        const total = localStorage.getItem('mara_total') || '0.00';
+        
+        const products = [
+            { id: 'q1', name: 'Орешки со сгущёнкой' },
+            { id: 'q2', name: 'Орешки со сгущёнкой и орехом' },
+            { id: 'q3', name: 'Кокос и миндаль' },
+            { id: 'q4', name: 'Nutella и фундук' },
+            { id: 'q5', name: 'Трубочки со сгущенкой' },
+            { id: 'q6', name: 'Муравейник' },
+            { id: 'q7', name: 'Грибочки' },
+            { id: 'q8', name: 'Сердечки' },
+            { id: 'q9', name: 'Кокосовое' },
+            { id: 'q10', name: 'Орешки в глазури' },
+            { id: 'q11', name: 'Картошка' },
+            { id: 'q12', name: 'Шоколадная колбаса' },
+            { id: 't1', name: 'Медовик 1.1кг' },
+            { id: 't2', name: 'Медовик 2.2кг' },
+            { id: 'n1', name: 'Набор Ассорти' }
+        ];
+
+        function renderOrder() {
+            const list = document.getElementById('order-list');
+            let html = '';
+            for (let id in cart) {
+                const p = products.find(x => x.id === id);
+                if (p) {
+                    html += `<div class="summary-item"><span>${p.name}</span><b>${cart[id]} шт.</b></div>`;
+                }
+            }
+            html += `<div style="text-align:right; margin-top:10px; font-weight:900; font-size:16px; color:var(--burgundy);">ИТОГО: ${total} BYN</div>`;
+            list.innerHTML = html;
+        }
+
+        function sendOrder() {
+            const name = document.getElementById('cust-name').value;
+            const phone = document.getElementById('cust-phone').value;
+            const delivery = document.getElementById('delivery-type').value;
+            const comment = document.getElementById('cust-comment').value;
+
+            if (!name || !phone) {
+                alert('Пожалуйста, заполните Имя и Телефон');
+                return;
+            }
+
+            // Формируем текст сообщения для Telegram
+            let message = `🆕 НОВЫЙ ЗАКАЗ\n`;
+            message += `👤 Клиент: ${name}\n`;
+            message += `📞 Тел: ${phone}\n`;
+            message += `📦 Тип: ${delivery}\n`;
+            message += `──────────────\n`;
+            
+            for (let id in cart) {
+                const p = products.find(x => x.id === id);
+                message += `• ${p.name}: ${cart[id]} шт.\n`;
+            }
+            
+            message += `──────────────\n`;
+            message += `💰 СУММА: ${total} BYN\n`;
+            if (comment) message += `💬 Коммент: ${comment}`;
+
+            // Отправляем данные боту
+            tg.sendData(message);
+            tg.close();
+        }
+
+        renderOrder();
+    </script>
+</body>
+</html>
