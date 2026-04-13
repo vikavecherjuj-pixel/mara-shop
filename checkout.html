@@ -10,131 +10,159 @@
         :root { 
             --accent: #c5a059; --burgundy: #630d16; --dark: #2c1a11; --bg: #fdfaf5; 
         }
-        body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--dark); }
+        body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding: 10px; color: var(--dark); min-height: 100vh; }
         
-        .checkout-container { max-width: 500px; margin: 0 auto; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        h2 { color: var(--burgundy); font-weight: 900; text-align: center; margin-top: 0; }
+        #checkout-screen { display: flex; flex-direction: column; gap: 15px; padding-bottom: 40px; }
+        .checkout-card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .checkout-title { font-weight: 900; font-size: 14px; margin-bottom: 15px; color: var(--burgundy); text-transform: uppercase; border-bottom: 1px solid #eee; padding-bottom: 8px; }
         
-        .order-summary { background: #f9f9f9; padding: 15px; border-radius: 12px; margin-bottom: 20px; }
-        .summary-item { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; border-bottom: 1px dashed #ddd; padding-bottom: 4px; }
+        label { display: block; font-size: 10px; font-weight: 700; margin-bottom: 5px; color: #888; text-transform: uppercase; }
+        input, select, textarea { width: 100%; padding: 14px; border: 1px solid #f0f0f0; border-radius: 12px; font-family: 'Montserrat'; font-size: 14px; margin-bottom: 15px; box-sizing: border-box; background: #fafafa; }
         
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 5px; color: #666; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-family: 'Montserrat'; box-sizing: border-box; font-size: 14px; }
-        
-        .btn-send { width: 100%; padding: 16px; background: var(--burgundy); color: white; border: none; border-radius: 12px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; margin-top: 10px; }
-        .btn-back { width: 100%; padding: 10px; background: transparent; color: #888; border: none; font-size: 12px; cursor: pointer; margin-top: 5px; }
-        
-        .erip-info { background: #eef7ee; padding: 12px; border-radius: 10px; font-size: 11px; margin-top: 10px; border-left: 4px solid #21a252; }
+        /* Списки товаров */
+        .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; padding-bottom: 5px; border-bottom: 1px dashed #eee; }
+        .preview-row span:first-child { font-weight: 600; }
+        .final-sum { text-align: right; font-weight: 900; color: var(--accent); font-size: 18px; margin-top: 10px; }
+
+        .btn-main { width: 100%; padding: 16px; background: var(--burgundy); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; }
+        .btn-back { width: 100%; padding: 12px; background: transparent; color: #aaa; border: none; font-size: 11px; cursor: pointer; }
+
+        /* Оплата ЕРИП */
+        .erip-box { background: #f4f9f4; border: 1px solid #e0eee0; padding: 15px; border-radius: 15px; font-size: 11px; line-height: 1.6; }
+        .copy-btn { background: #eee; border: none; padding: 8px; border-radius: 8px; font-size: 10px; font-weight: 700; width: 100%; margin-top: 10px; color: #555; }
     </style>
 </head>
-<body>
+<body onclick="hideKeyboard(event)">
 
-    <div class="checkout-container">
-        <h2>ВАШ ЗАКАЗ</h2>
+    <div id="checkout-screen">
+        <h2 style="text-align: center; font-weight: 900; font-size: 22px; margin: 10px 0;">ОФОРМЛЕНИЕ</h2>
         
-        <div id="order-list" class="order-summary"></div>
-        
-        <div class="form-group">
-            <label>ВАШЕ ИМЯ</label>
-            <input type="text" id="cust-name" placeholder="Как к вам обращаться?">
+        <div class="checkout-card">
+            <div class="checkout-title">Ваш заказ</div>
+            <div id="cart-items-preview"></div>
+            <div class="final-sum" id="final-sum">0.00 BYN</div>
         </div>
 
-        <div class="form-group">
-            <label>ТЕЛЕФОН</label>
-            <input type="tel" id="cust-phone" placeholder="+375 (__) ___-__-__">
+        <div class="checkout-card">
+            <div class="checkout-title">Контактные данные</div>
+            <label>Имя</label>
+            <input type="text" id="cust-name" placeholder="Введите имя">
+            
+            <label>Телефон</label>
+            <input type="tel" id="cust-phone" value="+375" maxlength="19">
         </div>
 
-        <div class="form-group">
-            <label>СПОСОБ ПОЛУЧЕНИЯ</label>
+        <div class="checkout-card">
+            <div class="checkout-title">Доставка и Время</div>
+            <label>Способ получения</label>
             <select id="delivery-type">
-                <option value="Самовывоз">Самовывоз (ул. Советская)</option>
-                <option value="Доставка">Доставка по городу</option>
+                <option value="self">Самовывоз (Свиридова 11)</option>
+                <option value="yandex">Яндекс.Доставка</option>
             </select>
+            <p style="font-size: 10px; color: #888; margin: -5px 0 15px 0;">*Самовывоз: 6 подъезд. Доставка по тарифам Яндекс.</p>
+            
+            <label>Выберите дату</label>
+            <input type="date" id="order-date">
+            
+            <button class="btn-main" style="background: #eee; color: #333; font-size: 11px; padding: 10px;" onclick="setDiscuss()">Обсудить время с кондитером</button>
         </div>
 
-        <div class="form-group">
-            <label>КОММЕНТАРИЙ К ЗАКАЗУ</label>
-            <textarea id="cust-comment" rows="2" placeholder="Уточнения по времени или адресу..."></textarea>
+        <div class="checkout-card">
+            <div class="checkout-title">Оплата (ЕРИП)</div>
+            <div class="erip-box">
+                Система Расчета ЕРИП / Банковские, Финансовые услуги / Банки, НКФО / АЛЬФА-БАНК / Пополнение счета / указать номер:
+                <div style="font-size: 15px; font-weight: 900; margin: 8px 0; color: #21a252;">+375 (29) 651-44-03</div>
+                <button class="copy-btn" onclick="copyNum()">СКОПИРОВАТЬ НОМЕР</button>
+            </div>
+            <p style="font-size: 9px; color: #999; margin-top: 10px; text-align: center;">Пришлите скриншот чека после нажатия кнопки ниже</p>
         </div>
 
-        <div class="erip-info">
-            <b>Оплата через ЕРИП:</b><br>
-            После подтверждения заказа администратором, вам будет выслан номер счета для оплаты.
-        </div>
-
-        <button class="btn-send" onclick="sendOrder()">ПОДТВЕРДИТЬ И ЗАКАЗАТЬ</button>
-        <button class="btn-back" onclick="window.location.href='shop.html'">← Вернуться в каталог</button>
+        <button class="btn-main" onclick="finalSubmit()">ПОДТВЕРДИТЬ И ЗАКАЗАТЬ</button>
+        <button class="btn-back" onclick="window.history.back()">← Вернуться в каталог</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
-        const total = localStorage.getItem('mara_total') || '0.00';
-        
+        // Данные из каталога (подтяни сюда продукты из shop.html)
         const products = [
-            { id: 'q1', name: 'Орешки со сгущёнкой' },
-            { id: 'q2', name: 'Орешки со сгущёнкой и орехом' },
-            { id: 'q3', name: 'Кокос и миндаль' },
-            { id: 'q4', name: 'Nutella и фундук' },
-            { id: 'q5', name: 'Трубочки со сгущенкой' },
-            { id: 'q6', name: 'Муравейник' },
-            { id: 'q7', name: 'Грибочки' },
-            { id: 'q8', name: 'Сердечки' },
-            { id: 'q9', name: 'Кокосовое' },
-            { id: 'q10', name: 'Орешки в глазури' },
-            { id: 'q11', name: 'Картошка' },
-            { id: 'q12', name: 'Шоколадная колбаса' },
-            { id: 't1', name: 'Медовик 1.1кг' },
-            { id: 't2', name: 'Медовик 2.2кг' },
-            { id: 'n1', name: 'Набор Ассорти' }
+            { id: 'q1', name: 'Орешки со сгущёнкой', price: 1.10 },
+            { id: 'q2', name: 'Орешки + орех', price: 1.50 },
+            { id: 'q3', name: 'Кокос и миндаль', price: 1.80 },
+            { id: 'q4', name: 'Nutella и фундук', price: 1.80 },
+            { id: 'q5', name: 'Трубочки', price: 4.00 },
+            { id: 'q6', name: 'Муравейник', price: 2.50 },
+            { id: 'q7', name: 'Грибочки', price: 2.50 },
+            { id: 'q11', name: 'Картошка', price: 4.00 },
+            { id: 't1', name: 'Медовик 1.1кг', price: 65.00 },
+            { id: 'n1', name: 'Набор Ассорти', price: 30.00 }
         ];
 
+        // 1. Сворачивание клавиатуры
+        function hideKeyboard(e) {
+            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'SELECT') {
+                document.activeElement.blur();
+            }
+        }
+
+        // 2. Маска телефона
+        const phoneInput = document.getElementById('cust-phone');
+        phoneInput.addEventListener('input', function (e) {
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,2})(\d{0,3})(\d{0,2})(\d{0,2})/);
+            if (!x[2]) { e.target.value = '+375'; return; }
+            e.target.value = `+375 (${x[2]}) ` + (x[3] ? `${x[3]}` : '') + (x[4] ? `-${x[4]}` : '') + (x[5] ? `-${x[5]}` : '');
+        });
+
+        // 3. Рендер списка из localStorage (из корзины)
         function renderOrder() {
-            const list = document.getElementById('order-list');
+            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
+            const total = localStorage.getItem('mara_total') || '0.00';
             let html = '';
+            
             for (let id in cart) {
                 const p = products.find(x => x.id === id);
                 if (p) {
-                    html += `<div class="summary-item"><span>${p.name}</span><b>${cart[id]} шт.</b></div>`;
+                    const rowSum = (p.price * cart[id]).toFixed(2);
+                    html += `
+                    <div class="preview-row">
+                        <span>${p.name}</span>
+                        <span>${cart[id]} шт. — ${rowSum} BYN</span>
+                    </div>`;
                 }
             }
-            html += `<div style="text-align:right; margin-top:10px; font-weight:900; font-size:16px; color:var(--burgundy);">ИТОГО: ${total} BYN</div>`;
-            list.innerHTML = html;
+            document.getElementById('cart-items-preview').innerHTML = html;
+            document.getElementById('final-sum').innerText = total + " BYN";
         }
 
-        function sendOrder() {
+        function setDiscuss() {
+            tg.showAlert("Вы выбрали: Обсудить время в чате. Мы свяжемся с вами!");
+            window.selectedTime = "ОБСУДИТЬ";
+        }
+
+        function copyNum() {
+            navigator.clipboard.writeText("+375296514403");
+            tg.showAlert("Номер скопирован!");
+        }
+
+        function finalSubmit() {
             const name = document.getElementById('cust-name').value;
             const phone = document.getElementById('cust-phone').value;
-            const delivery = document.getElementById('delivery-type').value;
-            const comment = document.getElementById('cust-comment').value;
-
-            if (!name || !phone) {
-                alert('Пожалуйста, заполните Имя и Телефон');
+            if (!name || phone.length < 18) {
+                tg.showAlert("Заполните Имя и Телефон полностью!");
                 return;
             }
-
-            // Формируем текст сообщения для Telegram
-            let message = `🆕 НОВЫЙ ЗАКАЗ\n`;
-            message += `👤 Клиент: ${name}\n`;
-            message += `📞 Тел: ${phone}\n`;
-            message += `📦 Тип: ${delivery}\n`;
-            message += `──────────────\n`;
             
-            for (let id in cart) {
-                const p = products.find(x => x.id === id);
-                message += `• ${p.name}: ${cart[id]} шт.\n`;
-            }
+            // Здесь формируем объект заказа для бота
+            const orderData = {
+                name: name,
+                phone: phone,
+                delivery: document.getElementById('delivery-type').value,
+                date: document.getElementById('order-date').value,
+                total: document.getElementById('final-sum').innerText
+            };
             
-            message += `──────────────\n`;
-            message += `💰 СУММА: ${total} BYN\n`;
-            if (comment) message += `💬 Коммент: ${comment}`;
-
-            // Отправляем данные боту
-            tg.sendData(message);
-            tg.close();
+            tg.sendData(JSON.stringify(orderData));
         }
 
         renderOrder();
