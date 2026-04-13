@@ -46,7 +46,6 @@
         .total-price { font-size: 20px; color: var(--accent); font-weight: 900; }
         .btn-footer { flex: 1; padding: 14px; border: none; border-radius: 12px; font-weight: 900; text-transform: uppercase; cursor: pointer; font-size: 12px; font-family: 'Montserrat'; }
         
-        /* КНОПКА ПРОСМОТРЕТЬ (ТОЛЬКО ОДНА СТРОКА, ТОНКИЙ ШРИФТ) */
         .btn-view-order {
             background: rgba(255, 255, 255, 0.1);
             color: white;
@@ -64,7 +63,6 @@
         }
 
         .btn-clear { background: var(--btn-clear); color: white; margin-right: 10px; }
-        /* Состояние для пустой корзины */
         .btn-clear:disabled { background: #555; opacity: 0.6; }
         
         .btn-pay { background: var(--btn-order); color: white; }
@@ -193,8 +191,6 @@
                 if(document.getElementById(`badge-${p.id}`)) document.getElementById(`badge-${p.id}`).style.display = 'none';
             }});
             document.getElementById('total-val').innerText = total.toFixed(2);
-            
-            // Кнопка Оформить и Очистить активируются при наличии товаров
             document.getElementById('main-pay-btn').disabled = (total < (hasPotato ? 16 : 20));
             document.getElementById('main-clear-btn').disabled = (itemCount === 0);
 
@@ -213,15 +209,13 @@
                     const itemTotal = (p.price * q).toFixed(2);
                     return `
                         <div class="cart-item-row">
-                            <div style="flex:1; display:flex; flex-direction:column;">
-                                <span style="font-weight:700; font-size:11px; color:var(--dark);">${p.name.ru}</span>
-                                <span style="font-size:10px; color:var(--accent); font-weight:600;">${itemTotal} BYN</span>
-                            </div>
+                            <span style="flex:1; font-weight:700; font-size:11px; color:var(--dark);">${p.name.ru}</span>
                             <div class="counter-controls" style="border:none; background:transparent;">
                                 <button class="btn-qty" style="width:24px; height:24px;" onclick="changeQty('${id}', -1)">-</button>
                                 <span style="margin:0 10px; font-weight:900; font-size:13px;">${q}</span>
                                 <button class="btn-qty" style="width:24px; height:24px;" onclick="changeQty('${id}', 1)">+</button>
                             </div>
+                            <span style="margin-left:10px; font-size:11px; color:var(--accent); font-weight:900; min-width:65px; text-align:right;">${itemTotal} BYN</span>
                         </div>`;
                 }).join('');
                 document.getElementById('cart-total-modal').innerText = "ИТОГО: " + total.toFixed(2) + " BYN";
