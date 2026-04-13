@@ -64,6 +64,9 @@
         }
 
         .btn-clear { background: var(--btn-clear); color: white; margin-right: 10px; }
+        /* Состояние для пустой корзины */
+        .btn-clear:disabled { background: #555; opacity: 0.6; }
+        
         .btn-pay { background: var(--btn-order); color: white; }
         .btn-pay:disabled { background: #555; opacity: 0.6; }
 
@@ -92,7 +95,7 @@
             <span class="total-price"><span id="total-val">0.00</span> BYN</span>
         </div>
         <div style="display: flex;">
-            <button class="btn-footer btn-clear" onclick="clearCart()">Очистить</button>
+            <button class="btn-footer btn-clear" id="main-clear-btn" disabled onclick="clearCart()">Очистить</button>
             <button class="btn-footer btn-pay" id="main-pay-btn" disabled onclick="goToCheckout()">Оформить</button>
         </div>
     </div>
@@ -125,9 +128,9 @@
             { id: 'q10', cat: 2, name: {ru: 'Орешки в глазури'}, price: 2.50, img: 'orshki v glazuri.jpg', min: 12 },
             { id: 'q11', cat: 2, name: {ru: 'Картошка'}, price: 4.00, img: 'kartoshka.jpg', min: 4 },
             { id: 'q12', cat: 2, name: {ru: 'Шоколадная колбаса'}, price: 12.00, img: 'shokoladnaya kolbasa.jpg', min: 1 },
-            { id: 't1', cat: 3, name: {ru: 'Медовик 1.1кг'}, price: 65.00, img: 'tort 2.jpg', min: 1 },
-            { id: 't2', cat: 3, name: {ru: 'Медовик 2.2кг'}, price: 130.00, img: 'tort 2.jpg', min: 1 },
-            { id: 'n1', cat: 4, name: {ru: 'Набор Ассорти'}, price: 30.00, img: 'oreshki.png', min: 1 }
+            { id: 't1', name: {ru: 'Медовик 1.1кг'}, cat: 3, price: 65.00, img: 'tort 2.jpg', min: 1 },
+            { id: 't2', name: {ru: 'Медовик 2.2кг'}, cat: 3, price: 130.00, img: 'tort 2.jpg', min: 1 },
+            { id: 'n1', name: {ru: 'Набор Ассорти'}, cat: 4, price: 30.00, img: 'oreshki.png', min: 1 }
         ];
 
         function init() { renderSidebar(); renderProducts(0); }
@@ -175,9 +178,11 @@
 
         function updateTotal() {
             total = 0; let hasPotato = false;
+            let itemCount = 0;
             for (let k in cart) {
                 let pr = products.find(x => x.id === k);
                 total += (pr.price * cart[k]);
+                itemCount += cart[k];
                 if (k === 'q11') hasPotato = true;
                 if(document.getElementById(`qty-${k}`)) document.getElementById(`qty-${k}`).innerText = cart[k];
                 let b = document.getElementById(`badge-${k}`);
@@ -188,7 +193,11 @@
                 if(document.getElementById(`badge-${p.id}`)) document.getElementById(`badge-${p.id}`).style.display = 'none';
             }});
             document.getElementById('total-val').innerText = total.toFixed(2);
+            
+            // Кнопка Оформить и Очистить активируются при наличии товаров
             document.getElementById('main-pay-btn').disabled = (total < (hasPotato ? 16 : 20));
+            document.getElementById('main-clear-btn').disabled = (itemCount === 0);
+
             if (document.getElementById('cart-modal').style.display === 'flex') showCart();
         }
 
@@ -201,9 +210,13 @@
             } else {
                 list.innerHTML = entries.map(([id, q]) => {
                     const p = products.find(x => x.id === id);
+                    const itemTotal = (p.price * q).toFixed(2);
                     return `
                         <div class="cart-item-row">
-                            <span style="flex:1; font-weight:700; font-size:11px; color:var(--dark);">${p.name.ru}</span>
+                            <div style="flex:1; display:flex; flex-direction:column;">
+                                <span style="font-weight:700; font-size:11px; color:var(--dark);">${p.name.ru}</span>
+                                <span style="font-size:10px; color:var(--accent); font-weight:600;">${itemTotal} BYN</span>
+                            </div>
                             <div class="counter-controls" style="border:none; background:transparent;">
                                 <button class="btn-qty" style="width:24px; height:24px;" onclick="changeQty('${id}', -1)">-</button>
                                 <span style="margin:0 10px; font-weight:900; font-size:13px;">${q}</span>
