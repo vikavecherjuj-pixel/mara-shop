@@ -1,112 +1,255 @@
-let tg = window.Telegram.WebApp;
-tg.expand();
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mara Shop - Оформление</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root { 
+            --accent: #c5a059; --burgundy: #630d16; --dark: #2c1a11; --bg: #fdfaf5; 
+        }
+        body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding: 10px; color: var(--dark); min-height: 100vh; -webkit-tap-highlight-color: transparent; }
+        
+        #checkout-screen { display: flex; flex-direction: column; gap: 12px; padding-bottom: 40px; }
+        .checkout-card { background: white; border-radius: 20px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .checkout-title { font-weight: 900; font-size: 14px; margin-bottom: 12px; color: var(--burgundy); text-transform: uppercase; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
+        
+        label { display: block; font-size: 10px; font-weight: 700; margin-bottom: 6px; color: #888; text-transform: uppercase; }
+        
+        input, select, textarea { 
+            width: 100%; padding: 14px; border: 1px solid #f0f0f0; border-radius: 12px; 
+            font-family: 'Montserrat'; font-size: 14px; margin-bottom: 12px; box-sizing: border-box; 
+            background: #fafafa; color: var(--dark); outline: none; 
+            caret-color: #000; /* Черный курсор */
+        }
+        input:focus { border-color: var(--accent); }
 
-let selectedTime = "";
+        .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; padding-bottom: 5px; border-bottom: 1px dashed #eee; }
+        .final-sum { text-align: right; font-weight: 900; color: var(--accent); font-size: 18px; margin-top: 10px; }
 
-// 1. ИСПРАВЛЕННЫЙ ТЕЛЕФОН (с курсором и удалением)
-const phoneInput = document.getElementById('cust-phone');
+        .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; margin-bottom: 15px; }
+        .time-btn { padding: 10px 5px; border: 1px solid #eee; border-radius: 10px; font-size: 11px; background: #fff; cursor: pointer; font-family: 'Montserrat'; font-weight: 700; color: var(--dark); }
+        .time-btn.active { background: var(--burgundy); color: white; border-color: var(--burgundy); }
 
-phoneInput.addEventListener('input', function(e) {
-    let cursorPosition = this.selectionStart;
-    let value = this.value.replace(/\D/g, '');
-    
-    // Всегда держим 375 в начале
-    if (!value.startsWith('375')) {
-        value = '375' + value;
-    }
+        .btn-main { width: 100%; padding: 18px; background: var(--burgundy); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; }
+        .btn-discuss { background: #eee; color: var(--dark); margin-top: 5px; padding: 14px; font-size: 12px; }
 
-    let formatted = '+375 ';
-    if (value.length > 3) formatted += '(' + value.substring(3, 5);
-    if (value.length > 5) formatted += ') ' + value.substring(5, 8);
-    if (value.length > 8) formatted += '-' + value.substring(8, 10);
-    if (value.length > 10) formatted += '-' + value.substring(10, 12);
-    
-    this.value = formatted;
+        .erip-box { background: #f4f9f4; border: 1px solid #e0eee0; padding: 15px; border-radius: 15px; font-size: 11px; line-height: 1.6; }
+        .copy-btn { background: #eee; border: none; padding: 12px; border-radius: 12px; font-size: 11px; font-weight: 900; width: 100%; margin-top: 10px; color: var(--dark); font-family: 'Montserrat'; text-transform: uppercase; }
+    </style>
+</head>
+<body onclick="hideKeyboard(event)">
 
-    // Возвращаем курсор на место (чтобы не прыгал в конец)
-    if (cursorPosition < formatted.length) {
-        this.setSelectionRange(cursorPosition, cursorPosition);
-    }
-});
+    <div id="checkout-screen">
+        <h2 style="text-align: center; font-weight: 900; font-size: 22px; margin: 15px 0;">ОФОРМЛЕНИЕ</h2>
+        
+        <div class="checkout-card">
+            <div class="checkout-title">Ваш заказ</div>
+            <div id="cart-items-preview"></div>
+            <div class="final-sum" id="final-sum">0.00 BYN</div>
+        </div>
 
-phoneInput.addEventListener('keydown', function(e) {
-    // Не даем стереть префикс +375
-    if (e.key === 'Backspace' && this.value.length <= 6) {
-        e.preventDefault();
-    }
-});
+        <div class="checkout-card">
+            <div class="checkout-title">Контактные данные</div>
+            <label>Имя</label>
+            <input type="text" id="cust-name" placeholder="Введите имя">
+            
+            <label>Телефон</label>
+            <input type="tel" id="cust-phone" value="+375 " maxlength="19">
+        </div>
 
-// 2. ЛОГИКА ВРЕМЕНИ (+2 часа для сегодня)
-function generateTimeSlots() {
-    const container = document.getElementById('time-slots');
-    const section = document.getElementById('time-section');
-    const dateInput = document.getElementById('order-date');
-    
-    container.innerHTML = '';
-    selectedTime = "";
-    
-    if (!dateInput.value) return;
-    
-    section.style.display = 'block';
-    
-    const selectedDate = new Date(dateInput.value);
-    const now = new Date();
-    
-    // Проверяем, выбрано ли "сегодня"
-    const isToday = selectedDate.toDateString() === now.toDateString();
-    
-    // Если сегодня, начинаем от текущего часа + 2
-    let startHour = 9;
-    if (isToday) {
-        startHour = now.getHours() + 2;
-    }
+        <div class="checkout-card">
+            <div class="checkout-title">Доставка и Время</div>
+            <label>Способ получения</label>
+            <select id="delivery-type">
+                <option value="Самовывоз (Свиридова 11)">Самовывоз (Свиридова 11)</option>
+                <option value="Яндекс.Доставка">Яндекс.Доставка</option>
+            </select>
+            <p style="font-size: 10px; color: #888; margin: -5px 0 15px 0;">*Самовывоз: Свиридова 11, 6 подъезд. Доставка — Яндекс.</p>
+            
+            <label>Выберите дату</label>
+            <input type="date" id="order-date" onchange="generateTimeSlots()">
+            
+            <div id="time-section" style="display:none;">
+                <label>Выберите время</label>
+                <div class="time-grid" id="time-slots"></div>
+            </div>
 
-    let slotsCreated = 0;
-    for (let h = 9; h <= 21; h++) {
-        if (h < startHour) continue; // Пропускаем недоступные часы
+            <button class="btn-main btn-discuss" id="discuss-btn" onclick="setDiscuss()">Обсудить время с кондитером</button>
+        </div>
 
-        let time = (h < 10 ? '0' + h : h) + ':00';
-        let btn = document.createElement('button');
-        btn.className = 'time-btn';
-        btn.innerText = time;
-        btn.onclick = function() {
+        <div class="checkout-card">
+            <div class="checkout-title">Оплата (ЕРИП)</div>
+            <div class="erip-box">
+                Система Расчета ЕРИП / Банковские, Финансовые услуги / Банки, НКФО / АЛЬФА-БАНК / Пополнение счета / номер телефона:
+                <div style="font-size: 16px; font-weight: 900; margin: 8px 0; color: #21a252;">+375 (29) 651-44-03</div>
+                <button class="copy-btn" onclick="copyNum()">Скопировать номер</button>
+            </div>
+            <p style="font-size: 9px; color: #999; margin-top: 10px; text-align: center;">После оплаты нажмите кнопку ниже и пришлите скриншот чека в чат</p>
+        </div>
+
+        <button class="btn-main" onclick="finalSubmit()">Я оплатил, прислать чек</button>
+        
+        <div style="text-align: center; margin-top: 10px;">
+            <a href="index.html" style="color: #aaa; text-decoration: none; font-size: 12px; font-weight: 600;">← Назад в каталог</a>
+        </div>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+
+        let selectedTime = "";
+        const ADMIN_USERNAME = "v_m_y_y"; // ЗАМЕНИ ЭТО НА СВОЙ USERNAME БЕЗ @
+
+        // 1. ТЕЛЕФОН (черный курсор + маска)
+        const phoneInput = document.getElementById('cust-phone');
+        phoneInput.addEventListener('input', function(e) {
+            let cursorPosition = this.selectionStart;
+            let value = this.value.replace(/\D/g, '');
+            if (!value.startsWith('375')) value = '375' + value;
+            let formatted = '+375 ';
+            if (value.length > 3) formatted += '(' + value.substring(3, 5);
+            if (value.length > 5) formatted += ') ' + value.substring(5, 8);
+            if (value.length > 8) formatted += '-' + value.substring(8, 10);
+            if (value.length > 10) formatted += '-' + value.substring(10, 12);
+            this.value = formatted;
+            if (cursorPosition < formatted.length) this.setSelectionRange(cursorPosition, cursorPosition);
+        });
+
+        phoneInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Backspace' && this.value.length <= 6) e.preventDefault();
+        });
+
+        // 2. ВРЕМЯ (+2 часа для сегодня)
+        function generateTimeSlots() {
+            const container = document.getElementById('time-slots');
+            const section = document.getElementById('time-section');
+            const dateInput = document.getElementById('order-date');
+            container.innerHTML = '';
+            selectedTime = "";
+            if (!dateInput.value) return;
+            section.style.display = 'block';
+            
+            const selectedDate = new Date(dateInput.value);
+            const now = new Date();
+            const isToday = selectedDate.toDateString() === now.toDateString();
+            let startHour = 9;
+            if (isToday) startHour = now.getHours() + 2;
+
+            let slotsCreated = 0;
+            for (let h = 9; h <= 21; h++) {
+                if (h < startHour) continue;
+                let time = (h < 10 ? '0' + h : h) + ':00';
+                let btn = document.createElement('button');
+                btn.className = 'time-btn';
+                btn.innerText = time;
+                btn.onclick = function() {
+                    document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedTime = time;
+                    resetDiscussBtn();
+                };
+                container.appendChild(btn);
+                slotsCreated++;
+            }
+            if (slotsCreated === 0 && isToday) {
+                container.innerHTML = '<p style="font-size:11px; color:red; grid-column: 1/-1;">На сегодня запись окончена. Выберите другую дату.</p>';
+            }
+        }
+
+        function setDiscuss() {
             document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            selectedTime = time;
-            resetDiscussBtn();
+            selectedTime = "ОБСУДИТЬ";
+            const btn = document.getElementById('discuss-btn');
+            btn.style.background = '#630d16';
+            btn.style.color = 'white';
+        }
+
+        function resetDiscussBtn() {
+            const btn = document.getElementById('discuss-btn');
+            btn.style.background = '#eee';
+            btn.style.color = '#2c1a11';
+        }
+
+        function copyNum() {
+            navigator.clipboard.writeText("+375296514403");
+            tg.showAlert("Номер скопирован!");
+        }
+
+        function finalSubmit() {
+            const name = document.getElementById('cust-name').value;
+            const phone = document.getElementById('cust-phone').value;
+            const date = document.getElementById('order-date').value;
+
+            if (!name || phone.length < 18) {
+                tg.showAlert("Заполните Имя и Телефон!");
+                return;
+            }
+            if (!date || !selectedTime) {
+                tg.showAlert("Выберите дату и время!");
+                return;
+            }
+
+            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
+            const data = {
+                name: name,
+                phone: phone,
+                delivery: document.getElementById('delivery-type').value,
+                date: date,
+                time: selectedTime,
+                total: document.getElementById('final-sum').innerText,
+                items: cart
+            };
+
+            tg.sendData(JSON.stringify(data));
+
+            setTimeout(() => {
+                tg.openTelegramLink(`https://t.me/${ADMIN_USERNAME}`);
+                tg.close();
+            }, 500);
+        }
+
+        function renderOrder() {
+            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
+            const total = localStorage.getItem('mara_total') || '0.00';
+            const products = [
+                { id: 'q1', name: 'Орешки со сгущёнкой', price: 1.10 },
+                { id: 'q2', name: 'Орешки + орех', price: 1.50 },
+                { id: 'q3', name: 'Кокос и миндаль', price: 1.80 },
+                { id: 'q4', name: 'Nutella и фундук', price: 1.80 },
+                { id: 'q5', name: 'Трубочки', price: 4.00 },
+                { id: 'q6', name: 'Муравейник', price: 2.50 },
+                { id: 'q7', name: 'Грибочки', price: 2.50 },
+                { id: 'q11', name: 'Картошка', price: 4.00 },
+                { id: 't1', name: 'Медовик 1.1кг', price: 65.00 },
+                { id: 'n1', name: 'Набор Ассорти', price: 30.00 }
+            ];
+            
+            let html = '';
+            for (let id in cart) {
+                const p = products.find(x => x.id === id);
+                if (p) {
+                    html += `<div class="preview-row"><span>${p.name}</span><span>${cart[id]} шт. — ${(p.price * cart[id]).toFixed(2)} BYN</span></div>`;
+                }
+            }
+            document.getElementById('cart-items-preview').innerHTML = html;
+            document.getElementById('final-sum').innerText = total + " BYN";
+        }
+
+        function hideKeyboard(e) {
+            if (e && (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT')) return;
+            document.activeElement.blur();
+        }
+
+        window.onload = function() {
+            const dateInput = document.getElementById('order-date');
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.setAttribute('min', today);
+            renderOrder();
         };
-        container.appendChild(btn);
-        slotsCreated++;
-    }
-
-    if (slotsCreated === 0 && isToday) {
-        container.innerHTML = '<p style="font-size:11px; color:red; grid-column: 1/-1;">На сегодня запись окончена. Выберите другую дату.</p>';
-    }
-}
-
-function resetDiscussBtn() {
-    const btn = document.getElementById('discuss-btn');
-    btn.style.background = '#eee';
-    btn.style.color = '#2c1a11';
-}
-
-function setDiscuss() {
-    document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
-    selectedTime = "ОБСУДИТЬ";
-    const btn = document.getElementById('discuss-btn');
-    btn.style.background = '#630d16';
-    btn.style.color = 'white';
-}
-
-// Установка минимальной даты (сегодня) при загрузке
-window.onload = function() {
-    const dateInput = document.getElementById('order-date');
-    const today = new Date().toISOString().split('T')[0];
-    dateInput.setAttribute('min', today);
-    renderOrder();
-};
-
-function hideKeyboard(e) {
-    if (e && (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA')) return;
-    document.activeElement.blur();
-}
+    </script>
+</body>
+</html>
