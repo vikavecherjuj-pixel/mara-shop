@@ -13,6 +13,11 @@
         body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding: 10px; color: var(--dark); min-height: 100vh; -webkit-tap-highlight-color: transparent; }
         
         #checkout-screen { display: flex; flex-direction: column; gap: 12px; padding-bottom: 40px; }
+        
+        /* Ссылка назад сверху */
+        .back-link-top { text-align: left; margin-bottom: 5px; }
+        .back-link-top a { color: #aaa; text-decoration: none; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; }
+
         .checkout-card { background: white; border-radius: 20px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .checkout-title { font-weight: 900; font-size: 14px; margin-bottom: 12px; color: var(--burgundy); text-transform: uppercase; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
         
@@ -43,7 +48,11 @@
 <body onclick="hideKeyboard(event)">
 
     <div id="checkout-screen">
-        <h2 style="text-align: center; font-weight: 900; font-size: 22px; margin: 15px 0;">ОФОРМЛЕНИЕ</h2>
+        <h2 style="text-align: center; font-weight: 900; font-size: 22px; margin: 15px 0 5px 0;">ОФОРМЛЕНИЕ</h2>
+        
+        <div class="back-link-top">
+            <a href="index.html">← Назад в каталог</a>
+        </div>
         
         <div class="checkout-card">
             <div class="checkout-title">Ваш заказ</div>
@@ -90,10 +99,6 @@
         </div>
 
         <button class="btn-main" onclick="finalSubmit()">Я оплатил, прислать чек</button>
-        
-        <div style="text-align: center; margin-top: 10px;">
-            <a href="index.html" style="color: #aaa; text-decoration: none; font-size: 12px; font-weight: 600;">← Назад в каталог</a>
-        </div>
     </div>
 
     <script>
@@ -103,23 +108,18 @@
         let selectedTime = "";
         const ADMIN_USERNAME = "v_m_y_y"; 
 
-        // ИСПРАВЛЕННАЯ МАСКА ТЕЛЕФОНА
         const phoneInput = document.getElementById('cust-phone');
-        
         phoneInput.addEventListener('focus', function() {
             if (!this.value) this.value = '+375 ';
         });
-
         phoneInput.addEventListener('input', function(e) {
             let x = this.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,2})(\d{0,3})(\d{0,2})(\d{0,2})/);
-            
             if (!x[1]) {
                 this.value = '+375 ';
             } else {
                 this.value = '+375 ' + (x[2] ? '(' + x[2] : '') + (x[2] && x[3] ? ') ' + x[3] : (x[2] ? '' : '')) + (x[4] ? '-' + x[4] : '') + (x[5] ? '-' + x[5] : '');
             }
         });
-
         phoneInput.addEventListener('keydown', function(e) {
             if (e.key === 'Backspace' && this.value.length <= 5) e.preventDefault();
         });
@@ -132,13 +132,11 @@
             selectedTime = "";
             if (!dateInput.value) return;
             section.style.display = 'block';
-            
             const selectedDate = new Date(dateInput.value);
             const now = new Date();
             const isToday = selectedDate.toDateString() === now.toDateString();
             let startHour = 9;
             if (isToday) startHour = now.getHours() + 2;
-
             let slotsCreated = 0;
             for (let h = 9; h <= 21; h++) {
                 if (h < startHour) continue;
@@ -183,7 +181,6 @@
             const name = document.getElementById('cust-name').value;
             const phone = document.getElementById('cust-phone').value;
             const date = document.getElementById('order-date').value;
-
             if (!name || phone.length < 17) {
                 tg.showAlert("Заполните Имя и Телефон!");
                 return;
@@ -192,7 +189,6 @@
                 tg.showAlert("Выберите дату и время!");
                 return;
             }
-
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
             const data = {
                 name: name,
@@ -203,9 +199,7 @@
                 total: document.getElementById('final-sum').innerText,
                 items: cart
             };
-
             tg.sendData(JSON.stringify(data));
-
             setTimeout(() => {
                 tg.openTelegramLink(`https://t.me/${ADMIN_USERNAME}`);
                 tg.close();
@@ -227,7 +221,6 @@
                 { id: 't1', name: 'Медовик 1.1кг', price: 65.00 },
                 { id: 'n1', name: 'Набор Ассорти', price: 30.00 }
             ];
-            
             let html = '';
             for (let id in cart) {
                 const p = products.find(x => x.id === id);
