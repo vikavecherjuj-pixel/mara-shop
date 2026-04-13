@@ -12,8 +12,8 @@
             --burgundy: #630d16; 
             --dark: #2c1a11; 
             --bg: #fdfaf5; 
-            --btn-clear: #e9233a; /* Тот самый красный */
-            --btn-order: #21a252; /* Тот самый зеленый */
+            --btn-clear: #e9233a; 
+            --btn-order: #21a252; 
         }
         body { 
             font-family: 'Montserrat', sans-serif; background: var(--bg); 
@@ -109,7 +109,6 @@
         let lang = localStorage.getItem('selectedLang') || 'ru';
         let city = localStorage.getItem('selectedCity') || 'Гомель';
 
-        // ТОЧНЫЕ ДАННЫЕ ИЗ ТВОЕГО КОДА
         const products = [
             { id: 'q1', cat: 0, name: {ru: 'Орешки со сгущёнкой', by: 'Арэшкі са згушчонкай', en: 'Nuts'}, price: 1.10, img: 'oreshki.png', min: 20 },
             { id: 'q2', cat: 0, name: {ru: 'Орешки со сгущёнкой и орехом', by: 'Арэшкі са згушчонкай і арэхам', en: 'Nuts + walnut'}, price: 1.50, img: 'oreshki sguchenka oreh.png', min: 20 },
@@ -131,7 +130,6 @@
         function init() { renderSidebar(); renderProducts(0); }
 
         function renderSidebar() {
-            // ФОТО ТЕПЕРЬ СТРОГО ИЗ ТВОЕГО СПИСКА
             const sidebarPhotos = ['oreshki.png', 'trubochka1.jpg', 'muraveynik.jpg', 'tort 2.jpg', 'oreshki.png'];
             const sideNames = ["ОРЕШКИ", "ТРУБОЧКИ", "ПИРОЖНЫЕ", "ТОРТ", "НАБОРЫ"];
             document.getElementById('sidebar').innerHTML = sideNames.map((name, i) => `
@@ -145,7 +143,7 @@
             const grid = document.getElementById('menu-grid');
             grid.innerHTML = '';
             if (city !== 'Гомель' && catIndex === 3) {
-                grid.innerHTML = `<div class="disabled-msg">Торты доступны только для Гомеля</div>`;
+                grid.innerHTML = `<div style="grid-column: 1/-1; padding: 20px; text-align: center; color: var(--burgundy); font-weight: 700;">Торты доступны только для Гомеля</div>`;
             }
             grid.innerHTML += products.filter(p => p.cat === catIndex).map(p => {
                 const count = cart[p.id] || 0;
@@ -214,12 +212,11 @@
                     return `
                         <div class="cart-item-row">
                             <span style="flex:1;">${p.name.ru}</span>
-                            <div class="counter-controls" style="margin: 0 10px; border:none; background:transparent;">
+                            <div class="counter-controls" style="display: flex; align-items: center; margin: 0 10px; border:none; background:transparent;">
                                 <button class="btn-qty" style="width:22px; height:22px; font-size:12px;" onclick="changeQty('${id}', -1)">-</button>
-                                <span style="margin:0 8px; font-weight:700;">${q}</span>
+                                <span style="margin:0 15px; font-weight:700; font-size:14px;">${q}</span>
                                 <button class="btn-qty" style="width:22px; height:22px; font-size:12px;" onclick="changeQty('${id}', 1)">+</button>
                             </div>
-                            <span style="min-width:60px; text-align:right;">${(p.price * q).toFixed(2)}</span>
                         </div>
                     `;
                 }).join('');
