@@ -47,22 +47,23 @@
         .btn-pay { background: var(--btn-order); color: white; }
         .btn-pay:disabled { background: #555; opacity: 0.6; }
 
-        /* МОДАЛЬНОЕ ОКНО "ВАШ ЗАКАЗ" */
-        #cart-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: white; border-radius: 25px; padding: 20px; width: 100%; max-width: 340px; }
-        .cart-item-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; font-size: 12px; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
-
         /* CHECKOUT MODAL */
         #checkout-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); z-index: 1000; display: none; flex-direction: column; overflow-y: auto; padding: 20px; }
         .checkout-card { background: white; border-radius: 20px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .checkout-title { font-weight: 900; font-size: 16px; margin-bottom: 15px; color: var(--burgundy); border-bottom: 2px solid var(--bg); padding-bottom: 5px; }
+        
         label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 5px; color: #666; }
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 10px; font-family: 'Montserrat'; font-size: 13px; margin-bottom: 12px; box-sizing: border-box; }
-        .erip-box { background: #fdfaf5; border: 1px solid #eee; padding: 12px; border-radius: 12px; font-size: 11px; line-height: 1.5; color: #333; }
-        .copy-phone { background: var(--accent); color: white; border: none; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: 700; width: 100%; margin-top: 5px; }
+        
+        .erip-box { background: #f0f7ff; border: 1px dashed #007aff; padding: 12px; border-radius: 12px; font-size: 11px; line-height: 1.5; color: #333; }
+        .copy-phone { background: #007aff; color: white; border: none; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 700; width: 100%; margin-top: 5px; }
+
         .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
         .time-btn { padding: 8px 5px; border: 1px solid #ddd; border-radius: 8px; font-size: 10px; background: white; cursor: pointer; font-weight: 600; }
         .time-btn.active { background: var(--burgundy); color: white; border-color: var(--burgundy); }
+
+        #cart-items-preview { margin-bottom: 15px; }
+        .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; padding-bottom: 5px; border-bottom: 1px solid #f9f9f9; }
     </style>
 </head>
 <body>
@@ -80,7 +81,7 @@
 
     <div class="payment-footer">
         <div class="footer-top">
-            <button onclick="showCart()" class="btn-footer" style="background: rgba(255,255,255,0.1); color: white; font-size: 10px; max-width: 180px; border: 1px solid rgba(255,255,255,0.2);">ПРОСМОТРЕТЬ ЗАКАЗ</button>
+            <button onclick="openCheckout()" class="btn-footer" style="background: rgba(255,255,255,0.1); color: white; font-size: 10px; max-width: 140px;">🛒 Заказ</button>
             <span class="total-price"><span id="total-val">0.00</span> BYN</span>
         </div>
         <div style="display: flex;">
@@ -89,24 +90,22 @@
         </div>
     </div>
 
-    <div id="cart-modal" onclick="this.style.display='none'">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <h2 style="text-align:center; font-size: 18px; margin-top: 0; color: var(--burgundy);">ВАШ ЗАКАЗ</h2>
-            <div id="cart-items-list" style="max-height: 300px; overflow-y: auto;"></div>
-            <div id="cart-total-modal" style="text-align:right; font-weight:900; margin-top:15px; color:var(--accent); font-size: 16px;"></div>
-            <button class="btn-footer" style="width: 100%; margin-top: 20px; background: #333; color: white;" onclick="document.getElementById('cart-modal').style.display='none'">ЗАКРЫТЬ</button>
-        </div>
-    </div>
-
     <div id="checkout-screen">
         <h2 style="text-align: center; font-weight: 900;">ОФОРМЛЕНИЕ</h2>
         
         <div class="checkout-card">
+            <div class="checkout-title">Ваш заказ</div>
+            <div id="cart-items-preview"></div>
+            <div style="text-align: right; font-weight: 900; color: var(--accent); font-size: 16px;" id="final-sum">0.00 BYN</div>
+        </div>
+
+        <div class="checkout-card">
             <div class="checkout-title">Контактные данные</div>
-            <label>ИМЯ</label>
-            <input type="text" id="cust-name" placeholder="Введите имя">
+            <label>ВАШЕ ИМЯ</label>
+            <input type="text" id="cust-name" placeholder="Как к вам обращаться?">
+            
             <label>ТЕЛЕФОН</label>
-            <input type="tel" id="cust-phone" placeholder="+375" value="+375">
+            <input type="tel" id="cust-phone" placeholder="+375 (__) ___-__-__" maxlength="19">
         </div>
 
         <div id="gomel-fields" style="display:none;">
@@ -116,17 +115,23 @@
                     <option value="self">Самовывоз (Свиридова 11)</option>
                     <option value="yandex">Яндекс.Доставка (по тарифу)</option>
                 </select>
-                <label>ДАТА</label>
+                
+                <p style="font-size: 10px; color: #666; margin-bottom: 10px;">Для самовывоза: 6 подъезд, наберите за 5-10 мин до прибытия.</p>
+                
+                <label>ВЫБЕРИТЕ ДАТУ</label>
                 <input type="date" id="order-date" onchange="updateTimeSlots()">
-                <label>ВРЕМЯ</label>
+                
+                <label>ВЫБЕРИТЕ ВРЕМЯ</label>
                 <div class="time-grid" id="time-slots"></div>
+                
                 <button class="btn-footer" id="btn-discuss" style="background: #eee; color: #333; margin-top: 10px; width: 100%;" onclick="setDiscuss()">ОБСУДИТЬ С КОНДИТЕРОМ</button>
             </div>
         </div>
 
         <div id="rb-fields" style="display:none;">
             <div class="checkout-card">
-                <div class="checkout-title">Доставка по РБ</div>
+                <div class="checkout-title">Почтовая доставка (РБ)</div>
+                <p style="font-size: 11px; color: var(--btn-clear); font-weight: 700;">Отправка после 100% оплаты!</p>
                 <label>ФИО ПОЛНОСТЬЮ</label>
                 <input type="text" id="cust-fio">
                 <select id="post-type">
@@ -150,13 +155,14 @@
             <div class="checkout-title">Оплата (ЕРИП)</div>
             <div class="erip-box">
                 Система Расчета ЕРИП / Банковские, Финансовые услуги / Банки, НКФО / АЛЬФА-БАНК / Пополнение счета / указать номер телефона:
-                <div style="font-size: 15px; font-weight: 900; margin: 8px 0;">+375 (29) 651-44-03</div>
+                <div style="font-size: 14px; font-weight: 900; margin: 5px 0;">+375 (29) 651-44-03</div>
                 <button class="copy-phone" onclick="copyNum()">СКОПИРОВАТЬ НОМЕР</button>
             </div>
+            <p style="font-size: 9px; margin-top: 10px;">*После оплаты нажмите кнопку ниже и пришлите скриншот чека в чат.</p>
         </div>
 
         <button class="btn-footer btn-pay" style="width: 100%; margin-bottom: 20px;" onclick="finalSubmit()">Я ОПЛАТИЛ, ОТПРАВИТЬ ЧЕК</button>
-        <button class="btn-footer" style="width: 100%; background: #ccc; margin-bottom: 50px;" onclick="closeCheckout()">НАЗАД</button>
+        <button class="btn-footer" style="width: 100%; background: #ccc; margin-bottom: 50px;" onclick="closeCheckout()">НАЗАД В КАТАЛОГ</button>
     </div>
 
     <script>
@@ -166,7 +172,6 @@
         let cart = {}; let total = 0;
         let selectedTime = "";
         let city = localStorage.getItem('selectedCity') || 'Гомель';
-        let lang = localStorage.getItem('selectedLang') || 'ru';
 
         const products = [
             { id: 'q1', cat: 0, name: {ru: 'Орешки со сгущёнкой'}, price: 1.10, img: 'oreshki.png', min: 20 },
@@ -181,41 +186,20 @@
             { id: 'n1', cat: 4, name: {ru: 'Набор Ассорти'}, price: 30.00, img: 'oreshki.png', min: 1 }
         ];
 
+        // МАСКА ДЛЯ ТЕЛЕФОНА
+        const phoneInput = document.getElementById('cust-phone');
+        phoneInput.addEventListener('input', function (e) {
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,2})(\d{0,3})(\d{0,2})(\d{0,2})/);
+            if (!x[1]) { e.target.value = '+375'; return; }
+            if (!x[2]) { e.target.value = `+375`; return; }
+            e.target.value = `+375 (${x[2]}) ` + (x[3] ? `${x[3]}` : '') + (x[4] ? `-${x[4]}` : '') + (x[5] ? `-${x[5]}` : '');
+        });
+
         function init() {
             renderSidebar();
             renderProducts(0);
             let dt = new Date();
             document.getElementById('order-date').setAttribute('min', dt.toISOString().split('T')[0]);
-        }
-
-        // Возвращена функция showCart
-        function showCart() {
-            const list = document.getElementById('cart-items-list');
-            const entries = Object.entries(cart);
-            if (!entries.length) {
-                list.innerHTML = `<div style="text-align:center; color:#999; padding: 20px;">Ваша корзина пуста</div>`;
-                document.getElementById('cart-total-modal').innerText = "";
-            } else {
-                list.innerHTML = entries.map(([id, q]) => {
-                    const p = products.find(x => x.id === id);
-                    const itemSum = (p.price * q).toFixed(2);
-                    return `
-                        <div class="cart-item-row">
-                            <span style="flex:1; font-weight:600;">${p.name.ru}</span>
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div class="counter-controls" style="width: 100px;">
-                                    <button class="btn-qty" onclick="changeQty('${id}', -1)">-</button>
-                                    <span style="font-weight:700;">${q}</span>
-                                    <button class="btn-qty" onclick="changeQty('${id}', 1)">+</button>
-                                </div>
-                                <span style="min-width: 50px; text-align: right; font-weight: 700;">${itemSum}</span>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-                document.getElementById('cart-total-modal').innerText = "ИТОГО: " + total.toFixed(2) + " BYN";
-            }
-            document.getElementById('cart-modal').style.display = 'flex';
         }
 
         function renderSidebar() {
@@ -264,26 +248,35 @@
             cart[id] = next;
             if (cart[id] <= 0) delete cart[id];
             
-            total = 0; let hasPotato = false;
+            total = 0;
             for (let k in cart) {
                 let pr = products.find(x => x.id === k);
                 total += (pr.price * cart[k]);
-                if (k === 'q11') hasPotato = true;
             }
             
             document.getElementById('total-val').innerText = total.toFixed(2);
-            let qtyLabel = document.getElementById(`qty-${id}`);
-            if (qtyLabel) qtyLabel.innerText = cart[id] || 0;
+            document.getElementById(`qty-${id}`).innerText = cart[id] || 0;
             let b = document.getElementById(`badge-${id}`);
-            if (b) { b.innerText = cart[id]; b.style.display = cart[id]>0?'block':'none'; }
-
-            document.getElementById('main-pay-btn').disabled = (total < (hasPotato ? 16 : 20));
-            if (document.getElementById('cart-modal').style.display === 'flex') showCart();
+            b.innerText = cart[id]; b.style.display = cart[id]>0?'block':'none';
+            document.getElementById('main-pay-btn').disabled = (total < 1);
         }
 
         function openCheckout() {
             if (total === 0) return;
             document.getElementById('checkout-screen').style.display = 'flex';
+            
+            // Заполнение данных о заказе (список товаров)
+            let html = '';
+            for (let id in cart) {
+                let p = products.find(x => x.id === id);
+                html += `<div class="preview-row">
+                    <span>${p.name.ru}</span>
+                    <span>${cart[id]} шт. — ${(p.price * cart[id]).toFixed(2)} BYN</span>
+                </div>`;
+            }
+            document.getElementById('cart-items-preview').innerHTML = html;
+            document.getElementById('final-sum').innerText = total.toFixed(2) + " BYN";
+
             if (city === 'Гомель') {
                 document.getElementById('gomel-fields').style.display = 'block';
                 document.getElementById('rb-fields').style.display = 'none';
@@ -310,15 +303,9 @@
             selectedTime = t;
             document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
             el.classList.add('active');
-            document.getElementById('btn-discuss').style.background = "#eee";
         }
 
-        function setDiscuss() {
-            selectedTime = "ОБСУДИТЬ С КОНДИТЕРОМ";
-            document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn-discuss').style.background = "var(--accent)";
-            document.getElementById('btn-discuss').style.color = "white";
-        }
+        function setDiscuss() { selectedTime = "ОБСУДИТЬ С КОНДИТЕРОМ"; }
 
         function copyNum() {
             navigator.clipboard.writeText("+375296514403");
@@ -326,16 +313,18 @@
         }
 
         function finalSubmit() {
+            let name = document.getElementById('cust-name').value;
+            let phone = document.getElementById('cust-phone').value;
+            if (!name || phone.length < 18) { tg.showAlert("Заполните Имя и Телефон полностью!"); return; }
+
             let data = {
                 items: cart,
                 total: total,
-                name: document.getElementById('cust-name').value,
-                phone: document.getElementById('cust-phone').value,
-                city: city,
+                name: name,
+                phone: phone,
                 time: selectedTime,
                 gift: document.getElementById('need-card').checked ? document.getElementById('card-text').value : "Нет"
             };
-            if (!data.name || data.phone.length < 10) { tg.showAlert("Заполните контакты правильно!"); return; }
             tg.sendData(JSON.stringify(data));
         }
 
