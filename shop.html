@@ -13,55 +13,56 @@
         }
         body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding: 0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-        /* HEADER */
+        /* HEADER & MAIN */
         .header-container { background: white; flex-shrink: 0; position: relative; display: flex; flex-direction: column; }
         .back-floating-btn { position: absolute; top: 15px; left: 15px; z-index: 100; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(5px); border: none; padding: 8px 14px; border-radius: 20px; font-weight: 700; font-size: 11px; color: var(--burgundy); cursor: pointer; }
-        .promo-banner { width: 100%; height: 160px; overflow: hidden; }
+        .promo-banner { width: 100%; height: 140px; overflow: hidden; }
         .promo-banner img { width: 100%; height: 100%; object-fit: cover; }
-        .logo-area { padding: 12px 20px; border-bottom: 1px solid #eee; background: white; }
-        .logo-area img { max-width: 120px; height: auto; }
+        .logo-area { padding: 10px 20px; border-bottom: 1px solid #eee; background: white; }
+        .logo-area img { max-width: 100px; height: auto; }
 
-        /* CATALOG MAIN */
         .main-area { flex-grow: 1; display: flex; overflow: hidden; }
-        .sidebar { width: 85px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; align-items: center; padding-top: 10px; flex-shrink: 0; overflow-y: auto; }
-        .cat-item { margin-bottom: 15px; text-align: center; font-size: 8px; color: #555; width: 100%; font-weight: 700; cursor: pointer; text-transform: uppercase; }
-        .cat-item img { width: 40px; height: 40px; border-radius: 50%; background: #eee; margin-bottom: 4px; border: 2px solid transparent; object-fit: cover; }
+        .sidebar { width: 80px; background: white; border-right: 1px solid #ddd; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding-top: 10px; }
+        .cat-item { margin-bottom: 15px; text-align: center; font-size: 8px; font-weight: 700; cursor: pointer; text-transform: uppercase; color: #555; width: 100%; }
+        .cat-item img { width: 45px; height: 45px; border-radius: 50%; margin-bottom: 4px; border: 2px solid transparent; object-fit: cover; background: #eee; }
         .cat-item.active { color: var(--burgundy); }
-        .cat-item.active img { border-color: var(--burgundy); box-shadow: 0 0 10px rgba(99, 13, 22, 0.2); }
+        .cat-item.active img { border-color: var(--burgundy); }
 
-        .menu-grid { flex-grow: 1; overflow-y: auto; padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; padding-bottom: 180px; }
-        .product-card { background: white; border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 3px 8px rgba(0,0,0,0.05); position: relative; display: flex; flex-direction: column; gap: 4px; }
-        .product-card img { width: 100%; height: 80px; object-fit: contain; margin-bottom: 4px; }
-        .product-card h3 { font-size: 9px; margin: 0; font-weight: 700; color: var(--dark); min-height: 22px; display: flex; align-items: center; justify-content: center; }
-        .product-card p { font-size: 7.5px; color: #777; margin: 0; min-height: 18px; }
-        .product-card .price { font-size: 11px; font-weight: 900; color: var(--accent); margin: 4px 0; }
-        
-        .counter-controls { display: flex; align-items: center; justify-content: space-between; background: #f8f8f8; border-radius: 20px; padding: 2px; border: 1px solid #eee; margin-top: auto; }
-        .btn-qty { width: 28px; height: 28px; border-radius: 50%; border: none; background: white; color: var(--burgundy); font-weight: 900; font-size: 16px; cursor: pointer; }
-        .qty-badge { position: absolute; top: -4px; right: -4px; background: var(--burgundy); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; line-height: 18px; display: none; border: 2px solid white; font-weight: 900; z-index: 10; }
+        .menu-grid { flex-grow: 1; overflow-y: auto; padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-content: start; padding-bottom: 180px; }
+        .product-card { background: white; border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative; }
+        .product-card img { width: 100%; height: 70px; object-fit: contain; }
+        .product-card h3 { font-size: 9px; margin: 5px 0; color: var(--dark); height: 22px; overflow: hidden; }
+        .price { font-size: 11px; font-weight: 900; color: var(--accent); margin-bottom: 8px; }
+
+        .counter-controls { display: flex; align-items: center; justify-content: space-between; background: #f8f8f8; border-radius: 20px; padding: 2px; border: 1px solid #eee; }
+        .btn-qty { width: 26px; height: 26px; border-radius: 50%; border: none; background: white; color: var(--burgundy); font-weight: 900; cursor: pointer; }
+        .qty-badge { position: absolute; top: -5px; right: -5px; background: var(--burgundy); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; line-height: 18px; font-weight: 900; border: 2px solid white; display: none; }
 
         /* FOOTER */
         .payment-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1512; padding: 10px 15px 25px 15px; z-index: 500; border-radius: 20px 20px 0 0; }
-        .footer-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .total-price { font-size: 20px; color: var(--accent); font-weight: 900; }
+        .footer-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .total-price { font-size: 18px; color: var(--accent); font-weight: 900; }
         .btn-footer { flex: 1; padding: 14px; border: none; border-radius: 12px; font-weight: 900; text-transform: uppercase; cursor: pointer; font-size: 12px; font-family: 'Montserrat'; }
         .btn-clear { background: var(--btn-clear); color: white; margin-right: 10px; }
         .btn-pay { background: var(--btn-order); color: white; }
         .btn-pay:disabled { background: #555; opacity: 0.6; }
 
-        /* MODAL QUICK VIEW (Твоя функция showCart) */
-        #cart-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 25px; }
-        .modal-content { background: white; border-radius: 25px; padding: 25px; width: 100%; max-width: 320px; }
+        /* МОДАЛЬНОЕ ОКНО "ВАШ ЗАКАЗ" */
+        #cart-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: white; border-radius: 25px; padding: 20px; width: 100%; max-width: 340px; }
+        .cart-item-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; font-size: 12px; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
 
-        /* CHECKOUT SCREEN */
+        /* CHECKOUT MODAL */
         #checkout-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); z-index: 1000; display: none; flex-direction: column; overflow-y: auto; padding: 20px; }
         .checkout-card { background: white; border-radius: 20px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .checkout-title { font-weight: 900; font-size: 15px; margin-bottom: 12px; color: var(--burgundy); border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        .checkout-title { font-weight: 900; font-size: 16px; margin-bottom: 15px; color: var(--burgundy); border-bottom: 2px solid var(--bg); padding-bottom: 5px; }
         label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 5px; color: #666; }
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 10px; font-family: 'Montserrat'; font-size: 13px; margin-bottom: 12px; box-sizing: border-box; }
-        .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-        .time-btn { padding: 10px 5px; border: 1px solid #eee; border-radius: 8px; font-size: 11px; background: white; cursor: pointer; font-weight: 700; }
-        .time-btn.active { background: var(--burgundy); color: white; }
+        .erip-box { background: #fdfaf5; border: 1px solid #eee; padding: 12px; border-radius: 12px; font-size: 11px; line-height: 1.5; color: #333; }
+        .copy-phone { background: var(--accent); color: white; border: none; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: 700; width: 100%; margin-top: 5px; }
+        .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+        .time-btn { padding: 8px 5px; border: 1px solid #ddd; border-radius: 8px; font-size: 10px; background: white; cursor: pointer; font-weight: 600; }
+        .time-btn.active { background: var(--burgundy); color: white; border-color: var(--burgundy); }
     </style>
 </head>
 <body>
@@ -79,7 +80,7 @@
 
     <div class="payment-footer">
         <div class="footer-top">
-            <button onclick="showCart()" class="btn-footer" style="background: rgba(255,255,255,0.1); color: white; font-size: 10px; max-width: 160px;">Просмотреть заказ</button>
+            <button onclick="showCart()" class="btn-footer" style="background: rgba(255,255,255,0.1); color: white; font-size: 10px; max-width: 180px; border: 1px solid rgba(255,255,255,0.2);">ПРОСМОТРЕТЬ ЗАКАЗ</button>
             <span class="total-price"><span id="total-val">0.00</span> BYN</span>
         </div>
         <div style="display: flex;">
@@ -90,21 +91,22 @@
 
     <div id="cart-modal" onclick="this.style.display='none'">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <h2 style="text-align:center; font-size: 18px; margin-bottom: 15px; color: var(--burgundy);">ВАШ ЗАКАЗ</h2>
-            <div id="cart-items-list" style="max-height: 250px; overflow-y: auto;"></div>
-            <div id="cart-total-modal" style="text-align:right; font-weight:900; margin-top:10px; color:var(--accent);"></div>
-            <button class="btn-footer" style="width: 100%; margin-top: 15px; background: #333; color: white;" onclick="document.getElementById('cart-modal').style.display='none'">ЗАКРЫТЬ</button>
+            <h2 style="text-align:center; font-size: 18px; margin-top: 0; color: var(--burgundy);">ВАШ ЗАКАЗ</h2>
+            <div id="cart-items-list" style="max-height: 300px; overflow-y: auto;"></div>
+            <div id="cart-total-modal" style="text-align:right; font-weight:900; margin-top:15px; color:var(--accent); font-size: 16px;"></div>
+            <button class="btn-footer" style="width: 100%; margin-top: 20px; background: #333; color: white;" onclick="document.getElementById('cart-modal').style.display='none'">ЗАКРЫТЬ</button>
         </div>
     </div>
 
     <div id="checkout-screen">
-        <h2 style="text-align: center; font-weight: 900; margin-top: 0;">Оформление</h2>
+        <h2 style="text-align: center; font-weight: 900;">ОФОРМЛЕНИЕ</h2>
+        
         <div class="checkout-card">
             <div class="checkout-title">Контактные данные</div>
             <label>ИМЯ</label>
-            <input type="text" id="cust-name">
+            <input type="text" id="cust-name" placeholder="Введите имя">
             <label>ТЕЛЕФОН</label>
-            <input type="tel" id="cust-phone" placeholder="+375">
+            <input type="tel" id="cust-phone" placeholder="+375" value="+375">
         </div>
 
         <div id="gomel-fields" style="display:none;">
@@ -112,13 +114,13 @@
                 <div class="checkout-title">Доставка и Время</div>
                 <select id="delivery-type">
                     <option value="self">Самовывоз (Свиридова 11)</option>
-                    <option value="yandex">Яндекс.Доставка</option>
+                    <option value="yandex">Яндекс.Доставка (по тарифу)</option>
                 </select>
                 <label>ДАТА</label>
                 <input type="date" id="order-date" onchange="updateTimeSlots()">
                 <label>ВРЕМЯ</label>
                 <div class="time-grid" id="time-slots"></div>
-                <button class="btn-footer" id="btn-discuss" style="background: #f0f0f0; color: #333; margin-top: 12px; width: 100%;" onclick="setDiscuss()">ОБСУДИТЬ С КОНДИТЕРОМ</button>
+                <button class="btn-footer" id="btn-discuss" style="background: #eee; color: #333; margin-top: 10px; width: 100%;" onclick="setDiscuss()">ОБСУДИТЬ С КОНДИТЕРОМ</button>
             </div>
         </div>
 
@@ -127,81 +129,86 @@
                 <div class="checkout-title">Доставка по РБ</div>
                 <label>ФИО ПОЛНОСТЬЮ</label>
                 <input type="text" id="cust-fio">
-                <select id="post-type"><option value="euro">Европочта</option><option value="bel">Белпочта</option></select>
+                <select id="post-type">
+                    <option value="euro">Европочта</option>
+                    <option value="bel">Белпочта</option>
+                </select>
                 <label>ГОРОД И № ОТДЕЛЕНИЯ / АДРЕС</label>
-                <textarea id="cust-addr"></textarea>
+                <textarea id="cust-addr" rows="2"></textarea>
             </div>
         </div>
 
         <div class="checkout-card">
             <div class="checkout-title">Дополнительно</div>
-            <label><input type="checkbox" id="need-card" onchange="document.getElementById('card-box').style.display=this.checked?'block':'none'"> Нужна открытка?</label>
-            <div id="card-box" style="display:none;"><textarea id="card-text" placeholder="Текст открытки..."></textarea></div>
+            <label><input type="checkbox" id="need-card" onchange="document.getElementById('card-text-box').style.display = this.checked ? 'block' : 'none'"> Нужна открытка?</label>
+            <div id="card-text-box" style="display:none;">
+                <textarea id="card-text" placeholder="Текст для открытки..."></textarea>
+            </div>
         </div>
 
         <div class="checkout-card">
             <div class="checkout-title">Оплата (ЕРИП)</div>
-            <div style="font-size: 11px; line-height: 1.4; background: #f9f9f9; padding: 10px; border-radius: 10px;">
-                Система Расчета ЕРИП/ Банковские, Финансовые услуги / Банки, НКФО / АЛЬФА-БАНК / Пополнение счета / указать номер телефона:
-                <div style="font-size: 15px; font-weight: 900; margin: 8px 0;">+375296514403</div>
-                <button onclick="copyNum()" style="background: var(--accent); color:white; border:none; padding:8px; border-radius:8px; width:100%; font-weight:700;">СКОПИРОВАТЬ НОМЕР</button>
+            <div class="erip-box">
+                Система Расчета ЕРИП / Банковские, Финансовые услуги / Банки, НКФО / АЛЬФА-БАНК / Пополнение счета / указать номер телефона:
+                <div style="font-size: 15px; font-weight: 900; margin: 8px 0;">+375 (29) 651-44-03</div>
+                <button class="copy-phone" onclick="copyNum()">СКОПИРОВАТЬ НОМЕР</button>
             </div>
         </div>
 
-        <button class="btn-footer btn-pay" style="width: 100%; margin-bottom: 15px;" onclick="finalSubmit()">Я ОПЛАТИЛ, ОТПРАВИТЬ ЧЕК</button>
-        <button class="btn-footer" style="width: 100%; background: #ccc; margin-bottom: 40px;" onclick="closeCheckout()">НАЗАД</button>
+        <button class="btn-footer btn-pay" style="width: 100%; margin-bottom: 20px;" onclick="finalSubmit()">Я ОПЛАТИЛ, ОТПРАВИТЬ ЧЕК</button>
+        <button class="btn-footer" style="width: 100%; background: #ccc; margin-bottom: 50px;" onclick="closeCheckout()">НАЗАД</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
+        tg.expand();
+
         let cart = {}; let total = 0;
         let selectedTime = "";
-        let lang = localStorage.getItem('selectedLang') || 'ru';
         let city = localStorage.getItem('selectedCity') || 'Гомель';
+        let lang = localStorage.getItem('selectedLang') || 'ru';
 
         const products = [
-            { id: 'q1', cat: 0, name: {ru: 'Орешки со сгущёнкой', by: 'Арэшкі са згушчонкай', en: 'Nuts'}, price: 1.10, img: 'oreshki.png', min: 20 },
-            { id: 'q2', cat: 0, name: {ru: 'Орешки со сгущёнкой и орехом', by: 'Арэшкі са згушчонкай і арэхам', en: 'Nuts + walnut'}, price: 1.50, img: 'oreshki sguchenka oreh.png', min: 20 },
-            { id: 'q3', cat: 0, name: {ru: 'Кокос и миндаль', by: 'Кокас і миндаль', en: 'Coconut & Almond'}, price: 1.80, img: 'oreshki kokos.jpg', min: 20 },
-            { id: 'q4', cat: 0, name: {ru: 'Nutella и фундук', by: 'Nutella і фундук', en: 'Nutella & Hazelnut'}, price: 1.80, img: 'shokoladnya oreshki.jpg', min: 20 },
-            { id: 'q5', cat: 1, name: {ru: 'Трубочки со сгущенкой', by: 'Трубачкі са згушчонкай', en: 'Tubes'}, price: 4.00, img: 'trubochka1.jpg', min: 6 },
-            { id: 'q6', cat: 2, name: {ru: 'Муравейник', by: 'Мурашнік', en: 'Anthill cake'}, price: 2.50, img: 'muraveynik.jpg', min: 8 },
-            { id: 'q7', cat: 2, name: {ru: 'Грибочки', by: 'Грыбочкі', en: 'Mushrooms'}, price: 2.50, img: 'grobochki.jpg', min: 12 },
-            { id: 'q8', cat: 2, name: {ru: 'Сердечки', by: 'Сэрцайкі', en: 'Hearts'}, price: 2.50, img: 'serdechki.png', min: 8 },
-            { id: 'q9', cat: 2, name: {ru: 'Кокосовое', by: 'Кокасавае', en: 'Coconut cake'}, price: 2.50, img: 'kokosovoe.jpg', min: 8 },
-            { id: 'q10', cat: 2, name: {ru: 'Орешки в глазури', by: 'Арэшкі ў глазуры', en: 'Glazed nuts'}, price: 2.50, img: 'orshki v glazuri.jpg', min: 12 },
-            { id: 'q11', cat: 2, name: {ru: 'Картошка', by: 'Бульба', en: 'Potato'}, price: 4.00, img: 'kartoshka.jpg', min: 4 },
-            { id: 'q12', cat: 2, name: {ru: 'Шоколадная колбаса', by: 'Шакаладная каўбаса', en: 'Choco sausage'}, price: 12.00, img: 'shokoladnaya kolbasa.jpg', min: 1 },
-            { id: 't1', cat: 3, name: {ru: 'Медовик 1.1кг', by: 'Мядовік 1.1кг', en: 'Honey cake 1.1kg'}, price: 65.00, img: 'tort 2.jpg', min: 1 },
-            { id: 't2', cat: 3, name: {ru: 'Медовик 2.2кг', by: 'Мядовік 2.2кг', en: 'Honey cake 2.2kg'}, price: 130.00, img: 'tort 2.jpg', min: 1 },
-            { id: 'n1', cat: 4, name: {ru: 'Набор Ассорти', by: 'Набор Асарці', en: 'Assorted set'}, price: 30.00, img: 'oreshki.png', min: 1 }
+            { id: 'q1', cat: 0, name: {ru: 'Орешки со сгущёнкой'}, price: 1.10, img: 'oreshki.png', min: 20 },
+            { id: 'q2', cat: 0, name: {ru: 'Орешки + орех'}, price: 1.50, img: 'oreshki sguchenka oreh.png', min: 20 },
+            { id: 'q3', cat: 0, name: {ru: 'Кокос и миндаль'}, price: 1.80, img: 'oreshki kokos.jpg', min: 20 },
+            { id: 'q4', cat: 0, name: {ru: 'Nutella и фундук'}, price: 1.80, img: 'shokoladnya oreshki.jpg', min: 20 },
+            { id: 'q5', cat: 1, name: {ru: 'Трубочки'}, price: 4.00, img: 'trubochka1.jpg', min: 6 },
+            { id: 'q6', cat: 2, name: {ru: 'Муравейник'}, price: 2.50, img: 'muraveynik.jpg', min: 8 },
+            { id: 'q7', cat: 2, name: {ru: 'Грибочки'}, price: 2.50, img: 'grobochki.jpg', min: 12 },
+            { id: 'q11', cat: 2, name: {ru: 'Картошка'}, price: 4.00, img: 'kartoshka.jpg', min: 4 },
+            { id: 't1', cat: 3, name: {ru: 'Медовик 1.1кг'}, price: 65.00, img: 'tort 2.jpg', min: 1 },
+            { id: 'n1', cat: 4, name: {ru: 'Набор Ассорти'}, price: 30.00, img: 'oreshki.png', min: 1 }
         ];
 
         function init() {
-            renderSidebar(); renderProducts(0);
-            let d = new Date();
-            document.getElementById('order-date').min = d.toISOString().split('T')[0];
-            d.setDate(d.getDate()+60);
-            document.getElementById('order-date').max = d.toISOString().split('T')[0];
+            renderSidebar();
+            renderProducts(0);
+            let dt = new Date();
+            document.getElementById('order-date').setAttribute('min', dt.toISOString().split('T')[0]);
         }
 
-        // ТВОЯ ФУНКЦИЯ showCart
+        // Возвращена функция showCart
         function showCart() {
             const list = document.getElementById('cart-items-list');
             const entries = Object.entries(cart);
             if (!entries.length) {
-                list.innerHTML = `<div style="text-align:center; color:#999;">Пусто</div>`;
+                list.innerHTML = `<div style="text-align:center; color:#999; padding: 20px;">Ваша корзина пуста</div>`;
                 document.getElementById('cart-total-modal').innerText = "";
             } else {
                 list.innerHTML = entries.map(([id, q]) => {
                     const p = products.find(x => x.id === id);
+                    const itemSum = (p.price * q).toFixed(2);
                     return `
-                        <div class="cart-item-row" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; font-size: 11px; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px;">
-                            <span style="flex:1;">${p.name.ru}</span>
-                            <div class="counter-controls" style="display: flex; align-items: center; margin: 0 10px; border:none; background:transparent;">
-                                <button class="btn-qty" style="width:22px; height:22px; font-size:12px; cursor:pointer;" onclick="changeQty('${id}', -1)">-</button>
-                                <span style="margin:0 15px; font-weight:700; font-size:14px;">${q}</span>
-                                <button class="btn-qty" style="width:22px; height:22px; font-size:12px; cursor:pointer;" onclick="changeQty('${id}', 1)">+</button>
+                        <div class="cart-item-row">
+                            <span style="flex:1; font-weight:600;">${p.name.ru}</span>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div class="counter-controls" style="width: 100px;">
+                                    <button class="btn-qty" onclick="changeQty('${id}', -1)">-</button>
+                                    <span style="font-weight:700;">${q}</span>
+                                    <button class="btn-qty" onclick="changeQty('${id}', 1)">+</button>
+                                </div>
+                                <span style="min-width: 50px; text-align: right; font-weight: 700;">${itemSum}</span>
                             </div>
                         </div>
                     `;
@@ -212,11 +219,11 @@
         }
 
         function renderSidebar() {
-            const imgs = ['oreshki.png', 'trubochka1.jpg', 'muraveynik.jpg', 'tort 2.jpg', 'oreshki.png'];
-            const names = ["ОРЕШКИ", "ТРУБОЧКИ", "ПИРОЖНЫЕ", "ТОРТ", "НАБОРЫ"];
-            document.getElementById('sidebar').innerHTML = names.map((n, i) => `
+            const sideNames = ["ОРЕШКИ", "ТРУБОЧКИ", "ПИРОЖНЫЕ", "ТОРТ", "НАБОРЫ"];
+            const sideImgs = ['oreshki.png', 'trubochka1.jpg', 'muraveynik.jpg', 'tort 2.jpg', 'oreshki.png'];
+            document.getElementById('sidebar').innerHTML = sideNames.map((n, i) => `
                 <div class="cat-item ${i==0?'active':''}" onclick="changeCat(${i}, this)">
-                    <img src="${imgs[i]}"><br>${n}
+                    <img src="${sideImgs[i]}"><br>${n}
                 </div>
             `).join('');
         }
@@ -229,8 +236,7 @@
                     <div class="product-card">
                         <div class="qty-badge" id="badge-${p.id}" style="display:${q>0?'block':'none'}">${q}</div>
                         <img src="${p.img}">
-                        <h3>${p.name[lang] || p.name.ru}</h3>
-                        <p>от ${p.min} шт.</p>
+                        <h3>${p.name.ru}</h3>
                         <div class="price">${p.price.toFixed(2)} BYN</div>
                         <div class="counter-controls">
                             <button class="btn-qty" onclick="changeQty('${p.id}', -1)">-</button>
@@ -244,7 +250,8 @@
 
         function changeCat(i, el) {
             document.querySelectorAll('.cat-item').forEach(c => c.classList.remove('active'));
-            el.classList.add('active'); renderProducts(i);
+            el.classList.add('active');
+            renderProducts(i);
         }
 
         function changeQty(id, delta) {
@@ -263,29 +270,39 @@
                 total += (pr.price * cart[k]);
                 if (k === 'q11') hasPotato = true;
             }
+            
             document.getElementById('total-val').innerText = total.toFixed(2);
-            document.getElementById(`qty-${id}`).innerText = cart[id] || 0;
+            let qtyLabel = document.getElementById(`qty-${id}`);
+            if (qtyLabel) qtyLabel.innerText = cart[id] || 0;
             let b = document.getElementById(`badge-${id}`);
             if (b) { b.innerText = cart[id]; b.style.display = cart[id]>0?'block':'none'; }
+
             document.getElementById('main-pay-btn').disabled = (total < (hasPotato ? 16 : 20));
-            if(document.getElementById('cart-modal').style.display === 'flex') showCart();
+            if (document.getElementById('cart-modal').style.display === 'flex') showCart();
         }
 
         function openCheckout() {
+            if (total === 0) return;
             document.getElementById('checkout-screen').style.display = 'flex';
-            document.getElementById('gomel-fields').style.display = city === 'Гомель' ? 'block' : 'none';
-            document.getElementById('rb-fields').style.display = city !== 'Гомель' ? 'block' : 'none';
-            document.getElementById('final-sum').innerText = (city === 'Гомель' ? total : total + 10).toFixed(2) + " BYN";
+            if (city === 'Гомель') {
+                document.getElementById('gomel-fields').style.display = 'block';
+                document.getElementById('rb-fields').style.display = 'none';
+            } else {
+                document.getElementById('gomel-fields').style.display = 'none';
+                document.getElementById('rb-fields').style.display = 'block';
+            }
         }
 
         function updateTimeSlots() {
-            const grid = document.getElementById('time-slots'); grid.innerHTML = '';
-            let selDate = document.getElementById('order-date').value;
+            const grid = document.getElementById('time-slots');
+            grid.innerHTML = '';
+            let selectedDate = document.getElementById('order-date').value;
             let now = new Date();
-            let isToday = selDate === now.toISOString().split('T')[0];
+            let isToday = selectedDate === now.toISOString().split('T')[0];
             for (let h = 9; h <= 21; h++) {
                 if (isToday && h < (now.getHours() + 2)) continue;
-                grid.innerHTML += `<button class="time-btn" onclick="setTime('${h}:00', this)">${h}:00</button>`;
+                let t = h + ":00";
+                grid.innerHTML += `<button class="time-btn" onclick="setTime('${t}', this)">${t}</button>`;
             }
         }
 
@@ -293,7 +310,7 @@
             selectedTime = t;
             document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
             el.classList.add('active');
-            document.getElementById('btn-discuss').style.background = "#f0f0f0";
+            document.getElementById('btn-discuss').style.background = "#eee";
         }
 
         function setDiscuss() {
@@ -310,18 +327,21 @@
 
         function finalSubmit() {
             let data = {
-                items: cart, total: total, city: city,
+                items: cart,
+                total: total,
                 name: document.getElementById('cust-name').value,
                 phone: document.getElementById('cust-phone').value,
+                city: city,
                 time: selectedTime,
                 gift: document.getElementById('need-card').checked ? document.getElementById('card-text').value : "Нет"
             };
-            if (!data.name || !data.phone) { tg.showAlert("Заполните контакты!"); return; }
+            if (!data.name || data.phone.length < 10) { tg.showAlert("Заполните контакты правильно!"); return; }
             tg.sendData(JSON.stringify(data));
         }
 
         function closeCheckout() { document.getElementById('checkout-screen').style.display = 'none'; }
         function clearCart() { cart = {}; total = 0; document.getElementById('total-val').innerText = "0.00"; renderProducts(0); document.getElementById('main-pay-btn').disabled = true; }
+
         init();
     </script>
 </body>
