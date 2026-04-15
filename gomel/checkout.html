@@ -19,20 +19,28 @@
         input, select, textarea { 
             width: 100%; padding: 14px; border: 1px solid #f0f0f0; border-radius: 12px; 
             font-family: 'Montserrat'; font-size: 14px; margin-bottom: 12px; box-sizing: border-box; 
-            background: #fafafa; outline: none; color: black !important; caret-color: black !important;
+            background: #fafafa; outline: none; color: black !important;
         }
 
         .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px; align-items: center; }
         .item-price-detail { font-weight: 700; color: var(--accent); white-space: nowrap; margin-left: 10px; }
         .final-sum { text-align: right; font-weight: 900; color: var(--accent); font-size: 18px; margin-top: 10px; }
         
-        .time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
-        .time-btn { padding: 10px 5px; border: 1px solid #eee; border-radius: 10px; font-size: 11px; background: #fff; font-weight: 700; font-family: 'Montserrat'; cursor: pointer; min-height: 45px; }
+        /* Сетка времени */
+        .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+        .time-btn { padding: 10px 5px; border: 1px solid #eee; border-radius: 10px; font-size: 11px; background: #fff; font-weight: 700; font-family: 'Montserrat'; cursor: pointer; min-height: 40px; }
         .time-btn:disabled { opacity: 0.3; background: #eee; cursor: not-allowed; color: #aaa; }
         .time-btn.active { background: var(--burgundy); color: white; border-color: var(--burgundy); }
-        .time-btn.discuss-btn { grid-column: span 3; background: #f0f0f0; color: var(--burgundy); border: 1px dashed var(--burgundy); }
-        .time-btn.discuss-btn.active { background: var(--burgundy); color: white; border-style: solid; }
         
+        /* Разделитель "ИЛИ" */
+        .time-divider { position: relative; text-align: center; margin: 15px 0; font-size: 10px; font-weight: 900; color: #ccc; text-transform: uppercase; letter-spacing: 1px; }
+        .time-divider::before, .time-divider::after { content: ""; position: absolute; top: 50%; width: 40%; height: 1px; background: #eee; }
+        .time-divider::before { left: 0; } .time-divider::after { right: 0; }
+
+        /* Кнопка обсуждения */
+        .discuss-option-btn { width: 100%; padding: 15px; border: 2px dashed #ddd; border-radius: 12px; background: #fff; color: var(--burgundy); font-weight: 700; font-size: 11px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; transition: 0.3s; }
+        .discuss-option-btn.active { border-color: var(--burgundy); background: #fdf2f3; border-style: solid; }
+
         .btn-main { width: 100%; padding: 18px; background: var(--green); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; box-shadow: 0 4px 10px rgba(33, 162, 82, 0.3); }
         
         .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 20px; border-radius: 15px; text-align: left; }
@@ -40,8 +48,8 @@
         .btn-copy { background: #f0f0f0; border: none; border-radius: 10px; padding: 12px; width: 100%; font-size: 11px; font-weight: 700; text-transform: uppercase; font-family: 'Montserrat'; cursor: pointer; }
     </style>
 </head>
-<body onclick="document.activeElement.blur()">
-    <div id="checkout-screen" onclick="event.stopPropagation()">
+<body>
+    <div id="checkout-screen">
         <h2 style="text-align: center; font-weight: 900; font-size: 22px; margin: 15px 0;">ОФОРМЛЕНИЕ</h2>
         <div class="back-link-top"><a href="../shop.html">← Назад в каталог</a></div>
         
@@ -52,7 +60,7 @@
         </div>
 
         <div class="checkout-card">
-            <div class="checkout-title">Способ и время получения</div>
+            <div class="checkout-title">Получение</div>
             <select id="delivery-type" onchange="updateDeliveryText()">
                 <option value="Самовывоз">Самовывоз (Свиридова 11)</option>
                 <option value="Яндекс.Доставка">Яндекс.Доставка</option>
@@ -66,19 +74,25 @@
             <input type="date" id="order-date" onchange="generateTimeSlots()">
             
             <div id="time-section" style="display:none;">
-                <label>Выберите время</label>
+                <label>Выберите точное время:</label>
                 <div class="time-grid" id="time-slots"></div>
+                
+                <div class="time-divider">или</div>
+                
+                <button id="discuss-btn" class="discuss-option-btn" onclick="setDiscuss()">
+                    Обсудить время с кондитером
+                </button>
             </div>
         </div>
 
         <div class="checkout-card">
-            <div class="checkout-title">Контактные данные</div>
+            <div class="checkout-title">Контакты</div>
             <label>Имя</label>
             <input type="text" id="cust-name" placeholder="Введите ваше имя">
             <label>Телефон</label>
             <input type="tel" id="cust-phone" value="+375 ">
-            <label>Комментарий к заказу</label>
-            <textarea id="cust-comment" placeholder="Оставьте комментарий (необязательно)" rows="2"></textarea>
+            <label>Комментарий</label>
+            <textarea id="cust-comment" placeholder="Важные детали (необязательно)" rows="2"></textarea>
         </div>
 
         <div class="checkout-card">
@@ -99,23 +113,17 @@
         let selectedTime = "";
 
         const productsData = {
-            'q1': { name: 'Орешки со сгущёнкой', price: 1.10 },
-            'q2': { name: 'Орешки + орех', price: 1.50 },
-            'q3': { name: 'Кокос и миндаль', price: 1.80 },
-            'q4': { name: 'Nutella и фундук', price: 1.80 },
-            'q5': { name: 'Трубочки', price: 4.00 },
-            'q6': { name: 'Муравейник', price: 2.50 },
-            'q7': { name: 'Грибочки', price: 2.50 },
-            'q8': { name: 'Сердечки', price: 2.50 },
-            'q9': { name: 'Кокосовое', price: 2.50 },
-            'q10': { name: 'Орешки в глазури', price: 2.50 },
-            'q11': { name: 'Картошка', price: 4.00 },
-            'q12': { name: 'Шоколадная колбаса', price: 12.00 },
-            't1': { name: 'Медовик 1.1кг', price: 65.00 },
-            't2': { name: 'Медовик 2.2кг', price: 130.00 },
+            'q1': { name: 'Орешки со сгущёнкой', price: 1.10 }, 'q2': { name: 'Орешки + орех', price: 1.50 },
+            'q3': { name: 'Кокос и миндаль', price: 1.80 }, 'q4': { name: 'Nutella и фундук', price: 1.80 },
+            'q5': { name: 'Трубочки', price: 4.00 }, 'q6': { name: 'Муравейник', price: 2.50 },
+            'q7': { name: 'Грибочки', price: 2.50 }, 'q8': { name: 'Сердечки', price: 2.50 },
+            'q9': { name: 'Кокосовое', price: 2.50 }, 'q10': { name: 'Орешки в глазури', price: 2.50 },
+            'q11': { name: 'Картошка', price: 4.00 }, 'q12': { name: 'Шоколадная колбаса', price: 12.00 },
+            't1': { name: 'Медовик 1.1кг', price: 65.00 }, 't2': { name: 'Медовик 2.2кг', price: 130.00 },
             'n1': { name: 'Набор Ассорти', price: 30.00 }
         };
 
+        // Работа с датой
         const dateInput = document.getElementById('order-date');
         const now = new Date();
         const offset = 3 * 60 * 60 * 1000;
@@ -133,17 +141,7 @@
             }
             document.getElementById('time-section').style.display = 'block';
             container.innerHTML = '';
-
-            // ОПЦИЯ ОБСУДИТЬ ВРЕМЯ (Первая в списке)
-            let discBtn = document.createElement('button');
-            discBtn.className = 'time-btn discuss-btn';
-            discBtn.innerText = 'ОБСУДИТЬ ВРЕМЯ С КОНДИТЕРОМ';
-            discBtn.onclick = (e) => {
-                e.preventDefault();
-                setActiveTime(discBtn, "Обсудить с кондитером");
-            };
-            container.appendChild(discBtn);
-
+            
             const currentHour = now.getHours();
             const isToday = (selectedDate === todayStr);
 
@@ -161,15 +159,26 @@
                 }
                 container.appendChild(btn);
             }
-            selectedTime = ""; 
+            // Сброс выбора при смене даты
+            selectedTime = "";
+            document.getElementById('discuss-btn').classList.remove('active');
         }
 
         function setActiveTime(element, value) {
             document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('discuss-btn').classList.remove('active');
             element.classList.add('active');
             selectedTime = value;
         }
 
+        function setDiscuss() {
+            document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('discuss-btn').classList.add('active');
+            selectedTime = "Обсудить с кондитером";
+            tg.showAlert("Выбрано: Обсудить время с кондитером. Он свяжется с вами после заказа.");
+        }
+
+        // Остальная логика
         const phoneInput = document.getElementById('cust-phone');
         phoneInput.addEventListener('input', function(e) {
             let val = e.target.value;
@@ -213,17 +222,14 @@
             const name = document.getElementById('cust-name').value;
             const phone = document.getElementById('cust-phone').value;
             const date = document.getElementById('order-date').value;
-            const comment = document.getElementById('cust-comment').value;
-            if (date < todayStr) return tg.showAlert("Ошибка! Выбрана прошедшая дата.");
+            if (date < todayStr) return tg.showAlert("Ошибка в дате.");
             if(!name || phone.length < 17) return tg.showAlert("Введите имя и полный телефон!");
-            if(!date) return tg.showAlert("Выберите дату заказа!");
-            if(!selectedTime) return tg.showAlert("Выберите время получения!");
+            if(!date) return tg.showAlert("Выберите дату!");
+            if(!selectedTime) return tg.showAlert("Выберите время или 'Обсудить с кондитером'");
             
             const data = {
-                name, phone, 
-                delivery: document.getElementById('delivery-type').value,
-                date, time: selectedTime,
-                comment,
+                name, phone, delivery: document.getElementById('delivery-type').value,
+                date, time: selectedTime, comment: document.getElementById('cust-comment').value,
                 total: document.getElementById('final-sum').innerText
             };
             tg.sendData(JSON.stringify(data));
