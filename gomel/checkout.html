@@ -26,18 +26,18 @@
         .final-sum { text-align: right; font-weight: 900; color: var(--accent); font-size: 18px; margin-top: 10px; }
         
         .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
-        .time-btn { padding: 10px 5px; border: 1px solid #eee; border-radius: 10px; font-size: 11px; background: #fff; font-weight: 700; font-family: 'Montserrat'; }
-        .time-btn.active { background: var(--burgundy); color: white; }
+        .time-btn { padding: 10px 5px; border: 1px solid #eee; border-radius: 10px; font-size: 11px; background: #fff; font-weight: 700; font-family: 'Montserrat'; cursor: pointer; }
+        .time-btn.active { background: var(--burgundy); color: white; border-color: var(--burgundy); }
         
         .btn-main { width: 100%; padding: 18px; background: var(--burgundy); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; }
-        .btn-discuss-active { background: var(--burgundy); color: white; margin-top: 10px; padding: 15px; font-size: 11px; font-weight: 700; border-radius: 12px; border: none; width: 100%; text-transform: uppercase; font-family: 'Montserrat'; }
+        .btn-discuss-active { background: var(--burgundy); color: white; margin-top: 10px; padding: 15px; font-size: 11px; font-weight: 700; border-radius: 12px; border: none; width: 100%; text-transform: uppercase; font-family: 'Montserrat'; cursor: pointer; }
         
-        .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 20px; border-radius: 15px; }
-        .erip-phone { color: var(--green); font-weight: 900; font-size: 20px; display: block; margin: 10px 0; }
-        .btn-copy { background: #f0f0f0; border: none; border-radius: 10px; padding: 12px; width: 100%; font-size: 11px; font-weight: 700; text-transform: uppercase; font-family: 'Montserrat'; }
+        .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 20px; border-radius: 15px; text-align: left; }
+        .erip-phone { color: var(--green); font-weight: 900; font-size: 20px; display: block; margin: 10px 0; letter-spacing: 0.5px; }
+        .btn-copy { background: #f0f0f0; border: none; border-radius: 10px; padding: 12px; width: 100%; font-size: 11px; font-weight: 700; text-transform: uppercase; font-family: 'Montserrat'; cursor: pointer; }
     </style>
 </head>
-<body onclick="document.activeElement.blur()">
+<body>
     <div id="checkout-screen">
         <h2 style="text-align: center; font-weight: 900; font-size: 22px; margin: 15px 0;">ОФОРМЛЕНИЕ</h2>
         <div class="back-link-top"><a href="../shop.html">← Назад в каталог</a></div>
@@ -81,7 +81,7 @@
                 <div class="erip-phone">+375 (29) 651-44-03</div>
                 <button class="btn-copy" onclick="copyPhone()">Скопировать номер</button>
             </div>
-            <button class="btn-main" style="margin-top:15px;" onclick="finalSubmit()">Подтвердить и заказать</button>
+            <button class="btn-main" style="margin-top:15px;" onclick="finalSubmit()">Я оплатил, подтвердить заказ</button>
         </div>
     </div>
 
@@ -89,7 +89,6 @@
         let tg = window.Telegram.WebApp;
         let selectedTime = "";
 
-        // База товаров для корректных названий
         const productsData = {
             'q1': 'Орешки со сгущёнкой', 'q2': 'Орешки + орех', 'q3': 'Кокос и миндаль',
             'q4': 'Nutella и фундук', 'q5': 'Трубочки', 'q6': 'Муравейник',
@@ -98,30 +97,42 @@
             't1': 'Медовик 1.1кг', 't2': 'Медовик 2.2кг', 'n1': 'Набор Ассорти'
         };
 
-        function init() {
-            // 1. Блокировка прошедших дат
-            const dateInput = document.getElementById('order-date');
-            const today = new Date().toISOString().split('T')[0];
-            dateInput.setAttribute('min', today);
-            
-            renderOrder();
-        }
+        // Блокировка прошлых дат
+        const dateInput = document.getElementById('order-date');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
 
-        // 2. Отображение названий и сумм
+        // Маска телефона
+        const phoneInput = document.getElementById('cust-phone');
+        phoneInput.addEventListener('input', function(e) {
+            let val = e.target.value;
+            if (!val.startsWith('+375 ')) { e.target.value = '+375 '; return; }
+            let digits = val.substring(5).replace(/\D/g, '');
+            let formatted = '+375 ';
+            if (digits.length > 0) formatted += '(' + digits.substring(0, 2);
+            if (digits.length >= 3) formatted += ') ' + digits.substring(2, 5);
+            if (digits.length >= 6) formatted += '-' + digits.substring(5, 7);
+            if (digits.length >= 8) formatted += '-' + digits.substring(7, 9);
+            e.target.value = formatted;
+        });
+
         function renderOrder() {
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
             const total = localStorage.getItem('mara_total') || '0.00';
             let html = '';
-            
             for (let id in cart) {
                 const name = productsData[id] || id;
-                html += `<div class="preview-row"><span>${name} (${cart[id]} шт.)</span></div>`;
+                html += `<div class="preview-row"><span>${name} (${cart[id]} шт.)</span><span>${(cart[id] * (getStaticPrice(id))).toFixed(2)} BYN</span></div>`;
             }
             document.getElementById('cart-items-preview').innerHTML = html;
             document.getElementById('final-sum').innerText = total + " BYN";
         }
 
-        // 3. Скрытие строки самовывоза при Яндекс.Доставке
+        function getStaticPrice(id) {
+            const prices = {'q1':1.1,'q2':1.5,'q3':1.8,'q4':1.8,'q5':4,'q6':2.5,'q7':2.5,'q8':2.5,'q9':2.5,'q10':2.5,'q11':4,'q12':12,'t1':65,'t2':130,'n1':30};
+            return prices[id] || 0;
+        }
+
         function updateDeliveryText() {
             const type = document.getElementById('delivery-type').value;
             const addressLine = document.getElementById('pickup-address-line');
@@ -135,7 +146,8 @@
             for (let h = 9; h <= 21; h++) {
                 let btn = document.createElement('button');
                 btn.className = 'time-btn'; btn.innerText = h + ':00';
-                btn.onclick = () => { 
+                btn.onclick = (e) => { 
+                    e.preventDefault();
                     document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active'); selectedTime = h + ':00'; 
                 };
@@ -143,26 +155,33 @@
             }
         }
 
-        function setDiscuss() { selectedTime = "Обсудить с кондитером"; tg.showAlert("Выбрано: Обсудить время"); }
+        function setDiscuss() { 
+            selectedTime = "Обсудить с кондитером"; 
+            document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+            tg.showAlert("Вы выбрали: Обсудить время с кондитером"); 
+        }
+
         function copyPhone() { navigator.clipboard.writeText('+375296514403'); tg.showAlert("Номер скопирован!"); }
 
         function finalSubmit() {
             const name = document.getElementById('cust-name').value;
             const phone = document.getElementById('cust-phone').value;
-            if(!name || phone.length < 10) return tg.showAlert("Заполните данные!");
+            const date = document.getElementById('order-date').value;
+            if(!name || phone.length < 17) return tg.showAlert("Введите имя и полный телефон!");
+            if(!date) return tg.showAlert("Выберите дату заказа!");
+            if(!selectedTime) return tg.showAlert("Выберите время или нажмите 'Обсудить с кондитером'");
             
             const data = {
                 name, phone, 
                 delivery: document.getElementById('delivery-type').value,
-                date: document.getElementById('order-date').value,
-                time: selectedTime,
+                date, time: selectedTime,
                 total: document.getElementById('final-sum').innerText
             };
             tg.sendData(JSON.stringify(data));
             tg.close();
         }
 
-        window.onload = init;
+        window.onload = renderOrder;
     </script>
 </body>
 </html>
