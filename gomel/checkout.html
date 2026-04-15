@@ -56,6 +56,8 @@
             <input type="text" id="cust-name" placeholder="Введите ваше имя">
             <label>Телефон</label>
             <input type="tel" id="cust-phone" value="+375 ">
+            <label>Комментарий к заказу</label>
+            <textarea id="cust-comment" placeholder="Оставьте комментарий (необязательно)" rows="3"></textarea>
         </div>
 
         <div class="checkout-card">
@@ -199,6 +201,7 @@
             const name = document.getElementById('cust-name').value;
             const phone = document.getElementById('cust-phone').value;
             const date = document.getElementById('order-date').value;
+            const comment = document.getElementById('cust-comment').value;
             if (date < todayStr) return tg.showAlert("Ошибка! Выбрана прошедшая дата.");
             if(!name || phone.length < 17) return tg.showAlert("Введите имя и полный телефон!");
             if(!date) return tg.showAlert("Выберите дату заказа!");
@@ -208,6 +211,7 @@
                 name, phone, 
                 delivery: document.getElementById('delivery-type').value,
                 date, time: selectedTime,
+                comment,
                 total: document.getElementById('final-sum').innerText
             };
             tg.sendData(JSON.stringify(data));
