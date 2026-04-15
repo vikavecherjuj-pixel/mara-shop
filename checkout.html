@@ -16,21 +16,24 @@
         .checkout-title { font-weight: 900; font-size: 14px; margin-bottom: 12px; color: var(--burgundy); text-transform: uppercase; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
         label { display: block; font-size: 10px; font-weight: 700; margin-bottom: 6px; color: #888; text-transform: uppercase; }
         
-        /* Исправлен цвет курсора и текста */
         input, select { 
             width: 100%; padding: 14px; border: 1px solid #f0f0f0; border-radius: 12px; 
             font-family: 'Montserrat'; font-size: 14px; margin-bottom: 12px; box-sizing: border-box; 
             background: #fafafa; outline: none; color: black !important; caret-color: black !important;
         }
 
-        .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; border-bottom: 1px dashed #eee; }
+        .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px; }
         .final-sum { text-align: right; font-weight: 900; color: var(--accent); font-size: 18px; margin-top: 10px; }
         .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
-        .time-btn { padding: 10px 5px; border: 1px solid #eee; border-radius: 10px; font-size: 11px; background: #fff; font-weight: 700; }
+        .time-btn { padding: 10px 5px; border: 1px solid #eee; border-radius: 10px; font-size: 11px; background: #fff; font-weight: 700; font-family: 'Montserrat'; }
         .time-btn.active { background: var(--burgundy); color: white; }
-        .btn-main { width: 100%; padding: 18px; background: var(--burgundy); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; }
-        .btn-discuss { background: #eee; color: var(--dark); margin-top: 5px; padding: 14px; font-size: 11px; font-weight: 700; }
-        .erip-box { background: #f4f9f4; border: 1px solid #e0eee0; padding: 15px; border-radius: 15px; font-size: 11px; }
+        .btn-main { width: 100%; padding: 18px; background: var(--burgundy); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; }
+        
+        /* Кнопка Обсудить время сразу цветная */
+        .btn-discuss-active { background: var(--burgundy); color: white; margin-top: 10px; padding: 15px; font-size: 11px; font-weight: 700; border-radius: 12px; border: none; width: 100%; text-transform: uppercase; font-family: 'Montserrat'; cursor: pointer; }
+        
+        .erip-box { background: #f4f9f4; border: 1px solid #e0eee0; padding: 15px; border-radius: 15px; font-size: 11px; line-height: 1.6; }
+        .copy-num { color: var(--burgundy); font-weight: 900; font-size: 14px; cursor: pointer; text-decoration: underline; display: block; margin-top: 5px; }
     </style>
 </head>
 <body onclick="document.activeElement.blur()">
@@ -66,7 +69,7 @@
             <label style="margin-top:10px;">Дата</label>
             <input type="date" id="order-date" onchange="generateTimeSlots()">
             <div id="time-section" style="display:none;"><div class="time-grid" id="time-slots"></div></div>
-            <button class="btn-main btn-discuss" id="discuss-btn" onclick="setDiscuss()">ОБСУДИТЬ ВРЕМЯ С КОНДИТЕРОМ</button>
+            <button class="btn-discuss-active" onclick="setDiscuss()">Обсудить время с кондитером</button>
         </div>
 
         <div id="rb-fields" class="checkout-card" style="display:none;">
@@ -87,7 +90,11 @@
 
         <div class="checkout-card">
             <div class="checkout-title">Оплата (ЕРИП)</div>
-            <div class="erip-box">АЛЬФА-БАНК / Пополнение счета / телефон: <br><b>+375 (29) 651-44-03</b></div>
+            <div class="erip-box">
+                Система Расчета ЕРИП / Банковские, Финансовые услуги / Банки, НКФО / АЛЬФА-БАНК / Пополнение счета / указать номер телефона:
+                <span class="copy-num" onclick="copyPhone()">+375 (29) 651-44-03</span>
+                <span id="copy-msg" style="font-size: 9px; color: green; display:none;">Номер скопирован!</span>
+            </div>
             <button class="btn-main" style="margin-top:15px;" onclick="finalSubmit()">Я оплатил, отправить чек</button>
         </div>
     </div>
@@ -110,12 +117,10 @@
             { id: 'n1', name: 'Набор Ассорти', price: 30.00 }
         ];
 
-        // Корректная работа с номером телефона (можно удалять цифры)
         const phoneInput = document.getElementById('cust-phone');
         phoneInput.addEventListener('input', function(e) {
             let val = e.target.value;
             if (!val.startsWith('+375 ')) { e.target.value = '+375 '; return; }
-            
             let digits = val.substring(5).replace(/\D/g, '');
             let formatted = '+375 ';
             if (digits.length > 0) formatted += '(' + digits.substring(0, 2);
@@ -125,12 +130,12 @@
             e.target.value = formatted;
         });
 
-        // Запрет на удаление префикса бэкспейсом
-        phoneInput.addEventListener('keydown', function(e) {
-            if (e.key === "Backspace" && phoneInput.value.length <= 5) {
-                e.preventDefault();
-            }
-        });
+        function copyPhone() {
+            navigator.clipboard.writeText('+375296514403');
+            const msg = document.getElementById('copy-msg');
+            msg.style.display = 'inline';
+            setTimeout(() => msg.style.display = 'none', 2000);
+        }
 
         function init() {
             renderOrder();
@@ -150,14 +155,12 @@
             const now = new Date();
             const isToday = new Date(dateVal).toDateString() === now.toDateString();
             const minHour = isToday ? now.getHours() + 2 : 9;
-
             document.getElementById('time-section').style.display = 'block';
             container.innerHTML = '';
             for (let h = 9; h <= 21; h++) {
                 if (h < minHour) continue;
                 let btn = document.createElement('button');
-                btn.className = 'time-btn';
-                btn.innerText = h + ':00';
+                btn.className = 'time-btn'; btn.innerText = h + ':00';
                 btn.onclick = (e) => { 
                     e.stopPropagation();
                     document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
@@ -174,9 +177,8 @@
         }
 
         function setDiscuss() { 
-            selectedTime = "ОБСУДИТЬ С КОНДИТЕРОМ"; 
-            document.getElementById('discuss-btn').style.background = '#630d16'; 
-            document.getElementById('discuss-btn').style.color = 'white'; 
+            selectedTime = "ОБСУДИТЬ С КОНДИТЕРОМ";
+            tg.showAlert("Вы выбрали вариант обсуждения времени в личных сообщениях.");
         }
 
         function renderOrder() {
@@ -184,7 +186,7 @@
             let html = '';
             for (let id in cart) {
                 const product = productsData.find(p => p.id === id);
-                const pName = product ? product.name : "Артикул " + id;
+                const pName = product ? product.name : id;
                 const pPrice = product ? (product.price * cart[id]).toFixed(2) : "0.00";
                 html += `<div class="preview-row"><span>${pName} (${cart[id]} шт.)</span><span>${pPrice} BYN</span></div>`;
             }
@@ -198,15 +200,12 @@
             const name = document.getElementById('cust-name').value;
             const phone = document.getElementById('cust-phone').value;
             if(!name || phone.length < 17) return tg.showAlert("Заполните имя и полный номер телефона!");
-            
             let info = (city === 'Gomel' || city === 'Гомель') ? 
                 `Доставка: ${document.getElementById('delivery-type').value}, Время: ${selectedTime}` :
                 `Почта: ${document.getElementById('post-type').value}, Город: ${document.getElementById('post-city').value}`;
-
             tg.sendData(JSON.stringify({ city, name, phone, info, total: document.getElementById('final-sum').innerText }));
             setTimeout(() => { tg.openTelegramLink('https://t.me/v_m_y_y'); tg.close(); }, 500);
         }
-
         window.onload = init;
     </script>
 </body>
