@@ -26,21 +26,17 @@
         .item-price-detail { font-weight: 700; color: var(--accent); white-space: nowrap; margin-left: 10px; }
         .final-sum { text-align: right; font-weight: 900; color: var(--accent); font-size: 18px; margin-top: 10px; }
         
-        /* Сетка времени */
-        .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+        /* Кнопка "Обсудить" - теперь заметная и основная */
+        .discuss-option-btn { width: 100%; padding: 16px; background: #f8f8f8; color: var(--burgundy); border: 2px dashed var(--burgundy); border-radius: 12px; font-weight: 700; font-size: 12px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; margin-bottom: 10px; }
+        .discuss-option-btn.active { background: var(--burgundy); color: white; border-style: solid; }
+
+        .time-divider { text-align: center; margin: 15px 0; font-size: 10px; font-weight: 800; color: #bbb; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
         .time-btn { padding: 10px 5px; border: 1px solid #eee; border-radius: 10px; font-size: 11px; background: #fff; font-weight: 700; font-family: 'Montserrat'; cursor: pointer; min-height: 40px; }
         .time-btn:disabled { opacity: 0.3; background: #eee; cursor: not-allowed; color: #aaa; }
-        .time-btn.active { background: var(--burgundy); color: white; border-color: var(--burgundy); }
+        .time-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
         
-        /* Разделитель "ИЛИ" */
-        .time-divider { position: relative; text-align: center; margin: 15px 0; font-size: 10px; font-weight: 900; color: #ccc; text-transform: uppercase; letter-spacing: 1px; }
-        .time-divider::before, .time-divider::after { content: ""; position: absolute; top: 50%; width: 40%; height: 1px; background: #eee; }
-        .time-divider::before { left: 0; } .time-divider::after { right: 0; }
-
-        /* Кнопка обсуждения */
-        .discuss-option-btn { width: 100%; padding: 15px; border: 2px dashed #ddd; border-radius: 12px; background: #fff; color: var(--burgundy); font-weight: 700; font-size: 11px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; transition: 0.3s; }
-        .discuss-option-btn.active { border-color: var(--burgundy); background: #fdf2f3; border-style: solid; }
-
         .btn-main { width: 100%; padding: 18px; background: var(--green); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; box-shadow: 0 4px 10px rgba(33, 162, 82, 0.3); }
         
         .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 20px; border-radius: 15px; text-align: left; }
@@ -48,8 +44,8 @@
         .btn-copy { background: #f0f0f0; border: none; border-radius: 10px; padding: 12px; width: 100%; font-size: 11px; font-weight: 700; text-transform: uppercase; font-family: 'Montserrat'; cursor: pointer; }
     </style>
 </head>
-<body>
-    <div id="checkout-screen">
+<body onclick="document.activeElement.blur()">
+    <div id="checkout-screen" onclick="event.stopPropagation()">
         <h2 style="text-align: center; font-weight: 900; font-size: 22px; margin: 15px 0;">ОФОРМЛЕНИЕ</h2>
         <div class="back-link-top"><a href="../shop.html">← Назад в каталог</a></div>
         
@@ -65,23 +61,21 @@
                 <option value="Самовывоз">Самовывоз (Свиридова 11)</option>
                 <option value="Яндекс.Доставка">Яндекс.Доставка</option>
             </select>
+            
             <div id="delivery-info-text" style="font-size: 10px; color: #888; font-weight: 600; line-height: 1.4; margin-bottom:15px;">
-                <span id="pickup-address-line">*Самовывоз: Свиридова 11, 6 подъезд<br></span>
-                Тел: <a href="tel:+375296514403" style="color: var(--burgundy); text-decoration: none; font-weight: 900;">+375 (29) 651-44-03</a>
+                *Самовывоз: Свиридова 11, 6 подъезд<br>
+                Позвоните за 10 минут до приезда: <a href="tel:+375296514403" style="color: var(--burgundy); text-decoration: none; font-weight: 900;">+375 (29) 651-44-03</a>
             </div>
             
             <label>Дата заказа</label>
             <input type="date" id="order-date" onchange="generateTimeSlots()">
             
-            <div id="time-section" style="display:none;">
-                <label>Выберите точное время:</label>
-                <div class="time-grid" id="time-slots"></div>
-                
-                <div class="time-divider">или</div>
-                
+            <div id="time-section" style="display:none; margin-top: 10px;">
                 <button id="discuss-btn" class="discuss-option-btn" onclick="setDiscuss()">
                     Обсудить время с кондитером
                 </button>
+                <div class="time-divider">или выберите точное время:</div>
+                <div class="time-grid" id="time-slots"></div>
             </div>
         </div>
 
@@ -123,13 +117,22 @@
             'n1': { name: 'Набор Ассорти', price: 30.00 }
         };
 
-        // Работа с датой
         const dateInput = document.getElementById('order-date');
         const now = new Date();
         const offset = 3 * 60 * 60 * 1000;
         const localNow = new Date(now.getTime() + offset);
         const todayStr = localNow.toISOString().split('T')[0];
         dateInput.setAttribute('min', todayStr);
+
+        function updateDeliveryText() {
+            const type = document.getElementById('delivery-type').value;
+            const infoBlock = document.getElementById('delivery-info-text');
+            if (type === 'Самовывоз') {
+                infoBlock.innerHTML = `*Самовывоз: Свиридова 11, 6 подъезд<br>Позвоните за 10 минут до приезда: <a href="tel:+375296514403" style="color: var(--burgundy); text-decoration: none; font-weight: 900;">+375 (29) 651-44-03</a>`;
+            } else {
+                infoBlock.innerHTML = `Тел: <a href="tel:+375296514403" style="color: var(--burgundy); text-decoration: none; font-weight: 900;">+375 (29) 651-44-03</a>`;
+            }
+        }
 
         function generateTimeSlots() {
             const container = document.getElementById('time-slots');
@@ -159,7 +162,6 @@
                 }
                 container.appendChild(btn);
             }
-            // Сброс выбора при смене даты
             selectedTime = "";
             document.getElementById('discuss-btn').classList.remove('active');
         }
@@ -175,10 +177,8 @@
             document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('discuss-btn').classList.add('active');
             selectedTime = "Обсудить с кондитером";
-            tg.showAlert("Выбрано: Обсудить время с кондитером. Он свяжется с вами после заказа.");
         }
 
-        // Остальная логика
         const phoneInput = document.getElementById('cust-phone');
         phoneInput.addEventListener('input', function(e) {
             let val = e.target.value;
@@ -200,20 +200,11 @@
                 const item = productsData[id];
                 if (item) {
                     const lineSum = (item.price * cart[id]).toFixed(2);
-                    html += `<div class="preview-row">
-                                <span>${item.name} (${cart[id]} шт.)</span>
-                                <span class="item-price-detail">${lineSum} BYN</span>
-                             </div>`;
+                    html += `<div class="preview-row"><span>${item.name} (${cart[id]} шт.)</span><span class="item-price-detail">${lineSum} BYN</span></div>`;
                 }
             }
             document.getElementById('cart-items-preview').innerHTML = html;
             document.getElementById('final-sum').innerText = total + " BYN";
-        }
-
-        function updateDeliveryText() {
-            const type = document.getElementById('delivery-type').value;
-            const addressLine = document.getElementById('pickup-address-line');
-            addressLine.style.display = (type === 'Яндекс.Доставка') ? 'none' : 'inline';
         }
 
         function copyPhone() { navigator.clipboard.writeText('+375296514403'); tg.showAlert("Номер скопирован!"); }
