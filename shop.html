@@ -223,11 +223,22 @@
             document.getElementById('cart-modal').style.display = 'flex';
         }
 
+        // ОБНОВЛЕННАЯ ФУНКЦИЯ ПЕРЕХОДА
         function goToCheckout() {
             if (total === 0) return;
+            
+            // Сохраняем корзину
             localStorage.setItem('mara_cart', JSON.stringify(cart));
             localStorage.setItem('mara_total', total.toFixed(2));
-            window.location.href = 'checkout.html';
+            
+            // Проверяем город и перенаправляем в нужную папку
+            const selectedCity = localStorage.getItem('selectedCity');
+            
+            if (selectedCity === 'Гомель') {
+                window.location.href = 'gomel/checkout.html';
+            } else {
+                window.location.href = 'rb/checkout.html';
+            }
         }
 
         function clearCart() { cart = {}; updateTotal(); }
