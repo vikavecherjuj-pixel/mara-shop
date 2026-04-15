@@ -32,12 +32,11 @@
         .btn-main { width: 100%; padding: 18px; background: var(--burgundy); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; }
         .btn-discuss-active { background: var(--burgundy); color: white; margin-top: 10px; padding: 15px; font-size: 11px; font-weight: 700; border-radius: 12px; border: none; width: 100%; text-transform: uppercase; font-family: 'Montserrat'; cursor: pointer; }
         
-        /* Стилизация ЕРИП как на скриншоте */
+        /* Стилизация ЕРИП по картинке */
         .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 20px; border-radius: 15px; text-align: left; }
         .erip-text { font-size: 11px; color: #555; line-height: 1.6; margin-bottom: 10px; }
         .erip-phone { color: var(--green); font-weight: 900; font-size: 20px; display: block; margin: 10px 0; letter-spacing: 0.5px; }
-        .btn-copy { background: #f0f0f0; color: #444; border: none; border-radius: 10px; padding: 12px; width: 100%; font-size: 11px; font-weight: 700; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; transition: 0.2s; }
-        .btn-copy:active { background: #e0e0e0; }
+        .btn-copy { background: #f0f0f0; color: #444; border: none; border-radius: 10px; padding: 12px; width: 100%; font-size: 11px; font-weight: 700; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; }
     </style>
 </head>
 <body onclick="document.activeElement.blur()">
@@ -95,21 +94,20 @@
         <div class="checkout-card">
             <div class="checkout-title">Дополнительно</div>
             <label>Комментарий к заказу</label>
-            <textarea id="cust-comment" placeholder="Напишите пожелания или уточнения..."></textarea>
+            <textarea id="cust-comment" placeholder="Ваши пожелания..."></textarea>
         </div>
 
         <div class="checkout-card">
             <div class="checkout-title">Оплата (ЕРИП)</div>
             <div class="erip-box">
                 <div class="erip-text">
-                    Система Расчета ЕРИП / Банковские, Финансовые услуги / Банки, НКФО / АЛЬФА-БАНК / Пополнение счета / указать номер:
+                    Система Расчета ЕРИП / Банковские, Финансовые услуги / Банки, НКФО / АЛЬФА-БАНК / Пополнение счета / указать номер телефона:
                 </div>
                 <div class="erip-phone">+375 (29) 651-44-03</div>
                 <button class="btn-copy" onclick="copyPhone()">Скопировать номер</button>
                 <div id="copy-msg" style="font-size: 10px; color: var(--green); text-align: center; margin-top: 8px; display: none; font-weight: 700;">Номер скопирован!</div>
             </div>
-            <p style="text-align: center; font-size: 10px; color: #888; margin-top: 10px;">Пришлите скриншот чека после нажатия кнопки ниже</p>
-            <button class="btn-main" style="margin-top:10px;" onclick="finalSubmit()">Подтвердить и заказать</button>
+            <button class="btn-main" style="margin-top:15px;" onclick="finalSubmit()">Я оплатил, подтвердить заказ</button>
         </div>
     </div>
 
@@ -119,16 +117,11 @@
         const city = localStorage.getItem('selectedCity') || 'Gomel';
 
         const productsData = [
-            { id: 'q1', name: 'Орешки со сгущёнкой', price: 1.10 },
-            { id: 'q2', name: 'Орешки + орех', price: 1.50 },
-            { id: 'q3', name: 'Кокос и миндаль', price: 1.80 },
-            { id: 'q4', name: 'Nutella и фундук', price: 1.80 },
-            { id: 'q5', name: 'Трубочки', price: 4.00 },
-            { id: 'q6', name: 'Муравейник', price: 2.50 },
-            { id: 'q7', name: 'Грибочки', price: 2.50 },
-            { id: 'q11', name: 'Картошка', price: 4.00 },
-            { id: 't1', name: 'Медовик 1.1кг', price: 65.00 },
-            { id: 'n1', name: 'Набор Ассорти', price: 30.00 }
+            { id: 'q1', name: 'Орешки со сгущёнкой', price: 1.10 }, { id: 'q2', name: 'Орешки + орех', price: 1.50 },
+            { id: 'q3', name: 'Кокос и миндаль', price: 1.80 }, { id: 'q4', name: 'Nutella и фундук', price: 1.80 },
+            { id: 'q5', name: 'Трубочки', price: 4.00 }, { id: 'q6', name: 'Муравейник', price: 2.50 },
+            { id: 'q7', name: 'Грибочки', price: 2.50 }, { id: 'q11', name: 'Картошка', price: 4.00 },
+            { id: 't1', name: 'Медовик 1.1кг', price: 65.00 }, { id: 'n1', name: 'Набор Ассорти', price: 30.00 }
         ];
 
         const phoneInput = document.getElementById('cust-phone');
@@ -184,28 +177,17 @@
             }
         }
 
-        function togglePostFields() {
-            const type = document.getElementById('post-type').value;
-            document.getElementById('euro-box').style.display = type === 'Европочта' ? 'block' : 'none';
-            document.getElementById('bel-box').style.display = type === 'Белпочта' ? 'block' : 'none';
-        }
-
-        function setDiscuss() { 
-            selectedTime = "ОБСУДИТЬ С КОНДИТЕРОМ";
-            tg.showAlert("Вы выбрали вариант обсуждения времени.");
-        }
+        function setDiscuss() { selectedTime = "ОБСУДИТЬ С КОНДИТЕРОМ"; tg.showAlert("Вы выбрали вариант обсуждения времени."); }
 
         function renderOrder() {
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
             let html = '';
             for (let id in cart) {
-                const product = productsData.find(p => p.id === id);
-                const pName = product ? product.name : id;
-                const pPrice = product ? (product.price * cart[id]).toFixed(2) : "0.00";
-                html += `<div class="preview-row"><span>${pName} (${cart[id]} шт.)</span><span>${pPrice} BYN</span></div>`;
+                const p = productsData.find(x => x.id === id);
+                html += `<div class="preview-row"><span>${p ? p.name : id} (${cart[id]} шт.)</span><span>${p ? (p.price*cart[id]).toFixed(2) : '0.00'} BYN</span></div>`;
             }
             document.getElementById('cart-items-preview').innerHTML = html;
-            if(city === 'Gomel' || city === 'Гомель') {
+            if(city.toLowerCase().includes('gomel') || city.includes('Гомель')) {
                 document.getElementById('final-sum').innerText = localStorage.getItem('mara_total') + " BYN";
             }
         }
@@ -213,22 +195,13 @@
         function finalSubmit() {
             const name = document.getElementById('cust-name').value;
             const phone = document.getElementById('cust-phone').value;
-            const comment = document.getElementById('cust-comment').value;
-
-            if(!name || phone.length < 17) return tg.showAlert("Заполните имя и полный номер телефона!");
-
+            if(!name || phone.length < 17) return tg.showAlert("Заполните имя и номер телефона!");
+            
             let info = (city === 'Gomel' || city === 'Гомель') ? 
                 `Доставка: ${document.getElementById('delivery-type').value}, Время: ${selectedTime}` :
                 `Почта: ${document.getElementById('post-type').value}, Город: ${document.getElementById('post-city').value}`;
 
-            const orderData = {
-                city, name, phone, info,
-                comment: comment || "Нет комментария",
-                total: document.getElementById('final-sum').innerText,
-                items: JSON.parse(localStorage.getItem('mara_cart'))
-            };
-
-            tg.sendData(JSON.stringify(orderData));
+            tg.sendData(JSON.stringify({ city, name, phone, info, comment: document.getElementById('cust-comment').value, total: document.getElementById('final-sum').innerText }));
             setTimeout(() => { tg.openTelegramLink('https://t.me/v_m_y_y'); tg.close(); }, 500);
         }
         window.onload = init;
