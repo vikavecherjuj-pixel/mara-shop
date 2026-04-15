@@ -30,9 +30,7 @@
         .time-btn:disabled { opacity: 0.3; background: #eee; cursor: not-allowed; color: #aaa; }
         .time-btn.active { background: var(--burgundy); color: white; border-color: var(--burgundy); }
         
-        /* ГЛАВНАЯ ЗЕЛЕНАЯ КНОПКА */
         .btn-main { width: 100%; padding: 18px; background: var(--green); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; box-shadow: 0 4px 10px rgba(33, 162, 82, 0.3); }
-        
         .btn-discuss-active { background: var(--burgundy); color: white; margin-top: 10px; padding: 15px; font-size: 11px; font-weight: 700; border-radius: 12px; border: none; width: 100%; text-transform: uppercase; font-family: 'Montserrat'; cursor: pointer; }
         
         .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 20px; border-radius: 15px; text-align: left; }
@@ -102,19 +100,31 @@
             't1': 'Медовик 1.1кг', 't2': 'Медовик 2.2кг', 'n1': 'Набор Ассорти'
         };
 
+        // НАСТРОЙКА ДАТЫ
         const dateInput = document.getElementById('order-date');
         const now = new Date();
-        const todayStr = now.toISOString().split('T')[0];
+        // Смещение времени для Беларуси (UTC+3)
+        const offset = 3 * 60 * 60 * 1000;
+        const localNow = new Date(now.getTime() + offset);
+        const todayStr = localNow.toISOString().split('T')[0];
+        
         dateInput.setAttribute('min', todayStr);
 
         function generateTimeSlots() {
             const container = document.getElementById('time-slots');
             const selectedDate = document.getElementById('order-date').value;
+            
+            // Если всё же выбрана прошлая дата (некоторые браузеры позволяют)
+            if (selectedDate < todayStr) {
+                tg.showAlert("Выбрана прошлая дата! Пожалуйста, выберите корректный день.");
+                document.getElementById('order-date').value = todayStr;
+                return generateTimeSlots();
+            }
+
             document.getElementById('time-section').style.display = 'block';
             container.innerHTML = '';
             
-            const currentNow = new Date();
-            const currentHour = currentNow.getHours();
+            const currentHour = now.getHours();
             const isToday = (selectedDate === todayStr);
 
             for (let h = 9; h <= 21; h++) {
@@ -122,6 +132,7 @@
                 btn.className = 'time-btn';
                 btn.innerText = h + ':00';
 
+                // Блокировка: сегодня + 2 часа
                 if (isToday && h < (currentHour + 2)) {
                     btn.disabled = true;
                 } else {
@@ -180,6 +191,12 @@
             const name = document.getElementById('cust-name').value;
             const phone = document.getElementById('cust-phone').value;
             const date = document.getElementById('order-date').value;
+            
+            // ЖЕСТКАЯ ПРОВЕРКА ДАТЫ ПРИ ОТПРАВКЕ
+            if (date < todayStr) {
+                return tg.showAlert("Ошибка! Выбрана прошедшая дата. Пожалуйста, выберите корректное число.");
+            }
+            
             if(!name || phone.length < 17) return tg.showAlert("Введите имя и полный телефон!");
             if(!date) return tg.showAlert("Выберите дату заказа!");
             if(!selectedTime) return tg.showAlert("Выберите время или 'Обсудить с кондитером'");
