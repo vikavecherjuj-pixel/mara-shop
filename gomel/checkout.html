@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --accent: #c5a059; --burgundy: #630d16; --dark: #2c1a11; --bg: #fdfaf5; --green: #27ae60; }
+        :root { --accent: #c5a059; --burgundy: #630d16; --dark: #2c1a11; --bg: #fdfaf5; --green: #21a252; }
         body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding: 10px; color: var(--dark); min-height: 100vh; }
         #checkout-screen { display: flex; flex-direction: column; gap: 12px; padding-bottom: 40px; }
         .back-link-top { text-align: left; margin-bottom: 5px; }
@@ -16,7 +16,6 @@
         .checkout-title { font-weight: 900; font-size: 14px; margin-bottom: 12px; color: var(--burgundy); text-transform: uppercase; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
         label { display: block; font-size: 10px; font-weight: 700; margin-bottom: 6px; color: #888; text-transform: uppercase; }
         
-        /* Черные слэши в полях */
         input, select, textarea { 
             width: 100%; padding: 14px; border: 1px solid #f0f0f0; border-radius: 12px; 
             font-family: 'Montserrat'; font-size: 14px; margin-bottom: 12px; box-sizing: border-box; 
@@ -28,9 +27,12 @@
         
         .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
         .time-btn { padding: 10px 5px; border: 1px solid #eee; border-radius: 10px; font-size: 11px; background: #fff; font-weight: 700; font-family: 'Montserrat'; cursor: pointer; }
+        .time-btn:disabled { opacity: 0.3; background: #eee; cursor: not-allowed; color: #aaa; }
         .time-btn.active { background: var(--burgundy); color: white; border-color: var(--burgundy); }
         
-        .btn-main { width: 100%; padding: 18px; background: var(--burgundy); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; }
+        /* ГЛАВНАЯ ЗЕЛЕНАЯ КНОПКА */
+        .btn-main { width: 100%; padding: 18px; background: var(--green); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; box-shadow: 0 4px 10px rgba(33, 162, 82, 0.3); }
+        
         .btn-discuss-active { background: var(--burgundy); color: white; margin-top: 10px; padding: 15px; font-size: 11px; font-weight: 700; border-radius: 12px; border: none; width: 100%; text-transform: uppercase; font-family: 'Montserrat'; cursor: pointer; }
         
         .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 20px; border-radius: 15px; text-align: left; }
@@ -84,7 +86,7 @@
                 <div class="erip-phone">+375 (29) 651-44-03</div>
                 <button class="btn-copy" onclick="copyPhone()">Скопировать номер</button>
             </div>
-            <button class="btn-main" style="margin-top:15px;" onclick="finalSubmit()">Я оплатил, подтвердить заказ</button>
+            <button class="btn-main" style="margin-top:20px;" onclick="finalSubmit()">Я оплатил, подтвердить заказ</button>
         </div>
     </div>
 
@@ -100,10 +102,40 @@
             't1': 'Медовик 1.1кг', 't2': 'Медовик 2.2кг', 'n1': 'Набор Ассорти'
         };
 
-        // 2. Блокировка прошедших дат
         const dateInput = document.getElementById('order-date');
-        const today = new Date().toISOString().split('T')[0];
-        dateInput.setAttribute('min', today);
+        const now = new Date();
+        const todayStr = now.toISOString().split('T')[0];
+        dateInput.setAttribute('min', todayStr);
+
+        function generateTimeSlots() {
+            const container = document.getElementById('time-slots');
+            const selectedDate = document.getElementById('order-date').value;
+            document.getElementById('time-section').style.display = 'block';
+            container.innerHTML = '';
+            
+            const currentNow = new Date();
+            const currentHour = currentNow.getHours();
+            const isToday = (selectedDate === todayStr);
+
+            for (let h = 9; h <= 21; h++) {
+                let btn = document.createElement('button');
+                btn.className = 'time-btn';
+                btn.innerText = h + ':00';
+
+                if (isToday && h < (currentHour + 2)) {
+                    btn.disabled = true;
+                } else {
+                    btn.onclick = (e) => { 
+                        e.preventDefault();
+                        document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active'); 
+                        selectedTime = h + ':00'; 
+                    };
+                }
+                container.appendChild(btn);
+            }
+            selectedTime = ""; 
+        }
 
         const phoneInput = document.getElementById('cust-phone');
         phoneInput.addEventListener('input', function(e) {
@@ -136,26 +168,10 @@
             addressLine.style.display = (type === 'Яндекс.Доставка') ? 'none' : 'inline';
         }
 
-        function generateTimeSlots() {
-            const container = document.getElementById('time-slots');
-            document.getElementById('time-section').style.display = 'block';
-            container.innerHTML = '';
-            for (let h = 9; h <= 21; h++) {
-                let btn = document.createElement('button');
-                btn.className = 'time-btn'; btn.innerText = h + ':00';
-                btn.onclick = (e) => { 
-                    e.preventDefault();
-                    document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active'); selectedTime = h + ':00'; 
-                };
-                container.appendChild(btn);
-            }
-        }
-
         function setDiscuss() { 
             selectedTime = "Обсудить с кондитером"; 
             document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
-            tg.showAlert("Вы выбрали: Обсудить время с кондитером"); 
+            tg.showAlert("Выбрано: Обсудить время с кондитером"); 
         }
 
         function copyPhone() { navigator.clipboard.writeText('+375296514403'); tg.showAlert("Номер скопирован!"); }
@@ -166,7 +182,7 @@
             const date = document.getElementById('order-date').value;
             if(!name || phone.length < 17) return tg.showAlert("Введите имя и полный телефон!");
             if(!date) return tg.showAlert("Выберите дату заказа!");
-            if(!selectedTime) return tg.showAlert("Выберите время или нажмите 'Обсудить с кондитером'");
+            if(!selectedTime) return tg.showAlert("Выберите время или 'Обсудить с кондитером'");
             
             const data = {
                 name, phone, 
