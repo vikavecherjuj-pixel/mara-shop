@@ -16,18 +16,19 @@
         .checkout-title { font-weight: 900; font-size: 14px; margin-bottom: 12px; color: var(--burgundy); text-transform: uppercase; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
         label { display: block; font-size: 10px; font-weight: 700; margin-bottom: 6px; color: #888; text-transform: uppercase; }
         
+        /* Исправлен цвет курсора и текста */
         input, select { 
             width: 100%; padding: 14px; border: 1px solid #f0f0f0; border-radius: 12px; 
-            font-family: 'Montserrat', sans-serif; font-size: 14px; margin-bottom: 12px; box-sizing: border-box; 
-            background: #fafafa; outline: none; color: black;
+            font-family: 'Montserrat'; font-size: 14px; margin-bottom: 12px; box-sizing: border-box; 
+            background: #fafafa; outline: none; color: black !important; caret-color: black !important;
         }
 
-        .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px; }
+        .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; border-bottom: 1px dashed #eee; }
         .final-sum { text-align: right; font-weight: 900; color: var(--accent); font-size: 18px; margin-top: 10px; }
         .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
-        .time-btn { padding: 10px 5px; border: 1px solid #eee; border-radius: 10px; font-size: 11px; background: #fff; font-weight: 700; font-family: 'Montserrat', sans-serif; }
+        .time-btn { padding: 10px 5px; border: 1px solid #eee; border-radius: 10px; font-size: 11px; background: #fff; font-weight: 700; }
         .time-btn.active { background: var(--burgundy); color: white; }
-        .btn-main { width: 100%; padding: 18px; background: var(--burgundy); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat', sans-serif; }
+        .btn-main { width: 100%; padding: 18px; background: var(--burgundy); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; }
         .btn-discuss { background: #eee; color: var(--dark); margin-top: 5px; padding: 14px; font-size: 11px; font-weight: 700; }
         .erip-box { background: #f4f9f4; border: 1px solid #e0eee0; padding: 15px; border-radius: 15px; font-size: 11px; }
     </style>
@@ -46,14 +47,14 @@
 
         <div class="checkout-card">
             <div class="checkout-title">Контактные данные</div>
-            <label id="label-name">Имя</label>
+            <label>Имя</label>
             <input type="text" id="cust-name" placeholder="Введите ваше имя">
             <label>Телефон</label>
             <input type="tel" id="cust-phone" value="+375 ">
         </div>
 
         <div id="gomel-fields" class="checkout-card" style="display:none;">
-            <div class="checkout-title">Доставка Гомель</div>
+            <div class="checkout-title">Выберите способ получения</div>
             <select id="delivery-type">
                 <option value="Самовывоз">Самовывоз (Свиридова 11)</option>
                 <option value="Яндекс.Доставка">Яндекс.Доставка</option>
@@ -109,11 +110,12 @@
             { id: 'n1', name: 'Набор Ассорти', price: 30.00 }
         ];
 
-        // Корректная работа с номером телефона
+        // Корректная работа с номером телефона (можно удалять цифры)
         const phoneInput = document.getElementById('cust-phone');
         phoneInput.addEventListener('input', function(e) {
             let val = e.target.value;
             if (!val.startsWith('+375 ')) { e.target.value = '+375 '; return; }
+            
             let digits = val.substring(5).replace(/\D/g, '');
             let formatted = '+375 ';
             if (digits.length > 0) formatted += '(' + digits.substring(0, 2);
@@ -123,11 +125,17 @@
             e.target.value = formatted;
         });
 
+        // Запрет на удаление префикса бэкспейсом
+        phoneInput.addEventListener('keydown', function(e) {
+            if (e.key === "Backspace" && phoneInput.value.length <= 5) {
+                e.preventDefault();
+            }
+        });
+
         function init() {
             renderOrder();
             if(city === 'Gomel' || city === 'Гомель') {
                 document.getElementById('gomel-fields').style.display = 'block';
-                document.getElementById('label-name').innerText = "Имя";
             } else {
                 document.getElementById('rb-fields').style.display = 'block';
                 document.getElementById('delivery-line').style.display = 'flex';
@@ -145,16 +153,15 @@
 
             document.getElementById('time-section').style.display = 'block';
             container.innerHTML = '';
-            
             for (let h = 9; h <= 21; h++) {
                 if (h < minHour) continue;
                 let btn = document.createElement('button');
                 btn.className = 'time-btn';
                 btn.innerText = h + ':00';
-                btn.onclick = (e) => {
+                btn.onclick = (e) => { 
                     e.stopPropagation();
                     document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active'); selectedTime = btn.innerText;
+                    btn.classList.add('active'); selectedTime = h + ':00'; 
                 };
                 container.appendChild(btn);
             }
@@ -177,7 +184,7 @@
             let html = '';
             for (let id in cart) {
                 const product = productsData.find(p => p.id === id);
-                const pName = product ? product.name : id;
+                const pName = product ? product.name : "Артикул " + id;
                 const pPrice = product ? (product.price * cart[id]).toFixed(2) : "0.00";
                 html += `<div class="preview-row"><span>${pName} (${cart[id]} шт.)</span><span>${pPrice} BYN</span></div>`;
             }
