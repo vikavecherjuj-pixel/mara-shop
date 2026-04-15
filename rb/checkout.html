@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mara Shop - Доставка по РБ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root { --accent: #c5a059; --burgundy: #630d16; --dark: #2c1a11; --bg: #fdfaf5; --green: #27ae60; }
+        body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding: 10px; color: var(--dark); min-height: 100vh; }
+        #checkout-screen { display: flex; flex-direction: column; gap: 12px; padding-bottom: 40px; }
+        .back-link-top { text-align: left; margin-bottom: 5px; }
+        /* ВАЖНО: Тут ссылка на главную изменена на ../shop.html, так как файл в папке */
+        .back-link-top a { color: #aaa; text-decoration: none; font-size: 13px; font-weight: 700; }
+        .checkout-card { background: white; border-radius: 20px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .checkout-title { font-weight: 900; font-size: 14px; margin-bottom: 12px; color: var(--burgundy); text-transform: uppercase; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
+        label { display: block; font-size: 10px; font-weight: 700; margin-bottom: 6px; color: #888; text-transform: uppercase; }
+        
+        input, select, textarea { 
+            width: 100%; padding: 14px; border: 1px solid #f0f0f0; border-radius: 12px; 
+            font-family: 'Montserrat'; font-size: 14px; margin-bottom: 12px; box-sizing: border-box; 
+            background: #fafafa; outline: none; color: black !important; caret-color: black !important;
+        }
+        textarea { resize: none; height: 80px; }
+
+        .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px; }
+        .final-sum { text-align: right; font-weight: 900; color: var(--accent); font-size: 18px; margin-top: 10px; }
+        .btn-main { width: 100%; padding: 18px; background: var(--burgundy); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; }
+        
+        .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 20px; border-radius: 15px; text-align: left; }
+        .erip-text { font-size: 11px; color: #555; line-height: 1.6; margin-bottom: 10px; }
+        .erip-phone { color: var(--green); font-weight: 900; font-size: 20px; display: block; margin: 10px 0; letter-spacing: 0.5px; }
+        .btn-copy { background: #f0f0f0; color: #444; border: none; border-radius: 10px; padding: 12px; width: 100%; font-size: 11px; font-weight: 700; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; }
+    </style>
+</head>
+<body onclick="document.activeElement.blur()">
+    <div id="checkout-screen" onclick="event.stopPropagation()">
+        <h2 style="text-align: center; font-weight: 900; font-size: 22px; margin: 15px 0;">ОФОРМЛЕНИЕ</h2>
+        <div class="back-link-top"><a href="../shop.html">← Назад в каталог</a></div>
+        
+        <div class="checkout-card">
+            <div class="checkout-title">Ваш заказ</div>
+            <div id="cart-items-preview"></div>
+            <div class="preview-row" style="color: var(--burgundy); font-weight:700;"><span>Доставка почтой</span><span>10.00 BYN</span></div>
+            <div class="final-sum" id="final-sum">0.00 BYN</div>
+        </div>
+
+        <div class="checkout-card">
+            <div class="checkout-title">Контактные данные</div>
+            <label>Фамилия и Имя</label>
+            <input type="text" id="cust-name" placeholder="Для почты нужно полное ФИО">
+            <label>Телефон</label>
+            <input type="tel" id="cust-phone" value="+375 ">
+        </div>
+
+        <div class="checkout-card">
+            <div class="checkout-title">Данные для доставки</div>
+            <select id="post-type" onchange="togglePostFields()">
+                <option value="Европочта">Европочта</option>
+                <option value="Белпочта">Белпочта</option>
+            </select>
+            
+            <label>Город</label>
+            <input type="text" id="post-city" placeholder="Напр: Минск">
+            
+            <div id="euro-box">
+                <label>Номер или адрес отделения</label>
+                <input type="text" id="post-dept" placeholder="Напр: Отделение №142">
+            </div>
+            
+            <div id="bel-box" style="display:none;">
+                <label>Полный адрес (Улица, дом, кв)</label>
+                <input type="text" id="post-addr">
+                <label>Почтовый индекс</label>
+                <input type="text" id="post-index">
+            </div>
+            
+            <p style="color:red; font-size:10px; font-weight:700; margin-top: 5px;">
+                *Отправка осуществляется после 100% оплаты заказа. Почтовые услуги оплачиваются отдельно при получении.
+            </p>
+        </div>
+
+        <div class="checkout-card">
+            <div class="checkout-title">Комментарий</div>
+            <textarea id="cust-comment" placeholder="Напишите, если есть доп. пожелания..."></textarea>
+        </div>
+
+        <div class="checkout-card">
+            <div class="checkout-title">Оплата (ЕРИП)</div>
+            <div class="erip-box">
+                <div class="erip-text">Система Расчета ЕРИП / Банковские услуги / Банки / АЛЬФА-БАНК / Пополнение счета:</div>
+                <div class="erip-phone">+375 (29) 651-44-03</div>
+                <button class="btn-copy" onclick="copyPhone()">Скопировать номер</button>
+            </div>
+            <button class="btn-main" style="margin-top:15px;" onclick="finalSubmit()">Я оплатил, оформить заказ</button>
+        </div>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+
+        function copyPhone() {
+            navigator.clipboard.writeText('+375296514403');
+            tg.showAlert("Номер скопирован!");
+        }
+
+        function togglePostFields() {
+            const type = document.getElementById('post-type').value;
+            document.getElementById('euro-box').style.display = type === 'Европочта' ? 'block' : 'none';
+            document.getElementById('bel-box').style.display = type === 'Белпочта' ? 'block' : 'none';
+        }
+
+        const phoneInput = document.getElementById('cust-phone');
+        phoneInput.addEventListener('input', function(e) {
+            let val = e.target.value;
+            if (!val.startsWith('+375 ')) { e.target.value = '+375 '; return; }
+            let digits = val.substring(5).replace(/\D/g, '');
+            let formatted = '+375 ';
+            if (digits.length > 0) formatted += '(' + digits.substring(0, 2);
+            if (digits.length >= 3) formatted += ') ' + digits.substring(2, 5);
+            if (digits.length >= 6) formatted += '-' + digits.substring(5, 7);
+            if (digits.length >= 8) formatted += '-' + digits.substring(7, 9);
+            e.target.value = formatted;
+        });
+
+        function renderOrder() {
+            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
+            let html = '';
+            // Мы не подгружаем массив продуктов здесь для легкости, просто показываем ID и кол-во
+            for (let id in cart) {
+                html += `<div class="preview-row"><span>Товар ID: ${id}</span><span>${cart[id]} шт.</span></div>`;
+            }
+            document.getElementById('cart-items-preview').innerHTML = html;
+            let total = parseFloat(localStorage.getItem('mara_total') || 0);
+            document.getElementById('final-sum').innerText = (total + 10).toFixed(2) + " BYN";
+        }
+
+        function finalSubmit() {
+            const name = document.getElementById('cust-name').value;
+            const phone = document.getElementById('cust-phone').value;
+            const city = document.getElementById('post-city').value;
+            
+            if(!name || phone.length < 17 || !city) return tg.showAlert("Заполните ФИО, телефон и город!");
+
+            const type = document.getElementById('post-type').value;
+            let deliveryInfo = `Почта: ${type}, Город: ${city}`;
+            if(type === 'Европочта') deliveryInfo += `, Отд: ${document.getElementById('post-dept').value}`;
+            else deliveryInfo += `, Адрес: ${document.getElementById('post-addr').value}, Индекс: ${document.getElementById('post-index').value}`;
+
+            const data = {
+                city: "РБ",
+                name: name,
+                phone: phone,
+                info: deliveryInfo,
+                comment: document.getElementById('cust-comment').value,
+                total: document.getElementById('final-sum').innerText
+            };
+
+            tg.sendData(JSON.stringify(data));
+            tg.close();
+        }
+
+        window.onload = renderOrder;
+    </script>
+</body>
+</html>
