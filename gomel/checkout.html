@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mara Shop - Оформление</title>
+    <title>Mara Shop - Оформление Гомель</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -19,34 +19,32 @@
         input, select, textarea { 
             width: 100%; padding: 14px; border: 1px solid #f0f0f0; border-radius: 12px; 
             font-family: 'Montserrat'; font-size: 14px; margin-bottom: 12px; box-sizing: border-box; 
-            background: #fafafa; outline: none; color: black !important; caret-color: black !important;
+            background: #fafafa; outline: none; color: black !important;
         }
-        textarea { resize: none; height: 80px; }
 
         .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px; }
         .final-sum { text-align: right; font-weight: 900; color: var(--accent); font-size: 18px; margin-top: 10px; }
+        
         .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
         .time-btn { padding: 10px 5px; border: 1px solid #eee; border-radius: 10px; font-size: 11px; background: #fff; font-weight: 700; font-family: 'Montserrat'; }
         .time-btn.active { background: var(--burgundy); color: white; }
         
         .btn-main { width: 100%; padding: 18px; background: var(--burgundy); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; }
-        .btn-discuss-active { background: var(--burgundy); color: white; margin-top: 10px; padding: 15px; font-size: 11px; font-weight: 700; border-radius: 12px; border: none; width: 100%; text-transform: uppercase; font-family: 'Montserrat'; cursor: pointer; }
+        .btn-discuss-active { background: var(--burgundy); color: white; margin-top: 10px; padding: 15px; font-size: 11px; font-weight: 700; border-radius: 12px; border: none; width: 100%; text-transform: uppercase; font-family: 'Montserrat'; }
         
-        .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 20px; border-radius: 15px; text-align: left; }
-        .erip-text { font-size: 11px; color: #555; line-height: 1.6; margin-bottom: 10px; }
-        .erip-phone { color: var(--green); font-weight: 900; font-size: 20px; display: block; margin: 10px 0; letter-spacing: 0.5px; }
-        .btn-copy { background: #f0f0f0; color: #444; border: none; border-radius: 10px; padding: 12px; width: 100%; font-size: 11px; font-weight: 700; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; }
+        .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 20px; border-radius: 15px; }
+        .erip-phone { color: var(--green); font-weight: 900; font-size: 20px; display: block; margin: 10px 0; }
+        .btn-copy { background: #f0f0f0; border: none; border-radius: 10px; padding: 12px; width: 100%; font-size: 11px; font-weight: 700; text-transform: uppercase; font-family: 'Montserrat'; }
     </style>
 </head>
 <body onclick="document.activeElement.blur()">
-    <div id="checkout-screen" onclick="event.stopPropagation()">
+    <div id="checkout-screen">
         <h2 style="text-align: center; font-weight: 900; font-size: 22px; margin: 15px 0;">ОФОРМЛЕНИЕ</h2>
-        <div class="back-link-top"><a href="shop.html">← Назад в каталог</a></div>
+        <div class="back-link-top"><a href="../shop.html">← Назад в каталог</a></div>
         
         <div class="checkout-card">
             <div class="checkout-title">Ваш заказ</div>
             <div id="cart-items-preview"></div>
-            <div id="delivery-line" class="preview-row" style="display:none; color: var(--burgundy); font-weight:700;"><span>Доставка РБ</span><span>10.00 BYN</span></div>
             <div class="final-sum" id="final-sum">0.00 BYN</div>
         </div>
 
@@ -58,128 +56,86 @@
             <input type="tel" id="cust-phone" value="+375 ">
         </div>
 
-        <div id="gomel-fields" class="checkout-card" style="display:none;">
-            <div class="checkout-title">Выберите способ получения</div>
+        <div class="checkout-card">
+            <div class="checkout-title">Способ получения</div>
             <select id="delivery-type" onchange="updateDeliveryText()">
                 <option value="Самовывоз">Самовывоз (Свиридова 11)</option>
                 <option value="Яндекс.Доставка">Яндекс.Доставка</option>
             </select>
             <div id="delivery-info-text" style="font-size: 10px; color: #888; font-weight: 600; line-height: 1.4;">
-                <span id="pickup-address">*Самовывоз: Свиридова 11, 6 подъезд<br></span>
+                <span id="pickup-address-line">*Самовывоз: Свиридова 11, 6 подъезд<br></span>
                 Позвоните за 10 минут до приезда: <a href="tel:+375296514403" style="color: var(--burgundy); text-decoration: none; font-weight: 900;">+375 (29) 651-44-03</a>
             </div>
-            <label style="margin-top:10px;">Дата</label>
+            
+            <label style="margin-top:15px;">Дата</label>
             <input type="date" id="order-date" onchange="generateTimeSlots()">
+            
             <div id="time-section" style="display:none;"><div class="time-grid" id="time-slots"></div></div>
             <button class="btn-discuss-active" onclick="setDiscuss()">Обсудить время с кондитером</button>
-        </div>
-
-        <div id="rb-fields" class="checkout-card" style="display:none;">
-            <div class="checkout-title">Доставка по РБ</div>
-            <select id="post-type" onchange="togglePostFields()">
-                <option value="Европочта">Европочта</option>
-                <option value="Белпочта">Белпочта</option>
-            </select>
-            <label>Город</label>
-            <input type="text" id="post-city">
-            <div id="euro-box"><label>Номер отделения</label><input type="text" id="post-dept"></div>
-            <div id="bel-box" style="display:none;">
-                <label>Адрес (Улица, дом, кв)</label><input type="text" id="post-addr">
-                <label>Индекс</label><input type="text" id="post-index">
-            </div>
-            <p style="color:red; font-size:10px; font-weight:700;">*Отправка после 100% оплаты.</p>
-        </div>
-
-        <div class="checkout-card">
-            <div class="checkout-title">Дополнительно</div>
-            <label>Комментарий к заказу</label>
-            <textarea id="cust-comment" placeholder="Ваши пожелания..."></textarea>
         </div>
 
         <div class="checkout-card">
             <div class="checkout-title">Оплата (ЕРИП)</div>
             <div class="erip-box">
-                <div class="erip-text">
-                    Система Расчета ЕРИП / Банковские, Финансовые услуги / Банки, НКФО / АЛЬФА-БАНК / Пополнение счета / указать номер телефона:
-                </div>
+                <div style="font-size:11px; color:#555;">Система ЕРИП / Банки / АЛЬФА-БАНК / Пополнение счета:</div>
                 <div class="erip-phone">+375 (29) 651-44-03</div>
                 <button class="btn-copy" onclick="copyPhone()">Скопировать номер</button>
-                <div id="copy-msg" style="font-size: 10px; color: var(--green); text-align: center; margin-top: 8px; display: none; font-weight: 700;">Номер скопирован!</div>
             </div>
-            <button class="btn-main" style="margin-top:15px;" onclick="finalSubmit()">Я оплатил, подтвердить заказ</button>
+            <button class="btn-main" style="margin-top:15px;" onclick="finalSubmit()">Подтвердить и заказать</button>
         </div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         let selectedTime = "";
-        const city = localStorage.getItem('selectedCity') || 'Gomel';
 
-        const productsData = [
-            { id: 'q1', name: 'Орешки со сгущёнкой', price: 1.10 }, { id: 'q2', name: 'Орешки + орех', price: 1.50 },
-            { id: 'q3', name: 'Кокос и миндаль', price: 1.80 }, { id: 'q4', name: 'Nutella и фундук', price: 1.80 },
-            { id: 'q5', name: 'Трубочки', price: 4.00 }, { id: 'q6', name: 'Муравейник', price: 2.50 },
-            { id: 'q7', name: 'Грибочки', price: 2.50 }, { id: 'q11', name: 'Картошка', price: 4.00 },
-            { id: 't1', name: 'Медовик 1.1кг', price: 65.00 }, { id: 'n1', name: 'Набор Ассорти', price: 30.00 }
-        ];
-
-        // Логика переключения текста доставки
-        function updateDeliveryText() {
-            const type = document.getElementById('delivery-type').value;
-            const addressSpan = document.getElementById('pickup-address');
-            if (type === 'Яндекс.Доставка') {
-                addressSpan.style.display = 'none';
-            } else {
-                addressSpan.style.display = 'inline';
-            }
-        }
-
-        const phoneInput = document.getElementById('cust-phone');
-        phoneInput.addEventListener('input', function(e) {
-            let val = e.target.value;
-            if (!val.startsWith('+375 ')) { e.target.value = '+375 '; return; }
-            let digits = val.substring(5).replace(/\D/g, '');
-            let formatted = '+375 ';
-            if (digits.length > 0) formatted += '(' + digits.substring(0, 2);
-            if (digits.length >= 3) formatted += ') ' + digits.substring(2, 5);
-            if (digits.length >= 6) formatted += '-' + digits.substring(5, 7);
-            if (digits.length >= 8) formatted += '-' + digits.substring(7, 9);
-            e.target.value = formatted;
-        });
-
-        function copyPhone() {
-            navigator.clipboard.writeText('+375296514403');
-            const msg = document.getElementById('copy-msg');
-            msg.style.display = 'block';
-            setTimeout(() => msg.style.display = 'none', 2000);
-        }
+        // База товаров для корректных названий
+        const productsData = {
+            'q1': 'Орешки со сгущёнкой', 'q2': 'Орешки + орех', 'q3': 'Кокос и миндаль',
+            'q4': 'Nutella и фундук', 'q5': 'Трубочки', 'q6': 'Муравейник',
+            'q7': 'Грибочки', 'q8': 'Сердечки', 'q9': 'Кокосовое',
+            'q10': 'Орешки в глазури', 'q11': 'Картошка', 'q12': 'Шоколадная колбаса',
+            't1': 'Медовик 1.1кг', 't2': 'Медовик 2.2кг', 'n1': 'Набор Ассорти'
+        };
 
         function init() {
+            // 1. Блокировка прошедших дат
+            const dateInput = document.getElementById('order-date');
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.setAttribute('min', today);
+            
             renderOrder();
-            if(city.toLowerCase().includes('gomel') || city.includes('Гомель')) {
-                document.getElementById('gomel-fields').style.display = 'block';
-            } else {
-                document.getElementById('rb-fields').style.display = 'block';
-                document.getElementById('delivery-line').style.display = 'flex';
-                let total = parseFloat(localStorage.getItem('mara_total'));
-                document.getElementById('final-sum').innerText = (total + 10).toFixed(2) + " BYN";
+        }
+
+        // 2. Отображение названий и сумм
+        function renderOrder() {
+            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
+            const total = localStorage.getItem('mara_total') || '0.00';
+            let html = '';
+            
+            for (let id in cart) {
+                const name = productsData[id] || id;
+                html += `<div class="preview-row"><span>${name} (${cart[id]} шт.)</span></div>`;
             }
+            document.getElementById('cart-items-preview').innerHTML = html;
+            document.getElementById('final-sum').innerText = total + " BYN";
+        }
+
+        // 3. Скрытие строки самовывоза при Яндекс.Доставке
+        function updateDeliveryText() {
+            const type = document.getElementById('delivery-type').value;
+            const addressLine = document.getElementById('pickup-address-line');
+            addressLine.style.display = (type === 'Яндекс.Доставка') ? 'none' : 'inline';
         }
 
         function generateTimeSlots() {
             const container = document.getElementById('time-slots');
-            const dateVal = document.getElementById('order-date').value;
-            const now = new Date();
-            const isToday = new Date(dateVal).toDateString() === now.toDateString();
-            const minHour = isToday ? now.getHours() + 2 : 9;
             document.getElementById('time-section').style.display = 'block';
             container.innerHTML = '';
             for (let h = 9; h <= 21; h++) {
-                if (h < minHour) continue;
                 let btn = document.createElement('button');
                 btn.className = 'time-btn'; btn.innerText = h + ':00';
-                btn.onclick = (e) => { 
-                    e.stopPropagation();
+                btn.onclick = () => { 
                     document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active'); selectedTime = h + ':00'; 
                 };
@@ -187,39 +143,25 @@
             }
         }
 
-        function setDiscuss() { selectedTime = "ОБСУДИТЬ С КОНДИТЕРОМ"; tg.showAlert("Вы выбрали вариант обсуждения времени."); }
-
-        function togglePostFields() {
-            const type = document.getElementById('post-type').value;
-            document.getElementById('euro-box').style.display = type === 'Европочта' ? 'block' : 'none';
-            document.getElementById('bel-box').style.display = type === 'Белпочта' ? 'block' : 'none';
-        }
-
-        function renderOrder() {
-            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
-            let html = '';
-            for (let id in cart) {
-                const p = productsData.find(x => x.id === id);
-                html += `<div class="preview-row"><span>${p ? p.name : id} (${cart[id]} шт.)</span><span>${p ? (p.price*cart[id]).toFixed(2) : '0.00'} BYN</span></div>`;
-            }
-            document.getElementById('cart-items-preview').innerHTML = html;
-            if(city.toLowerCase().includes('gomel') || city.includes('Гомель')) {
-                document.getElementById('final-sum').innerText = localStorage.getItem('mara_total') + " BYN";
-            }
-        }
+        function setDiscuss() { selectedTime = "Обсудить с кондитером"; tg.showAlert("Выбрано: Обсудить время"); }
+        function copyPhone() { navigator.clipboard.writeText('+375296514403'); tg.showAlert("Номер скопирован!"); }
 
         function finalSubmit() {
             const name = document.getElementById('cust-name').value;
             const phone = document.getElementById('cust-phone').value;
-            if(!name || phone.length < 17) return tg.showAlert("Заполните имя и номер телефона!");
+            if(!name || phone.length < 10) return tg.showAlert("Заполните данные!");
             
-            let info = (city.toLowerCase().includes('gomel') || city.includes('Гомель')) ? 
-                `Доставка: ${document.getElementById('delivery-type').value}, Время: ${selectedTime}` :
-                `Почта: ${document.getElementById('post-type').value}, Город: ${document.getElementById('post-city').value}`;
-
-            tg.sendData(JSON.stringify({ city, name, phone, info, comment: document.getElementById('cust-comment').value, total: document.getElementById('final-sum').innerText }));
-            setTimeout(() => { tg.openTelegramLink('https://t.me/v_m_y_y'); tg.close(); }, 500);
+            const data = {
+                name, phone, 
+                delivery: document.getElementById('delivery-type').value,
+                date: document.getElementById('order-date').value,
+                time: selectedTime,
+                total: document.getElementById('final-sum').innerText
+            };
+            tg.sendData(JSON.stringify(data));
+            tg.close();
         }
+
         window.onload = init;
     </script>
 </body>
