@@ -22,7 +22,8 @@
             background: #fafafa; outline: none; color: black !important; caret-color: black !important;
         }
 
-        .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px; }
+        .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px; align-items: center; }
+        .item-price-detail { font-weight: 700; color: var(--accent); white-space: nowrap; margin-left: 10px; }
         .final-sum { text-align: right; font-weight: 900; color: var(--accent); font-size: 18px; margin-top: 10px; }
         
         .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
@@ -93,37 +94,40 @@
         let selectedTime = "";
 
         const productsData = {
-            'q1': 'Орешки со сгущёнкой', 'q2': 'Орешки + орех', 'q3': 'Кокос и миндаль',
-            'q4': 'Nutella и фундук', 'q5': 'Трубочки', 'q6': 'Муравейник',
-            'q7': 'Грибочки', 'q8': 'Сердечки', 'q9': 'Кокосовое',
-            'q10': 'Орешки в глазури', 'q11': 'Картошка', 'q12': 'Шоколадная колбаса',
-            't1': 'Медовик 1.1кг', 't2': 'Медовик 2.2кг', 'n1': 'Набор Ассорти'
+            'q1': { name: 'Орешки со сгущёнкой', price: 1.10 },
+            'q2': { name: 'Орешки + орех', price: 1.50 },
+            'q3': { name: 'Кокос и миндаль', price: 1.80 },
+            'q4': { name: 'Nutella и фундук', price: 1.80 },
+            'q5': { name: 'Трубочки', price: 4.00 },
+            'q6': { name: 'Муравейник', price: 2.50 },
+            'q7': { name: 'Грибочки', price: 2.50 },
+            'q8': { name: 'Сердечки', price: 2.50 },
+            'q9': { name: 'Кокосовое', price: 2.50 },
+            'q10': { name: 'Орешки в глазури', price: 2.50 },
+            'q11': { name: 'Картошка', price: 4.00 },
+            'q12': { name: 'Шоколадная колбаса', price: 12.00 },
+            't1': { name: 'Медовик 1.1кг', price: 65.00 },
+            't2': { name: 'Медовик 2.2кг', price: 130.00 },
+            'n1': { name: 'Набор Ассорти', price: 30.00 }
         };
 
-        // НАСТРОЙКА ДАТЫ
         const dateInput = document.getElementById('order-date');
         const now = new Date();
-        // Смещение времени для Беларуси (UTC+3)
         const offset = 3 * 60 * 60 * 1000;
         const localNow = new Date(now.getTime() + offset);
         const todayStr = localNow.toISOString().split('T')[0];
-        
         dateInput.setAttribute('min', todayStr);
 
         function generateTimeSlots() {
             const container = document.getElementById('time-slots');
             const selectedDate = document.getElementById('order-date').value;
-            
-            // Если всё же выбрана прошлая дата (некоторые браузеры позволяют)
             if (selectedDate < todayStr) {
-                tg.showAlert("Выбрана прошлая дата! Пожалуйста, выберите корректный день.");
+                tg.showAlert("Выбрана прошлая дата!");
                 document.getElementById('order-date').value = todayStr;
                 return generateTimeSlots();
             }
-
             document.getElementById('time-section').style.display = 'block';
             container.innerHTML = '';
-            
             const currentHour = now.getHours();
             const isToday = (selectedDate === todayStr);
 
@@ -131,8 +135,6 @@
                 let btn = document.createElement('button');
                 btn.className = 'time-btn';
                 btn.innerText = h + ':00';
-
-                // Блокировка: сегодня + 2 часа
                 if (isToday && h < (currentHour + 2)) {
                     btn.disabled = true;
                 } else {
@@ -166,8 +168,14 @@
             const total = localStorage.getItem('mara_total') || '0.00';
             let html = '';
             for (let id in cart) {
-                const name = productsData[id] || id;
-                html += `<div class="preview-row"><span>${name} (${cart[id]} шт.)</span></div>`;
+                const item = productsData[id];
+                if (item) {
+                    const lineSum = (item.price * cart[id]).toFixed(2);
+                    html += `<div class="preview-row">
+                                <span>${item.name} (${cart[id]} шт.)</span>
+                                <span class="item-price-detail">${lineSum} BYN</span>
+                             </div>`;
+                }
             }
             document.getElementById('cart-items-preview').innerHTML = html;
             document.getElementById('final-sum').innerText = total + " BYN";
@@ -191,15 +199,10 @@
             const name = document.getElementById('cust-name').value;
             const phone = document.getElementById('cust-phone').value;
             const date = document.getElementById('order-date').value;
-            
-            // ЖЕСТКАЯ ПРОВЕРКА ДАТЫ ПРИ ОТПРАВКЕ
-            if (date < todayStr) {
-                return tg.showAlert("Ошибка! Выбрана прошедшая дата. Пожалуйста, выберите корректное число.");
-            }
-            
+            if (date < todayStr) return tg.showAlert("Ошибка! Выбрана прошедшая дата.");
             if(!name || phone.length < 17) return tg.showAlert("Введите имя и полный телефон!");
             if(!date) return tg.showAlert("Выберите дату заказа!");
-            if(!selectedTime) return tg.showAlert("Выберите время или 'Обсудить с кондитером'");
+            if(!selectedTime) return tg.showAlert("Выберите время!");
             
             const data = {
                 name, phone, 
