@@ -20,12 +20,12 @@
             width: 100%; padding: 14px; border: 1px solid #f0f0f0; border-radius: 12px; 
             font-family: 'Montserrat'; font-size: 14px; margin-bottom: 12px; box-sizing: border-box; 
             background: #fafafa; outline: none; color: black !important;
-            transition: all 0.2s;
-            border-left: 4px solid transparent;
+            transition: all 0.2s ease;
+            border-left: 2px solid transparent; /* Тонкая линия */
         }
 
-        /* Анимация мигающего черного слеша (курсора) */
-        @keyframes blink-border {
+        /* Тонкий мигающий слеш (курсор) внутри поля */
+        @keyframes blink-cursor {
             0% { border-left-color: black; }
             50% { border-left-color: transparent; }
             100% { border-left-color: black; }
@@ -33,9 +33,9 @@
 
         .contact-input:focus {
             background: #fff;
-            padding-left: 12px;
-            animation: blink-border 0.8s infinite;
-            border-left: 4px solid black;
+            padding-left: 14px; /* Небольшой отступ для красоты */
+            border-left: 2px solid black; /* Уменьшил толщину до 2px */
+            animation: blink-cursor 0.8s infinite;
         }
 
         .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px; align-items: center; }
