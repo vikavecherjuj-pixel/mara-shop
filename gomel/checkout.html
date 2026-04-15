@@ -26,16 +26,16 @@
         .item-price-detail { font-weight: 700; color: var(--accent); white-space: nowrap; margin-left: 10px; }
         .final-sum { text-align: right; font-weight: 900; color: var(--accent); font-size: 18px; margin-top: 10px; }
         
-        .discuss-option-btn { width: 100%; padding: 16px; background: #f8f8f8; color: var(--burgundy); border: 2px dashed var(--burgundy); border-radius: 12px; font-weight: 700; font-size: 12px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; margin: 10px 0; }
-        .discuss-option-btn.active { background: var(--burgundy); color: white; border-style: solid; }
-
         .time-divider { text-align: center; margin: 15px 0; font-size: 10px; font-weight: 800; color: #bbb; text-transform: uppercase; letter-spacing: 1px; }
         
-        .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
         .time-btn { padding: 10px 5px; border: 1px solid #eee; border-radius: 10px; font-size: 11px; background: #fff; font-weight: 700; font-family: 'Montserrat'; cursor: pointer; min-height: 40px; }
         .time-btn:disabled { opacity: 0.3; background: #eee; cursor: not-allowed; color: #aaa; }
         .time-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
         
+        .discuss-option-btn { width: 100%; padding: 16px; background: #f8f8f8; color: var(--burgundy); border: 2px dashed var(--burgundy); border-radius: 12px; font-weight: 700; font-size: 12px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; margin-top: 10px; }
+        .discuss-option-btn.active { background: var(--burgundy); color: white; border-style: solid; }
+
         .btn-main { width: 100%; padding: 18px; background: var(--green); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; box-shadow: 0 4px 10px rgba(33, 162, 82, 0.3); }
         
         .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 20px; border-radius: 15px; text-align: left; }
@@ -66,19 +66,19 @@
                 Позвоните за 10 минут до приезда: <a href="tel:+375296514403" style="color: var(--burgundy); text-decoration: none; font-weight: 900;">+375 (29) 651-44-03</a>
             </div>
 
+            <label>Выберите дату</label>
+            <input type="date" id="order-date" onchange="generateTimeSlots()">
+            
+            <div id="time-grid-wrapper" style="display:none; margin-top: 10px;">
+                <label>Выберите точное время:</label>
+                <div class="time-grid" id="time-slots"></div>
+            </div>
+
+            <div class="time-divider">или</div>
+
             <button id="discuss-btn" class="discuss-option-btn" onclick="setDiscuss()">
                 Обсудить время с кондитером
             </button>
-
-            <div class="time-divider">или выбрать дату и время:</div>
-            
-            <label>Дата заказа</label>
-            <input type="date" id="order-date" onchange="generateTimeSlots()">
-            
-            <div id="time-grid-wrapper" style="display:none; margin-top: 15px;">
-                <label>Точное время:</label>
-                <div class="time-grid" id="time-slots"></div>
-            </div>
         </div>
 
         <div class="checkout-card">
@@ -146,7 +146,6 @@
                 return;
             }
 
-            // Если выбрали дату, снимаем фокус с "Обсудить с кондитером"
             document.getElementById('discuss-btn').classList.remove('active');
             wrapper.style.display = 'block';
             container.innerHTML = '';
@@ -179,7 +178,6 @@
         }
 
         function setDiscuss() {
-            // Сбрасываем дату и сетку времени
             document.getElementById('order-date').value = "";
             document.getElementById('time-grid-wrapper').style.display = 'none';
             document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
@@ -225,9 +223,8 @@
             
             if(!name || phone.length < 17) return tg.showAlert("Введите имя и полный телефон!");
             
-            // Если НЕ нажата кнопка обсуждения, проверяем дату и время
             if (selectedTime !== "Обсудить с кондитером") {
-                if(!date) return tg.showAlert("Выберите дату заказа или нажмите 'Обсудить с кондитером'!");
+                if(!date) return tg.showAlert("Выберите дату или нажмите 'Обсудить с кондитером'!");
                 if(!selectedTime) return tg.showAlert("Выберите время получения!");
             }
             
