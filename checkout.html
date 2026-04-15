@@ -16,11 +16,10 @@
         .checkout-title { font-weight: 900; font-size: 14px; margin-bottom: 12px; color: var(--burgundy); text-transform: uppercase; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
         label { display: block; font-size: 10px; font-weight: 700; margin-bottom: 6px; color: #888; text-transform: uppercase; }
         
-        /* Исправлен цвет текста и курсора (caret) для видимости слеша */
         input, select { 
             width: 100%; padding: 14px; border: 1px solid #f0f0f0; border-radius: 12px; 
             font-family: 'Montserrat'; font-size: 14px; margin-bottom: 12px; box-sizing: border-box; 
-            background: #fafafa; outline: none; color: var(--dark); caret-color: black;
+            background: #fafafa; outline: none; color: black; caret-color: black;
         }
 
         .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px; }
@@ -92,6 +91,7 @@
     <script>
         let tg = window.Telegram.WebApp;
         let selectedTime = "";
+        // Проверяем выбранный город
         const city = localStorage.getItem('selectedCity') || 'Gomel';
 
         const productsData = [
@@ -107,26 +107,29 @@
             { id: 'n1', name: 'Набор Ассорти', price: 30.00 }
         ];
 
-        // Фиксация +375 и маска телефона
+        // Маска телефона +375
         const phoneInput = document.getElementById('cust-phone');
         phoneInput.addEventListener('input', function (e) {
-            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,2})(\d{0,3})(\d{0,2})(\d{0,2})/);
-            if (!x[1]) { e.target.value = '+375 '; return; }
-            if (!e.target.value.startsWith('+375')) { e.target.value = '+375 ' + e.target.value.replace('+375', ''); }
-            
+            let value = e.target.value.replace(/\D/g, '');
+            if (!value.startsWith('375')) value = '375' + value;
+            let x = value.match(/(\d{3})(\d{0,2})(\d{0,3})(\d{0,2})(\d{0,2})/);
+            if (!x) return;
             e.target.value = '+375 ' + (x[2] ? '(' + x[2] + ') ' : '') + (x[3] ? x[3] : '') + (x[4] ? '-' + x[4] : '') + (x[5] ? '-' + x[5] : '');
         });
-
         phoneInput.addEventListener('keydown', function(e) {
-            if (e.key === "Backspace" && phoneInput.value.length <= 5) { e.preventDefault(); }
+            if (e.key === "Backspace" && phoneInput.value.length <= 5) e.preventDefault();
         });
 
         function init() {
             renderOrder();
-            if(city === 'Gomel') {
+            // ЛОГИКА ПЕРЕКЛЮЧЕНИЯ: Гомель или РБ
+            if(city === 'Gomel' || city === 'Гомель') {
                 document.getElementById('gomel-fields').style.display = 'block';
+                document.getElementById('rb-fields').style.display = 'none';
+                document.getElementById('delivery-line').style.display = 'none';
             } else {
                 document.getElementById('rb-fields').style.display = 'block';
+                document.getElementById('gomel-fields').style.display = 'none';
                 document.getElementById('delivery-line').style.display = 'flex';
                 let total = parseFloat(localStorage.getItem('mara_total'));
                 document.getElementById('final-sum').innerText = (total + 10).toFixed(2) + " BYN";
@@ -155,27 +158,10 @@
             }
         }
 
-        function setDiscuss() { selectedTime = "ОБСУДИТЬ"; document.getElementById('discuss-btn').style.background = '#630d16'; document.getElementById('discuss-btn').style.color = 'white'; }
-
-        function finalSubmit() {
-            const name = document.getElementById('cust-name').value;
-            const phone = document.getElementById('cust-phone').value;
-            if(!name || phone.length < 17) return tg.showAlert("Заполните корректно ФИО и номер телефона!");
-            
-            let deliveryData = city === 'Gomel' ? 
-                `Доставка: ${document.getElementById('delivery-type').value}, Время: ${selectedTime}` :
-                `Почта: ${document.getElementById('post-type').value}, Город: ${document.getElementById('post-city').value}`;
-
-            const data = {
-                city: city,
-                name: name,
-                phone: phone,
-                info: deliveryData,
-                total: document.getElementById('final-sum').innerText,
-                items: JSON.parse(localStorage.getItem('mara_cart'))
-            };
-            tg.sendData(JSON.stringify(data));
-            setTimeout(() => { tg.openTelegramLink('https://t.me/v_m_y_y'); tg.close(); }, 500);
+        function setDiscuss() { 
+            selectedTime = "ОБСУДИТЬ"; 
+            document.getElementById('discuss-btn').style.background = '#630d16'; 
+            document.getElementById('discuss-btn').style.color = 'white'; 
         }
 
         function renderOrder() {
@@ -188,9 +174,27 @@
                 html += `<div class="preview-row"><span>${pName} (${cart[id]} шт.)</span><span>${pPrice} BYN</span></div>`;
             }
             document.getElementById('cart-items-preview').innerHTML = html;
-            if(city === 'Gomel') {
+            if(city === 'Gomel' || city === 'Гомель') {
                 document.getElementById('final-sum').innerText = localStorage.getItem('mara_total') + " BYN";
             }
+        }
+
+        function finalSubmit() {
+            const name = document.getElementById('cust-name').value;
+            const phone = document.getElementById('cust-phone').value;
+            if(!name || phone.length < 17) return tg.showAlert("Заполните корректно ФИО и номер телефона!");
+            
+            let deliveryData = (city === 'Gomel' || city === 'Гомель') ? 
+                `Доставка: ${document.getElementById('delivery-type').value}, Время: ${selectedTime}` :
+                `Почта: ${document.getElementById('post-type').value}, Город: ${document.getElementById('post-city').value}`;
+
+            const data = {
+                city: city, name: name, phone: phone, info: deliveryData,
+                total: document.getElementById('final-sum').innerText,
+                items: JSON.parse(localStorage.getItem('mara_cart'))
+            };
+            tg.sendData(JSON.stringify(data));
+            setTimeout(() => { tg.openTelegramLink('https://t.me/v_m_y_y'); tg.close(); }, 500);
         }
 
         window.onload = init;
