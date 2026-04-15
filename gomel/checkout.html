@@ -26,8 +26,7 @@
         .item-price-detail { font-weight: 700; color: var(--accent); white-space: nowrap; margin-left: 10px; }
         .final-sum { text-align: right; font-weight: 900; color: var(--accent); font-size: 18px; margin-top: 10px; }
         
-        /* Кнопка "Обсудить" - теперь заметная и основная */
-        .discuss-option-btn { width: 100%; padding: 16px; background: #f8f8f8; color: var(--burgundy); border: 2px dashed var(--burgundy); border-radius: 12px; font-weight: 700; font-size: 12px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; margin-bottom: 10px; }
+        .discuss-option-btn { width: 100%; padding: 16px; background: #f8f8f8; color: var(--burgundy); border: 2px dashed var(--burgundy); border-radius: 12px; font-weight: 700; font-size: 12px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; margin: 10px 0; }
         .discuss-option-btn.active { background: var(--burgundy); color: white; border-style: solid; }
 
         .time-divider { text-align: center; margin: 15px 0; font-size: 10px; font-weight: 800; color: #bbb; text-transform: uppercase; letter-spacing: 1px; }
@@ -66,15 +65,18 @@
                 *Самовывоз: Свиридова 11, 6 подъезд<br>
                 Позвоните за 10 минут до приезда: <a href="tel:+375296514403" style="color: var(--burgundy); text-decoration: none; font-weight: 900;">+375 (29) 651-44-03</a>
             </div>
+
+            <button id="discuss-btn" class="discuss-option-btn" onclick="setDiscuss()">
+                Обсудить время с кондитером
+            </button>
+
+            <div class="time-divider">или выбрать дату и время:</div>
             
             <label>Дата заказа</label>
             <input type="date" id="order-date" onchange="generateTimeSlots()">
             
-            <div id="time-section" style="display:none; margin-top: 10px;">
-                <button id="discuss-btn" class="discuss-option-btn" onclick="setDiscuss()">
-                    Обсудить время с кондитером
-                </button>
-                <div class="time-divider">или выберите точное время:</div>
+            <div id="time-grid-wrapper" style="display:none; margin-top: 15px;">
+                <label>Точное время:</label>
                 <div class="time-grid" id="time-slots"></div>
             </div>
         </div>
@@ -130,19 +132,23 @@
             if (type === 'Самовывоз') {
                 infoBlock.innerHTML = `*Самовывоз: Свиридова 11, 6 подъезд<br>Позвоните за 10 минут до приезда: <a href="tel:+375296514403" style="color: var(--burgundy); text-decoration: none; font-weight: 900;">+375 (29) 651-44-03</a>`;
             } else {
-                infoBlock.innerHTML = `Тел: <a href="tel:+375296514403" style="color: var(--burgundy); text-decoration: none; font-weight: 900;">+375 (29) 651-44-03</a>`;
+                infoBlock.innerHTML = `Позвоните за 10 минут до приезда: <a href="tel:+375296514403" style="color: var(--burgundy); text-decoration: none; font-weight: 900;">+375 (29) 651-44-03</a>`;
             }
         }
 
         function generateTimeSlots() {
             const container = document.getElementById('time-slots');
+            const wrapper = document.getElementById('time-grid-wrapper');
             const selectedDate = document.getElementById('order-date').value;
-            if (selectedDate < todayStr) {
-                tg.showAlert("Выбрана прошлая дата!");
-                document.getElementById('order-date').value = todayStr;
-                return generateTimeSlots();
+            
+            if (!selectedDate) {
+                wrapper.style.display = 'none';
+                return;
             }
-            document.getElementById('time-section').style.display = 'block';
+
+            // Если выбрали дату, снимаем фокус с "Обсудить с кондитером"
+            document.getElementById('discuss-btn').classList.remove('active');
+            wrapper.style.display = 'block';
             container.innerHTML = '';
             
             const currentHour = now.getHours();
@@ -163,7 +169,6 @@
                 container.appendChild(btn);
             }
             selectedTime = "";
-            document.getElementById('discuss-btn').classList.remove('active');
         }
 
         function setActiveTime(element, value) {
@@ -174,7 +179,11 @@
         }
 
         function setDiscuss() {
+            // Сбрасываем дату и сетку времени
+            document.getElementById('order-date').value = "";
+            document.getElementById('time-grid-wrapper').style.display = 'none';
             document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+            
             document.getElementById('discuss-btn').classList.add('active');
             selectedTime = "Обсудить с кондитером";
         }
@@ -213,14 +222,20 @@
             const name = document.getElementById('cust-name').value;
             const phone = document.getElementById('cust-phone').value;
             const date = document.getElementById('order-date').value;
-            if (date < todayStr) return tg.showAlert("Ошибка в дате.");
+            
             if(!name || phone.length < 17) return tg.showAlert("Введите имя и полный телефон!");
-            if(!date) return tg.showAlert("Выберите дату!");
-            if(!selectedTime) return tg.showAlert("Выберите время или 'Обсудить с кондитером'");
+            
+            // Если НЕ нажата кнопка обсуждения, проверяем дату и время
+            if (selectedTime !== "Обсудить с кондитером") {
+                if(!date) return tg.showAlert("Выберите дату заказа или нажмите 'Обсудить с кондитером'!");
+                if(!selectedTime) return tg.showAlert("Выберите время получения!");
+            }
             
             const data = {
                 name, phone, delivery: document.getElementById('delivery-type').value,
-                date, time: selectedTime, comment: document.getElementById('cust-comment').value,
+                date: date || "Не указана (обсуждение)", 
+                time: selectedTime, 
+                comment: document.getElementById('cust-comment').value,
                 total: document.getElementById('final-sum').innerText
             };
             tg.sendData(JSON.stringify(data));
