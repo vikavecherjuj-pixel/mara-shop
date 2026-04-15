@@ -15,15 +15,22 @@
         .checkout-card { background: white; border-radius: 20px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .checkout-title { font-weight: 900; font-size: 14px; margin-bottom: 12px; color: var(--burgundy); text-transform: uppercase; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
         label { display: block; font-size: 10px; font-weight: 700; margin-bottom: 6px; color: #888; text-transform: uppercase; }
-        input, select { width: 100%; padding: 14px; border: 1px solid #f0f0f0; border-radius: 12px; font-family: 'Montserrat'; font-size: 14px; margin-bottom: 12px; box-sizing: border-box; background: #fafafa; outline: none; }
-        .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; border-bottom: 1px dashed #eee; }
+        
+        /* Исправлен цвет текста и курсора (caret) для видимости слеша */
+        input, select { 
+            width: 100%; padding: 14px; border: 1px solid #f0f0f0; border-radius: 12px; 
+            font-family: 'Montserrat'; font-size: 14px; margin-bottom: 12px; box-sizing: border-box; 
+            background: #fafafa; outline: none; color: var(--dark); caret-color: black;
+        }
+
+        .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px; }
         .final-sum { text-align: right; font-weight: 900; color: var(--accent); font-size: 18px; margin-top: 10px; }
         .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
         .time-btn { padding: 10px 5px; border: 1px solid #eee; border-radius: 10px; font-size: 11px; background: #fff; font-weight: 700; }
         .time-btn.active { background: var(--burgundy); color: white; }
         .btn-main { width: 100%; padding: 18px; background: var(--burgundy); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; }
         .btn-discuss { background: #eee; color: var(--dark); margin-top: 5px; padding: 14px; font-size: 12px; }
-        .erip-box { background: #f4f9f4; border: 1px solid #e0eee0; padding: 15px; border-radius: 15px; font-size: 11px; }
+        .erip-box { background: #f4f9f4; border: 1px solid #e0eee0; padding: 15px; border-radius: 15px; font-size: 11px; line-height: 1.5; }
     </style>
 </head>
 <body>
@@ -41,9 +48,9 @@
         <div class="checkout-card">
             <div class="checkout-title">Контактные данные</div>
             <label>Фамилия и Имя</label>
-            <input type="text" id="cust-name" placeholder="Иванов Иван">
+            <input type="text" id="cust-name" placeholder="Введите фамилию и имя">
             <label>Телефон</label>
-            <input type="tel" id="cust-phone" placeholder="+375 (__) ___-__-__">
+            <input type="tel" id="cust-phone" value="+375 ">
         </div>
 
         <div id="gomel-fields" class="checkout-card" style="display:none;">
@@ -72,7 +79,7 @@
                 <label>Адрес (Улица, дом, кв)</label><input type="text" id="post-addr">
                 <label>Индекс</label><input type="text" id="post-index">
             </div>
-            <p style="color:red; font-size:10px; font-weight:700;">*Отправка после 100% оплаты. Почту оплачиваете при получении.</p>
+            <p style="color:red; font-size:10px; font-weight:700;">*Отправка после 100% оплаты заказа и доставки.</p>
         </div>
 
         <div class="checkout-card">
@@ -86,6 +93,33 @@
         let tg = window.Telegram.WebApp;
         let selectedTime = "";
         const city = localStorage.getItem('selectedCity') || 'Gomel';
+
+        const productsData = [
+            { id: 'q1', name: 'Орешки со сгущёнкой', price: 1.10 },
+            { id: 'q2', name: 'Орешки + орех', price: 1.50 },
+            { id: 'q3', name: 'Кокос и миндаль', price: 1.80 },
+            { id: 'q4', name: 'Nutella и фундук', price: 1.80 },
+            { id: 'q5', name: 'Трубочки', price: 4.00 },
+            { id: 'q6', name: 'Муравейник', price: 2.50 },
+            { id: 'q7', name: 'Грибочки', price: 2.50 },
+            { id: 'q11', name: 'Картошка', price: 4.00 },
+            { id: 't1', name: 'Медовик 1.1кг', price: 65.00 },
+            { id: 'n1', name: 'Набор Ассорти', price: 30.00 }
+        ];
+
+        // Фиксация +375 и маска телефона
+        const phoneInput = document.getElementById('cust-phone');
+        phoneInput.addEventListener('input', function (e) {
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,2})(\d{0,3})(\d{0,2})(\d{0,2})/);
+            if (!x[1]) { e.target.value = '+375 '; return; }
+            if (!e.target.value.startsWith('+375')) { e.target.value = '+375 ' + e.target.value.replace('+375', ''); }
+            
+            e.target.value = '+375 ' + (x[2] ? '(' + x[2] + ') ' : '') + (x[3] ? x[3] : '') + (x[4] ? '-' + x[4] : '') + (x[5] ? '-' + x[5] : '');
+        });
+
+        phoneInput.addEventListener('keydown', function(e) {
+            if (e.key === "Backspace" && phoneInput.value.length <= 5) { e.preventDefault(); }
+        });
 
         function init() {
             renderOrder();
@@ -126,7 +160,7 @@
         function finalSubmit() {
             const name = document.getElementById('cust-name').value;
             const phone = document.getElementById('cust-phone').value;
-            if(!name || !phone) return tg.showAlert("Заполните имя и телефон!");
+            if(!name || phone.length < 17) return tg.showAlert("Заполните корректно ФИО и номер телефона!");
             
             let deliveryData = city === 'Gomel' ? 
                 `Доставка: ${document.getElementById('delivery-type').value}, Время: ${selectedTime}` :
@@ -147,12 +181,16 @@
         function renderOrder() {
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
             let html = '';
-            // Здесь должен быть ваш список продуктов для сопоставления названий
             for (let id in cart) {
-                html += `<div class="preview-row"><span>Артикул ${id}</span><span>${cart[id]} шт.</span></div>`;
+                const product = productsData.find(p => p.id === id);
+                const pName = product ? product.name : "Товар " + id;
+                const pPrice = product ? (product.price * cart[id]).toFixed(2) : "0.00";
+                html += `<div class="preview-row"><span>${pName} (${cart[id]} шт.)</span><span>${pPrice} BYN</span></div>`;
             }
             document.getElementById('cart-items-preview').innerHTML = html;
-            document.getElementById('final-sum').innerText = localStorage.getItem('mara_total') + " BYN";
+            if(city === 'Gomel') {
+                document.getElementById('final-sum').innerText = localStorage.getItem('mara_total') + " BYN";
+            }
         }
 
         window.onload = init;
