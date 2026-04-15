@@ -20,6 +20,13 @@
             width: 100%; padding: 14px; border: 1px solid #f0f0f0; border-radius: 12px; 
             font-family: 'Montserrat'; font-size: 14px; margin-bottom: 12px; box-sizing: border-box; 
             background: #fafafa; outline: none; color: black !important;
+            transition: border-left 0.2s;
+        }
+
+        /* Черный слеш (акцент) при наборе в полях контактов */
+        .contact-input:focus {
+            border-left: 4px solid black;
+            padding-left: 10px;
         }
 
         .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px; align-items: center; }
@@ -43,8 +50,8 @@
         .btn-copy { background: #f0f0f0; border: none; border-radius: 10px; padding: 12px; width: 100%; font-size: 11px; font-weight: 700; text-transform: uppercase; font-family: 'Montserrat'; cursor: pointer; }
     </style>
 </head>
-<body onclick="document.activeElement.blur()">
-    <div id="checkout-screen" onclick="event.stopPropagation()">
+<body>
+    <div id="checkout-screen">
         <h2 style="text-align: center; font-weight: 900; font-size: 22px; margin: 15px 0;">ОФОРМЛЕНИЕ</h2>
         <div class="back-link-top"><a href="../shop.html">← Назад в каталог</a></div>
         
@@ -84,11 +91,11 @@
         <div class="checkout-card">
             <div class="checkout-title">Контакты</div>
             <label>Имя</label>
-            <input type="text" id="cust-name" placeholder="Введите ваше имя">
+            <input type="text" id="cust-name" class="contact-input" placeholder="Введите ваше имя">
             <label>Телефон</label>
-            <input type="tel" id="cust-phone" value="+375 ">
+            <input type="tel" id="cust-phone" class="contact-input" value="+375 ">
             <label>Комментарий</label>
-            <textarea id="cust-comment" placeholder="Важные детали (необязательно)" rows="2"></textarea>
+            <textarea id="cust-comment" class="contact-input" placeholder="Важные детали (необязательно)" rows="2"></textarea>
         </div>
 
         <div class="checkout-card">
@@ -140,19 +147,12 @@
             const container = document.getElementById('time-slots');
             const wrapper = document.getElementById('time-grid-wrapper');
             const selectedDate = document.getElementById('order-date').value;
-            
-            if (!selectedDate) {
-                wrapper.style.display = 'none';
-                return;
-            }
-
+            if (!selectedDate) { wrapper.style.display = 'none'; return; }
             document.getElementById('discuss-btn').classList.remove('active');
             wrapper.style.display = 'block';
             container.innerHTML = '';
-            
             const currentHour = now.getHours();
             const isToday = (selectedDate === todayStr);
-
             for (let h = 9; h <= 21; h++) {
                 let btn = document.createElement('button');
                 btn.className = 'time-btn';
@@ -160,10 +160,7 @@
                 if (isToday && h < (currentHour + 2)) {
                     btn.disabled = true;
                 } else {
-                    btn.onclick = (e) => { 
-                        e.preventDefault();
-                        setActiveTime(btn, h + ':00');
-                    };
+                    btn.onclick = (e) => { e.preventDefault(); setActiveTime(btn, h + ':00'); };
                 }
                 container.appendChild(btn);
             }
@@ -181,7 +178,6 @@
             document.getElementById('order-date').value = "";
             document.getElementById('time-grid-wrapper').style.display = 'none';
             document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
-            
             document.getElementById('discuss-btn').classList.add('active');
             selectedTime = "Обсудить с кондитером";
         }
@@ -220,14 +216,11 @@
             const name = document.getElementById('cust-name').value;
             const phone = document.getElementById('cust-phone').value;
             const date = document.getElementById('order-date').value;
-            
             if(!name || phone.length < 17) return tg.showAlert("Введите имя и полный телефон!");
-            
             if (selectedTime !== "Обсудить с кондитером") {
                 if(!date) return tg.showAlert("Выберите дату или нажмите 'Обсудить с кондитером'!");
                 if(!selectedTime) return tg.showAlert("Выберите время получения!");
             }
-            
             const data = {
                 name, phone, delivery: document.getElementById('delivery-type').value,
                 date: date || "Не указана (обсуждение)", 
@@ -238,7 +231,6 @@
             tg.sendData(JSON.stringify(data));
             tg.close();
         }
-
         window.onload = renderOrder;
     </script>
 </body>
