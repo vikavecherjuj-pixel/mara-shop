@@ -8,48 +8,66 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { --accent: #c5a059; --burgundy: #630d16; --dark: #2c1a11; --bg: #fdfaf5; --green: #21a252; --gray: #f4f4f4; }
+        
         body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding: 12px; color: var(--dark); min-height: 100vh; }
         #checkout-screen { display: flex; flex-direction: column; gap: 16px; padding-bottom: 50px; }
+        
+        /* Ссылка назад */
+        .back-link-container { margin-bottom: 5px; }
+        .back-link-container a { color: #aaa; text-decoration: none; font-size: 13px; font-weight: 700; }
+
         .checkout-card { background: white; border-radius: 24px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
         .section-title { font-weight: 900; font-size: 13px; margin-bottom: 16px; color: var(--burgundy); text-transform: uppercase; border-bottom: 1px solid #f8f8f8; padding-bottom: 10px; }
 
-        /* Segmented Control */
+        /* Способ получения (Segmented Control) */
         .delivery-selector { display: flex; background: var(--gray); padding: 4px; border-radius: 14px; margin-bottom: 15px; }
-        .delivery-option { flex: 1; padding: 12px; text-align: center; font-size: 12px; font-weight: 700; border-radius: 11px; cursor: pointer; color: #888; }
+        .delivery-option { flex: 1; padding: 12px; text-align: center; font-size: 12px; font-weight: 700; border-radius: 11px; cursor: pointer; color: #888; transition: all 0.2s; }
         .delivery-option.active { background: white; color: var(--burgundy); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
-        /* Поля ввода */
+        /* Поля ввода и курсор */
         input, select, textarea { 
-            width: 100%; padding: 14px; border: 1px solid transparent; border-radius: 14px; 
+            width: 100%; border: 1px solid transparent; border-radius: 14px; 
             font-family: 'Montserrat'; font-size: 14px; box-sizing: border-box; 
             background: var(--gray); outline: none; color: black !important;
-            caret-color: black; /* Стандартный мигающий слеш */
+            caret-color: black; 
         }
-        input:focus { border-color: var(--accent); background: #fff; }
+        input:focus, textarea:focus { border-color: var(--accent); background: #fff; }
 
-        /* Разделение Даты и Времени */
-        .datetime-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
+        /* Строка даты и времени */
+        .datetime-row { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 15px; }
+        .field-group { flex: 1; display: flex; flex-direction: column; }
         .field-group label { display: block; font-size: 10px; font-weight: 800; color: #bbb; text-transform: uppercase; margin-bottom: 6px; }
-        
-        #order-time:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .or-divider { text-align: center; font-size: 10px; font-weight: 700; color: #ccc; margin: 10px 0; text-transform: uppercase; }
+        input[type="date"], #order-time { height: 48px; padding: 0 12px; -webkit-appearance: none; }
+        textarea { padding: 14px; resize: none; margin-top: 5px; }
 
-        /* Товары */
-        .preview-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; border-bottom: 1px dashed #eee; padding-bottom: 6px; }
-        .item-name { flex: 1; padding-right: 10px; }
-        .item-cost { font-weight: 700; color: var(--accent); }
+        /* Список товаров */
+        .preview-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; border-bottom: 1px dashed #eee; padding-bottom: 6px; align-items: flex-start; }
+        .item-name { flex: 1; padding-right: 10px; line-height: 1.4; }
+        .item-cost { font-weight: 700; color: var(--accent); white-space: nowrap; }
         .final-total { text-align: right; font-weight: 900; color: var(--accent); font-size: 20px; margin-top: 10px; }
 
-        .discuss-btn { width: 100%; padding: 14px; background: transparent; color: var(--burgundy); border: 2px dashed #ddd; border-radius: 14px; font-weight: 700; font-size: 12px; cursor: pointer; }
-        .discuss-btn.active { background: var(--burgundy); color: white; border-style: solid; }
+        /* Обсудить время */
+        .or-divider { text-align: center; font-size: 10px; font-weight: 700; color: #ccc; margin: 10px 0; text-transform: uppercase; }
+        .discuss-btn { width: 100%; padding: 14px; background: transparent; color: var(--burgundy); border: 2px dashed #ddd; border-radius: 14px; font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+        .discuss-btn.active { background: var(--burgundy); color: white; border-style: solid; border-color: var(--burgundy); }
 
-        .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 18px; border-radius: 18px; font-size: 11px; line-height: 1.4; }
-        .btn-main { width: 100%; padding: 20px; background: var(--green); color: white; border: none; border-radius: 18px; font-weight: 900; font-size: 15px; text-transform: uppercase; cursor: pointer; margin-top: 15px; }
+        /* Контакты */
+        .contact-label { display: block; font-size: 10px; font-weight: 800; color: #bbb; text-transform: uppercase; margin-bottom: 6px; margin-top: 12px; }
+
+        /* ЕРИП */
+        .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 18px; border-radius: 18px; font-size: 11px; line-height: 1.5; color: #555; }
+        .erip-phone { color: var(--green); font-weight: 900; font-size: 18px; display: block; margin-top: 8px; letter-spacing: 0.5px; }
+
+        .btn-main { width: 100%; padding: 20px; background: var(--green); color: white; border: none; border-radius: 18px; font-weight: 900; font-size: 15px; text-transform: uppercase; cursor: pointer; margin-top: 15px; box-shadow: 0 6px 20px rgba(33, 162, 82, 0.2); }
     </style>
 </head>
 <body>
     <div id="checkout-screen">
+        <div class="back-link-container">
+            <a href="shop.html">← Назад в каталог</a>
+        </div>
+
         <div class="checkout-card">
             <div class="section-title">Ваш выбор</div>
             <div id="cart-list"></div>
@@ -59,11 +77,11 @@
         <div class="checkout-card">
             <div class="section-title">Способ получения</div>
             <div class="delivery-selector">
-                <div class="delivery-option active" onclick="setDeliv('Самовывоз', this)">Самовывоз</div>
-                <div class="delivery-option" onclick="setDeliv('Яндекс.Доставка', this)">Доставка</div>
+                <div class="delivery-option active" id="opt-pickup" onclick="setDeliv('Самовывоз')">Самовывоз</div>
+                <div class="delivery-option" id="opt-delivery" onclick="setDeliv('Яндекс.Доставка')">Доставка</div>
             </div>
 
-            <div class="datetime-grid">
+            <div class="datetime-row">
                 <div class="field-group">
                     <label>Дата</label>
                     <input type="date" id="order-date" onchange="enableTime()">
@@ -82,19 +100,23 @@
 
         <div class="checkout-card">
             <div class="section-title">Ваши данные</div>
-            <label style="font-size:10px; color:#bbb; font-weight:800;">ИМЯ</label>
-            <input type="text" id="c-name" placeholder="Введите ваше имя" style="margin-bottom:12px;">
-            <label style="font-size:10px; color:#bbb; font-weight:800;">ТЕЛЕФОН</label>
+            <label class="contact-label">Имя</label>
+            <input type="text" id="c-name" placeholder="Введите ваше имя">
+            
+            <label class="contact-label">Телефон</label>
             <input type="tel" id="c-phone" value="+375 ">
+            
+            <label class="contact-label">Комментарий</label>
+            <textarea id="c-comment" placeholder="Адрес для доставки или другие пожелания" rows="3"></textarea>
         </div>
 
         <div class="checkout-card">
             <div class="section-title">Оплата (ЕРИП)</div>
             <div class="erip-box">
-                Система Расчета ЕРИП / Банковские, Финансовые услуги / Банки, НКФО / АЛЬФА-БАНК / Пополнение счета <br>
-                <strong style="color:var(--green); font-size:16px;">+375 (29) 651-44-03</strong>
+                Система Расчета ЕРИП / Банковские, Финансовые услуги / Банки, НКФО / АЛЬФА-БАНК / Пополнение счета
+                <span class="erip-phone">+375 (29) 651-44-03</span>
             </div>
-            <button class="btn-main" onclick="finish()">Заказать</button>
+            <button class="btn-main" onclick="finishOrder()">Оплатил, заказать</button>
         </div>
     </div>
 
@@ -103,59 +125,102 @@
         let method = "Самовывоз";
         let isDisc = false;
 
-        const products = {
-            'q1': { n: 'Орешки со сгущёнкой', p: 1.10 }, 'q4': { n: 'Nutella и фундук', p: 1.80 }
-            // Добавьте остальные id и цены аналогично
+        const productsData = {
+            'q1': { name: 'Орешки со сгущёнкой', price: 1.10 }, 'q2': { name: 'Орешки + орех', price: 1.50 },
+            'q3': { name: 'Кокос и миндаль', price: 1.80 }, 'q4': { name: 'Nutella и фундук', price: 1.80 },
+            'q5': { name: 'Трубочки', price: 4.00 }, 'q6': { name: 'Муравейник', price: 2.50 },
+            'q7': { name: 'Грибочки', price: 2.50 }, 'q8': { name: 'Сердечки', price: 2.50 },
+            'q9': { name: 'Кокосовое', price: 2.50 }, 'q10': { name: 'Орешки в глазури', price: 2.50 },
+            'q11': { name: 'Картошка', price: 4.00 }, 'q12': { name: 'Шоколадная колбаса', price: 12.00 },
+            't1': { name: 'Медовик 1.1кг', price: 65.00 }, 't2': { name: 'Медовик 2.2кг', price: 130.00 },
+            'n1': { name: 'Набор Ассорти', price: 30.00 }
         };
+
+        const dateInput = document.getElementById('order-date');
+        const now = new Date();
+        const offset = 3 * 60 * 60 * 1000;
+        const localNow = new Date(now.getTime() + offset);
+        const todayStr = localNow.toISOString().split('T')[0];
+        dateInput.setAttribute('min', todayStr);
 
         function render() {
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
             const total = localStorage.getItem('mara_total') || '0.00';
-            let h = '';
+            let html = '';
             for (let id in cart) {
-                const item = products[id] || { n: id, p: 0 };
-                const linePrice = (item.p * cart[id]).toFixed(2);
-                h += `<div class="preview-row">
-                        <span class="item-name">${item.n} × ${cart[id]}</span>
-                        <span class="item-cost">${linePrice} BYN</span>
-                      </div>`;
+                const item = productsData[id];
+                if (item) {
+                    const linePrice = (item.price * cart[id]).toFixed(2);
+                    html += `<div class="preview-row">
+                                <span class="item-name">${item.name} (${cart[id]} шт.)</span>
+                                <span class="item-cost">${linePrice} BYN</span>
+                             </div>`;
+                }
             }
-            document.getElementById('cart-list').innerHTML = h;
+            document.getElementById('cart-list').innerHTML = html;
             document.getElementById('final-sum').innerText = total + " BYN";
+        }
+
+        function setDeliv(m) {
+            method = m;
+            document.getElementById('opt-pickup').classList.toggle('active', m === 'Самовывоз');
+            document.getElementById('opt-delivery').classList.toggle('active', m === 'Яндекс.Доставка');
         }
 
         function enableTime() {
             const t = document.getElementById('order-time');
+            const selectedDate = dateInput.value;
             t.disabled = false;
             t.innerHTML = '<option value="">Выбрать время</option>';
-            for(let h=9; h<=21; h++) {
-                let o = document.createElement('option');
-                o.value = h+':00'; o.innerText = h+':00';
-                t.appendChild(o);
+            const currentHour = new Date().getHours();
+            const isToday = (selectedDate === todayStr);
+
+            for (let h = 9; h <= 21; h++) {
+                if (isToday && h < (currentHour + 3)) continue;
+                let opt = document.createElement('option');
+                opt.value = h + ':00';
+                opt.innerText = h + ':00';
+                t.appendChild(opt);
             }
             isDisc = false;
             document.getElementById('btn-discuss').classList.remove('active');
-        }
-
-        function setDeliv(m, el) {
-            method = m;
-            document.querySelectorAll('.delivery-option').forEach(o => o.classList.remove('active'));
-            el.classList.add('active');
         }
 
         function toggleDisc() {
             isDisc = !isDisc;
             document.getElementById('btn-discuss').classList.toggle('active', isDisc);
             if(isDisc) {
-                document.getElementById('order-date').value = '';
+                dateInput.value = '';
                 document.getElementById('order-time').disabled = true;
+                document.getElementById('order-time').innerHTML = '<option value="">Обсуждение...</option>';
             }
         }
 
-        function finish() {
+        document.getElementById('c-phone').addEventListener('input', function(e) {
+            let val = e.target.value;
+            if (!val.startsWith('+375 ')) { e.target.value = '+375 '; return; }
+            let digits = val.substring(5).replace(/\D/g, '');
+            let formatted = '+375 ';
+            if (digits.length > 0) formatted += '(' + digits.substring(0, 2);
+            if (digits.length >= 3) formatted += ') ' + digits.substring(2, 5);
+            if (digits.length >= 6) formatted += '-' + digits.substring(5, 7);
+            if (digits.length >= 8) formatted += '-' + digits.substring(7, 9);
+            e.target.value = formatted;
+        });
+
+        function finishOrder() {
             const name = document.getElementById('c-name').value;
-            if(!name) return tg.showAlert("Введите имя!");
-            tg.sendData(JSON.stringify({ name, method, disc: isDisc }));
+            const phone = document.getElementById('c-phone').value;
+            if(!name || phone.length < 17) return tg.showAlert("Введите имя и телефон!");
+            
+            const data = {
+                name, phone, method,
+                date: isDisc ? "Обсудить" : dateInput.value,
+                time: isDisc ? "Обсудить" : document.getElementById('order-time').value,
+                comment: document.getElementById('c-comment').value,
+                total: document.getElementById('final-sum').innerText
+            };
+            tg.sendData(JSON.stringify(data));
             tg.close();
         }
 
