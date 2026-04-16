@@ -16,15 +16,16 @@
         .checkout-title { font-weight: 900; font-size: 14px; margin-bottom: 12px; color: var(--burgundy); text-transform: uppercase; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
         label { display: block; font-size: 10px; font-weight: 700; margin-bottom: 6px; color: #888; text-transform: uppercase; }
         
+        /* Поля ввода с родным курсором после текста */
         input, select, textarea { 
             width: 100%; padding: 14px; border: 1px solid #f0f0f0; border-radius: 12px; 
             font-family: 'Montserrat'; font-size: 14px; margin-bottom: 12px; box-sizing: border-box; 
             background: #fafafa; outline: none; color: black !important;
-            transition: all 0.2s ease;
-            caret-color: black; /* Цвет курсора после букв */
+            transition: border-color 0.2s;
+            caret-color: black; /* Цвет курсора (слеша) при печати */
         }
 
-        .contact-input:focus {
+        input:focus, textarea:focus {
             background: #fff;
             border-color: #ddd;
         }
@@ -91,11 +92,11 @@
         <div class="checkout-card">
             <div class="checkout-title">Контакты</div>
             <label>Имя</label>
-            <input type="text" id="cust-name" class="contact-input" placeholder="Введите ваше имя">
+            <input type="text" id="cust-name" placeholder="Введите ваше имя">
             <label>Телефон</label>
-            <input type="tel" id="cust-phone" class="contact-input" value="+375 ">
+            <input type="tel" id="cust-phone" value="+375 ">
             <label>Комментарий</label>
-            <textarea id="cust-comment" class="contact-input" placeholder="Важные детали (необязательно)" rows="2"></textarea>
+            <textarea id="cust-comment" placeholder="Важные детали (необязательно)" rows="2"></textarea>
         </div>
 
         <div class="checkout-card">
@@ -126,13 +127,13 @@
             'n1': { name: 'Набор Ассорти', price: 30.00 }
         };
 
-        // Настройка даты (блокировка прошедших)
+        // БЛОКИРОВКА ПРОШЕДШИХ ДАТ
         const dateInput = document.getElementById('order-date');
         const now = new Date();
-        const offset = 3 * 60 * 60 * 1000;
+        const offset = 3 * 60 * 60 * 1000; // GMT+3
         const localNow = new Date(now.getTime() + offset);
         const todayStr = localNow.toISOString().split('T')[0];
-        dateInput.setAttribute('min', todayStr); // Запрещаем всё, что раньше сегодня
+        dateInput.setAttribute('min', todayStr);
 
         function updateDeliveryText() {
             const type = document.getElementById('delivery-type').value;
@@ -162,7 +163,7 @@
                 btn.className = 'time-btn';
                 btn.innerText = h + ':00';
                 
-                // Изменено на +3 часа от текущего времени
+                // ЗАПРЕТ НА +3 ЧАСА ОТ ТЕКУЩЕГО
                 if (isToday && h < (currentHour + 3)) {
                     btn.disabled = true;
                 } else {
