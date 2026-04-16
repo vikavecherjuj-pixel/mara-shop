@@ -3,194 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mara Shop - Оформление Гомель</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <title>Mara Shop - Оформление</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --accent: #c5a059; --burgundy: #630d16; --dark: #2c1a11; --bg: #fdfaf5; --green: #21a252; }
-        body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding: 10px; color: var(--dark); min-height: 100vh; }
-        #checkout-screen { display: flex; flex-direction: column; gap: 12px; padding-bottom: 40px; }
-        .back-link-top { text-align: left; margin-bottom: 5px; }
-        .back-link-top a { color: #aaa; text-decoration: none; font-size: 13px; font-weight: 700; }
-        .checkout-card { background: white; border-radius: 20px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .checkout-title { font-weight: 900; font-size: 14px; margin-bottom: 12px; color: var(--burgundy); text-transform: uppercase; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
-        label { display: block; font-size: 10px; font-weight: 700; margin-bottom: 6px; color: #888; text-transform: uppercase; }
+        :root { --accent: #c5a059; --burgundy: #630d16; --dark: #2c1a11; --bg: #fdfaf5; --green: #21a252; --gray: #f4f4f4; }
         
-        /* Поля ввода с родным курсором после текста */
+        body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding: 12px; color: var(--dark); min-height: 100vh; -webkit-tap-highlight-color: transparent; }
+        
+        #checkout-screen { display: flex; flex-direction: column; gap: 16px; padding-bottom: 50px; }
+        
+        .back-link { color: #aaa; text-decoration: none; font-size: 13px; font-weight: 700; margin-bottom: 5px; display: block; }
+        
+        .checkout-card { background: white; border-radius: 24px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
+        
+        .section-title { font-weight: 900; font-size: 13px; margin-bottom: 16px; color: var(--burgundy); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #f8f8f8; padding-bottom: 10px; }
+
+        /* НОВЫЙ ПЕРЕКЛЮЧАТЕЛЬ (Доставка/Самовывоз) */
+        .delivery-selector { display: flex; background: var(--gray); padding: 4px; border-radius: 14px; margin-bottom: 15px; }
+        .delivery-option { flex: 1; padding: 12px; text-align: center; font-size: 12px; font-weight: 700; border-radius: 11px; cursor: pointer; transition: all 0.3s ease; color: #888; }
+        .delivery-option.active { background: white; color: var(--burgundy); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+        .info-note { font-size: 11px; color: #888; line-height: 1.5; margin-bottom: 15px; background: #fffcf5; padding: 10px; border-radius: 10px; border-left: 3px solid var(--accent); }
+
+        /* ГРУППИРОВКА ДАТЫ И ВРЕМЕНИ */
+        .datetime-row { display: grid; grid-template-columns: 1.2fr 1fr; gap: 10px; margin-bottom: 15px; }
+        
+        label { display: block; font-size: 10px; font-weight: 800; margin-bottom: 6px; color: #bbb; text-transform: uppercase; }
+        
         input, select, textarea { 
-            width: 100%; padding: 14px; border: 1px solid #f0f0f0; border-radius: 12px; 
-            font-family: 'Montserrat'; font-size: 14px; margin-bottom: 12px; box-sizing: border-box; 
-            background: #fafafa; outline: none; color: black !important;
-            transition: border-color 0.2s;
-            caret-color: black; /* Цвет курсора (слеша) при печати */
+            width: 100%; padding: 14px; border: 1px solid transparent; border-radius: 14px; 
+            font-family: 'Montserrat'; font-size: 14px; box-sizing: border-box; 
+            background: var(--gray); outline: none; color: black !important; transition: all 0.2s;
         }
+        input:focus, textarea:focus { background: #fff; border-color: var(--accent); }
 
-        input:focus, textarea:focus {
-            background: #fff;
-            border-color: #ddd;
-        }
+        .time-select-custom { position: relative; }
 
-        .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px; align-items: center; }
-        .item-price-detail { font-weight: 700; color: var(--accent); white-space: nowrap; margin-left: 10px; }
-        .final-sum { text-align: right; font-weight: 900; color: var(--accent); font-size: 18px; margin-top: 10px; }
-        
-        .time-divider { text-align: center; margin: 15px 0; font-size: 10px; font-weight: 800; color: #bbb; text-transform: uppercase; letter-spacing: 1px; }
-        
-        .time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
-        .time-btn { padding: 10px 5px; border: 1px solid #eee; border-radius: 10px; font-size: 11px; background: #fff; font-weight: 700; font-family: 'Montserrat'; cursor: pointer; min-height: 40px; }
-        .time-btn:disabled { opacity: 0.3; background: #eee; cursor: not-allowed; color: #aaa; }
-        .time-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
-        
-        .discuss-option-btn { width: 100%; padding: 16px; background: #f8f8f8; color: var(--burgundy); border: 2px dashed var(--burgundy); border-radius: 12px; font-weight: 700; font-size: 12px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; margin-top: 10px; }
-        .discuss-option-btn.active { background: var(--burgundy); color: white; border-style: solid; }
+        /* СПИСОК ТОВАРОВ */
+        .preview-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px dashed #eee; }
+        .item-price { font-weight: 700; color: var(--accent); }
+        .total-amount { text-align: right; font-weight: 900; color: var(--accent); font-size: 20px; margin-top: 10px; }
 
-        .btn-main { width: 100%; padding: 18px; background: var(--green); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; box-shadow: 0 4px 10px rgba(33, 162, 82, 0.3); }
-        
-        .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 20px; border-radius: 15px; text-align: left; }
-        .erip-phone { color: var(--green); font-weight: 900; font-size: 20px; display: block; margin: 10px 0; letter-spacing: 0.5px; }
-        .btn-copy { background: #f0f0f0; border: none; border-radius: 10px; padding: 12px; width: 100%; font-size: 11px; font-weight: 700; text-transform: uppercase; font-family: 'Montserrat'; cursor: pointer; }
+        /* КНОПКА ОБСУДИТЬ */
+        .discuss-btn { width: 100%; padding: 14px; background: transparent; color: var(--burgundy); border: 2px dashed #ddd; border-radius: 14px; font-weight: 700; font-size: 12px; cursor: pointer; margin-top: 5px; }
+        .discuss-btn.active { background: var(--burgundy); color: white; border-color: var(--burgundy); }
+
+        /* ОПЛАТА ЕРИП */
+        .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 18px; border-radius: 18px; }
+        .erip-number { color: var(--green); font-weight: 900; font-size: 19px; display: block; margin: 8px 0; }
+        .btn-copy { background: white; border: 1px solid #eee; border-radius: 10px; padding: 10px; width: 100%; font-size: 11px; font-weight: 700; cursor: pointer; color: #555; }
+
+        .btn-main { width: 100%; padding: 20px; background: var(--green); color: white; border: none; border-radius: 18px; font-weight: 900; font-size: 15px; text-transform: uppercase; cursor: pointer; margin-top: 10px; box-shadow: 0 10px 20px rgba(33, 162, 82, 0.2); }
     </style>
 </head>
 <body onclick="document.activeElement.blur()">
+
     <div id="checkout-screen" onclick="event.stopPropagation()">
-        <h2 style="text-align: center; font-weight: 900; font-size: 22px; margin: 15px 0;">ОФОРМЛЕНИЕ</h2>
-        <div class="back-link-top"><a href="../shop.html">← Назад в каталог</a></div>
-        
+        <a href="../shop.html" class="back-link">← Вернуться к покупкам</a>
+
         <div class="checkout-card">
-            <div class="checkout-title">Ваш заказ</div>
-            <div id="cart-items-preview"></div>
-            <div class="final-sum" id="final-sum">0.00 BYN</div>
+            <div class="section-title">Ваш выбор</div>
+            <div id="cart-preview"></div>
+            <div class="total-amount" id="total-price">0.00 BYN</div>
         </div>
 
         <div class="checkout-card">
-            <div class="checkout-title">Получение</div>
-            <select id="delivery-type" onchange="updateDeliveryText()">
-                <option value="Самовывоз">Самовывоз (Свиридова 11)</option>
-                <option value="Яндекс.Доставка">Яндекс.Доставка</option>
-            </select>
+            <div class="section-title">Способ получения</div>
             
-            <div id="delivery-info-text" style="font-size: 10px; color: #888; font-weight: 600; line-height: 1.4; margin-bottom:15px;">
-                *Самовывоз: Свиридова 11, 6 подъезд<br>
-                Позвоните за 10 минут до приезда: <a href="tel:+375296514403" style="color: var(--burgundy); text-decoration: none; font-weight: 900;">+375 (29) 651-44-03</a>
+            <div class="delivery-selector">
+                <div class="delivery-option active" id="opt-pickup" onclick="setDelivery('Самовывоз')">Самовывоз</div>
+                <div class="delivery-option" id="opt-delivery" onclick="setDelivery('Яндекс.Доставка')">Доставка</div>
             </div>
 
-            <label>Выберите дату</label>
-            <input type="date" id="order-date" onchange="generateTimeSlots()">
-            
-            <div id="time-grid-wrapper" style="display:none; margin-top: 10px;">
-                <label>Выберите точное время:</label>
-                <div class="time-grid" id="time-slots"></div>
+            <div id="delivery-note" class="info-note">
+                Свиридова 11, 6 подъезд. Позвоните за 10 мин: <br>
+                <strong>+375 (29) 651-44-03</strong>
             </div>
 
-            <div class="time-divider">или</div>
+            <div class="datetime-row">
+                <div>
+                    <label>Дата</label>
+                    <input type="date" id="order-date" onchange="updateTimeSlots()">
+                </div>
+                <div>
+                    <label>Время</label>
+                    <select id="order-time">
+                        <option value="">Выберите...</option>
+                    </select>
+                </div>
+            </div>
 
-            <button id="discuss-btn" class="discuss-option-btn" onclick="setDiscuss()">
-                Обсудить время с кондитером
+            <button id="discuss-btn" class="discuss-btn" onclick="toggleDiscuss()">
+                Обсудить время в переписке
             </button>
         </div>
 
         <div class="checkout-card">
-            <div class="checkout-title">Контакты</div>
-            <label>Имя</label>
-            <input type="text" id="cust-name" placeholder="Введите ваше имя">
-            <label>Телефон</label>
-            <input type="tel" id="cust-phone" value="+375 ">
-            <label>Комментарий</label>
-            <textarea id="cust-comment" placeholder="Важные детали (необязательно)" rows="2"></textarea>
+            <div class="section-title">Ваши данные</div>
+            <div style="margin-bottom: 12px;">
+                <label>Имя</label>
+                <input type="text" id="cust-name" placeholder="Как к вам обращаться?">
+            </div>
+            <div style="margin-bottom: 12px;">
+                <label>Телефон</label>
+                <input type="tel" id="cust-phone" value="+375 ">
+            </div>
+            <div>
+                <label>Комментарий</label>
+                <textarea id="cust-comment" placeholder="Пожелания, детали адреса..." rows="2"></textarea>
+            </div>
         </div>
 
         <div class="checkout-card">
-            <div class="checkout-title">Оплата (ЕРИП)</div>
+            <div class="section-title">Оплата (ЕРИП)</div>
             <div class="erip-box">
-                <div style="font-size:11px; color:#555; line-height: 1.5;">
-                    Система Расчета ЕРИП / Банковские услуги / Банки / АЛЬФА-БАНК / Пополнение счета:
-                </div>
-                <div class="erip-phone">+375 (29) 651-44-03</div>
-                <button class="btn-copy" onclick="copyPhone()">Скопировать номер</button>
+                <span style="font-size: 10px; color: #777;">Альфа-Банк / Пополнение счета:</span>
+                <span class="erip-number">+375 (29) 651-44-03</span>
+                <button class="btn-copy" onclick="copyNum()">Скопировать номер</button>
             </div>
-            <button class="btn-main" style="margin-top:20px;" onclick="finalSubmit()">Я оплатил, подтвердить заказ</button>
+            <button class="btn-main" onclick="sendOrder()">Подтвердить и заказать</button>
         </div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
-        let selectedTime = "";
+        let deliveryMethod = "Самовывоз";
+        let isDiscussing = false;
 
-        const productsData = {
-            'q1': { name: 'Орешки со сгущёнкой', price: 1.10 }, 'q2': { name: 'Орешки + орех', price: 1.50 },
-            'q3': { name: 'Кокос и миндаль', price: 1.80 }, 'q4': { name: 'Nutella и фундук', price: 1.80 },
-            'q5': { name: 'Трубочки', price: 4.00 }, 'q6': { name: 'Муравейник', price: 2.50 },
-            'q7': { name: 'Грибочки', price: 2.50 }, 'q8': { name: 'Сердечки', price: 2.50 },
-            'q9': { name: 'Кокосовое', price: 2.50 }, 'q10': { name: 'Орешки в глазури', price: 2.50 },
-            'q11': { name: 'Картошка', price: 4.00 }, 'q12': { name: 'Шоколадная колбаса', price: 12.00 },
-            't1': { name: 'Медовик 1.1кг', price: 65.00 }, 't2': { name: 'Медовик 2.2кг', price: 130.00 },
-            'n1': { name: 'Набор Ассорти', price: 30.00 }
-        };
-
-        // БЛОКИРОВКА ПРОШЕДШИХ ДАТ
+        // Инициализация даты
         const dateInput = document.getElementById('order-date');
         const now = new Date();
-        const offset = 3 * 60 * 60 * 1000; // GMT+3
+        const offset = 3 * 60 * 60 * 1000;
         const localNow = new Date(now.getTime() + offset);
         const todayStr = localNow.toISOString().split('T')[0];
         dateInput.setAttribute('min', todayStr);
 
-        function updateDeliveryText() {
-            const type = document.getElementById('delivery-type').value;
-            const infoBlock = document.getElementById('delivery-info-text');
-            if (type === 'Самовывоз') {
-                infoBlock.innerHTML = `*Самовывоз: Свиридова 11, 6 подъезд<br>Позвоните за 10 минут до приезда: <a href="tel:+375296514403" style="color: var(--burgundy); text-decoration: none; font-weight: 900;">+375 (29) 651-44-03</a>`;
+        function setDelivery(method) {
+            deliveryMethod = method;
+            document.getElementById('opt-pickup').classList.toggle('active', method === 'Самовывоз');
+            document.getElementById('opt-delivery').classList.toggle('active', method === 'Яндекс.Доставка');
+            
+            const note = document.getElementById('delivery-note');
+            if(method === 'Самовывоз') {
+                note.innerHTML = `Свиридова 11, 6 подъезд. Позвоните за 10 мин: <br><strong>+375 (29) 651-44-03</strong>`;
             } else {
-                infoBlock.innerHTML = `Позвоните за 10 минут до приезда: <a href="tel:+375296514403" style="color: var(--burgundy); text-decoration: none; font-weight: 900;">+375 (29) 651-44-03</a>`;
+                note.innerHTML = `Отправляем через сервис Яндекс.Доставка. <br>Оплата доставки — <strong>за счет клиента</strong>.`;
             }
         }
 
-        function generateTimeSlots() {
-            const container = document.getElementById('time-slots');
-            const wrapper = document.getElementById('time-grid-wrapper');
-            const selectedDate = document.getElementById('order-date').value;
-            if (!selectedDate) { wrapper.style.display = 'none'; return; }
+        function updateTimeSlots() {
+            const timeSelect = document.getElementById('order-time');
+            const selectedDate = dateInput.value;
+            timeSelect.innerHTML = '<option value="">Выберите...</option>';
             
+            if(!selectedDate) return;
+            isDiscussing = false;
             document.getElementById('discuss-btn').classList.remove('active');
-            wrapper.style.display = 'block';
-            container.innerHTML = '';
-            
-            const currentHour = now.getHours();
+
+            const currentHour = new Date().getHours();
             const isToday = (selectedDate === todayStr);
-            
+
             for (let h = 9; h <= 21; h++) {
-                let btn = document.createElement('button');
-                btn.className = 'time-btn';
-                btn.innerText = h + ':00';
+                // ПРАВИЛО +3 ЧАСА
+                if (isToday && h < (currentHour + 3)) continue;
                 
-                // ЗАПРЕТ НА +3 ЧАСА ОТ ТЕКУЩЕГО
-                if (isToday && h < (currentHour + 3)) {
-                    btn.disabled = true;
-                } else {
-                    btn.onclick = (e) => { e.preventDefault(); setActiveTime(btn, h + ':00'); };
-                }
-                container.appendChild(btn);
+                let opt = document.createElement('option');
+                opt.value = h + ':00';
+                opt.innerText = h + ':00';
+                timeSelect.appendChild(opt);
             }
-            selectedTime = "";
         }
 
-        function setActiveTime(element, value) {
-            document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('discuss-btn').classList.remove('active');
-            element.classList.add('active');
-            selectedTime = value;
+        function toggleDiscuss() {
+            isDiscussing = !isDiscussing;
+            const btn = document.getElementById('discuss-btn');
+            const timeSelect = document.getElementById('order-time');
+            const dInput = document.getElementById('order-date');
+
+            if(isDiscussing) {
+                btn.classList.add('active');
+                timeSelect.value = "";
+                dInput.value = "";
+            } else {
+                btn.classList.remove('active');
+            }
         }
 
-        function setDiscuss() {
-            document.getElementById('order-date').value = "";
-            document.getElementById('time-grid-wrapper').style.display = 'none';
-            document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('discuss-btn').classList.add('active');
-            selectedTime = "Обсудить с кондитером";
-        }
-
-        const phoneInput = document.getElementById('cust-phone');
-        phoneInput.addEventListener('input', function(e) {
+        // Маска телефона
+        document.getElementById('cust-phone').addEventListener('input', function(e) {
             let val = e.target.value;
             if (!val.startsWith('+375 ')) { e.target.value = '+375 '; return; }
             let digits = val.substring(5).replace(/\D/g, '');
@@ -202,43 +203,52 @@
             e.target.value = formatted;
         });
 
-        function renderOrder() {
-            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
-            const total = localStorage.getItem('mara_total') || '0.00';
-            let html = '';
-            for (let id in cart) {
-                const item = productsData[id];
-                if (item) {
-                    const lineSum = (item.price * cart[id]).toFixed(2);
-                    html += `<div class="preview-row"><span>${item.name} (${cart[id]} шт.)</span><span class="item-price-detail">${lineSum} BYN</span></div>`;
-                }
-            }
-            document.getElementById('cart-items-preview').innerHTML = html;
-            document.getElementById('final-sum').innerText = total + " BYN";
+        function copyNum() {
+            navigator.clipboard.writeText('+375296514403');
+            tg.showAlert("Номер скопирован для ЕРИП!");
         }
 
-        function copyPhone() { navigator.clipboard.writeText('+375296514403'); tg.showAlert("Номер скопирован!"); }
+        function renderCart() {
+            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
+            const total = localStorage.getItem('mara_total') || '0.00';
+            const products = {
+                'q1': 'Орешки со сгущёнкой', 'q2': 'Орешки + орех', 'q3': 'Кокос и миндаль', 
+                'q4': 'Nutella и фундук', 'q5': 'Трубочки', 'q6': 'Муравейник',
+                'q7': 'Грибочки', 'q8': 'Сердечки', 'q9': 'Кокосовое', 
+                'q10': 'Орешки в глазури', 'q11': 'Картошка', 'q12': 'Шоколадная колбаса',
+                't1': 'Медовик 1.1кг', 't2': 'Медовик 2.2кг', 'n1': 'Набор Ассорти'
+            };
+            
+            let html = '';
+            for (let id in cart) {
+                html += `<div class="preview-row"><span>${products[id]} × ${cart[id]}</span></div>`;
+            }
+            document.getElementById('cart-preview').innerHTML = html;
+            document.getElementById('total-price').innerText = total + " BYN";
+        }
 
-        function finalSubmit() {
+        function sendOrder() {
             const name = document.getElementById('cust-name').value;
             const phone = document.getElementById('cust-phone').value;
-            const date = document.getElementById('order-date').value;
-            if(!name || phone.length < 17) return tg.showAlert("Введите имя и полный телефон!");
-            if (selectedTime !== "Обсудить с кондитером") {
-                if(!date) return tg.showAlert("Выберите дату или нажмите 'Обсудить с кондитером'!");
-                if(!selectedTime) return tg.showAlert("Выберите время получения!");
-            }
+            const date = dateInput.value;
+            const time = document.getElementById('order-time').value;
+
+            if(!name || phone.length < 17) return tg.showAlert("Укажите имя и телефон!");
+            if(!isDiscussing && (!date || !time)) return tg.showAlert("Выберите дату и время или 'Обсудить'");
+
             const data = {
-                name, phone, delivery: document.getElementById('delivery-type').value,
-                date: date || "Не указана (обсуждение)", 
-                time: selectedTime, 
+                name, phone, delivery: deliveryMethod,
+                date: isDiscussing ? "Обсуждение" : date,
+                time: isDiscussing ? "Обсуждение" : time,
                 comment: document.getElementById('cust-comment').value,
-                total: document.getElementById('final-sum').innerText
+                total: document.getElementById('total-price').innerText
             };
+
             tg.sendData(JSON.stringify(data));
             tg.close();
         }
-        window.onload = renderOrder;
+
+        window.onload = renderCart;
     </script>
 </body>
 </html>
