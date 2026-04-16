@@ -12,19 +12,21 @@
         body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding: 12px; color: var(--dark); min-height: 100vh; }
         #checkout-screen { display: flex; flex-direction: column; gap: 16px; padding-bottom: 50px; }
         
-        /* Ссылка назад */
         .back-link-container { margin-bottom: 5px; }
         .back-link-container a { color: #aaa; text-decoration: none; font-size: 13px; font-weight: 700; }
 
         .checkout-card { background: white; border-radius: 24px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
         .section-title { font-weight: 900; font-size: 13px; margin-bottom: 16px; color: var(--burgundy); text-transform: uppercase; border-bottom: 1px solid #f8f8f8; padding-bottom: 10px; }
 
-        /* Способ получения (Segmented Control) */
-        .delivery-selector { display: flex; background: var(--gray); padding: 4px; border-radius: 14px; margin-bottom: 15px; }
+        /* Переключатель доставки */
+        .delivery-selector { display: flex; background: var(--gray); padding: 4px; border-radius: 14px; margin-bottom: 12px; }
         .delivery-option { flex: 1; padding: 12px; text-align: center; font-size: 12px; font-weight: 700; border-radius: 11px; cursor: pointer; color: #888; transition: all 0.2s; }
         .delivery-option.active { background: white; color: var(--burgundy); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
-        /* Поля ввода и курсор */
+        /* Инфо-блок адреса */
+        #delivery-note { font-size: 11px; color: #888; line-height: 1.5; margin-bottom: 15px; background: #fffcf5; padding: 12px; border-radius: 12px; border-left: 3px solid var(--accent); }
+
+        /* Поля ввода */
         input, select, textarea { 
             width: 100%; border: 1px solid transparent; border-radius: 14px; 
             font-family: 'Montserrat'; font-size: 14px; box-sizing: border-box; 
@@ -41,25 +43,23 @@
         input[type="date"], #order-time { height: 48px; padding: 0 12px; -webkit-appearance: none; }
         textarea { padding: 14px; resize: none; margin-top: 5px; }
 
-        /* Список товаров */
+        /* Товары */
         .preview-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; border-bottom: 1px dashed #eee; padding-bottom: 6px; align-items: flex-start; }
         .item-name { flex: 1; padding-right: 10px; line-height: 1.4; }
         .item-cost { font-weight: 700; color: var(--accent); white-space: nowrap; }
         .final-total { text-align: right; font-weight: 900; color: var(--accent); font-size: 20px; margin-top: 10px; }
 
-        /* Обсудить время */
         .or-divider { text-align: center; font-size: 10px; font-weight: 700; color: #ccc; margin: 10px 0; text-transform: uppercase; }
         .discuss-btn { width: 100%; padding: 14px; background: transparent; color: var(--burgundy); border: 2px dashed #ddd; border-radius: 14px; font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.2s; }
         .discuss-btn.active { background: var(--burgundy); color: white; border-style: solid; border-color: var(--burgundy); }
 
-        /* Контакты */
         .contact-label { display: block; font-size: 10px; font-weight: 800; color: #bbb; text-transform: uppercase; margin-bottom: 6px; margin-top: 12px; }
 
         /* ЕРИП */
         .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 18px; border-radius: 18px; font-size: 11px; line-height: 1.5; color: #555; }
         .erip-phone { color: var(--green); font-weight: 900; font-size: 18px; display: block; margin-top: 8px; letter-spacing: 0.5px; }
 
-        .btn-main { width: 100%; padding: 20px; background: var(--green); color: white; border: none; border-radius: 18px; font-weight: 900; font-size: 15px; text-transform: uppercase; cursor: pointer; margin-top: 15px; box-shadow: 0 6px 20px rgba(33, 162, 82, 0.2); }
+        .btn-main { width: 100%; padding: 20px; background: var(--green); color: white; border: none; border-radius: 18px; font-weight: 900; font-size: 15px; text-transform: uppercase; cursor: pointer; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -81,6 +81,11 @@
                 <div class="delivery-option" id="opt-delivery" onclick="setDeliv('Яндекс.Доставка')">Доставка</div>
             </div>
 
+            <div id="delivery-note">
+                Свиридова 11, 6 подъезд. Позвоните за 10 мин: <br>
+                <strong>+375 (29) 651-44-03</strong>
+            </div>
+
             <div class="datetime-row">
                 <div class="field-group">
                     <label>Дата</label>
@@ -89,7 +94,7 @@
                 <div class="field-group">
                     <label>Время</label>
                     <select id="order-time" disabled>
-                        <option value="">Сначала дату</option>
+                        <option value="">Загрузка...</option>
                     </select>
                 </div>
             </div>
@@ -107,7 +112,7 @@
             <input type="tel" id="c-phone" value="+375 ">
             
             <label class="contact-label">Комментарий</label>
-            <textarea id="c-comment" placeholder="Адрес для доставки или другие пожелания" rows="3"></textarea>
+            <textarea id="c-comment" placeholder="Адрес доставки или пожелания" rows="3"></textarea>
         </div>
 
         <div class="checkout-card">
@@ -141,7 +146,13 @@
         const offset = 3 * 60 * 60 * 1000;
         const localNow = new Date(now.getTime() + offset);
         const todayStr = localNow.toISOString().split('T')[0];
-        dateInput.setAttribute('min', todayStr);
+
+        window.onload = function() {
+            render();
+            dateInput.setAttribute('min', todayStr);
+            dateInput.value = todayStr; 
+            enableTime(); 
+        };
 
         function render() {
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
@@ -165,16 +176,22 @@
             method = m;
             document.getElementById('opt-pickup').classList.toggle('active', m === 'Самовывоз');
             document.getElementById('opt-delivery').classList.toggle('active', m === 'Яндекс.Доставка');
+            const note = document.getElementById('delivery-note');
+            if (m === 'Самовывоз') {
+                note.innerHTML = `Свиридова 11, 6 подъезд. Позвоните за 10 мин: <br><strong>+375 (29) 651-44-03</strong>`;
+            } else {
+                note.innerHTML = `Отправляем через сервис Яндекс.Доставка. <br>Оплата доставки — <strong>за счет клиента</strong>.`;
+            }
         }
 
         function enableTime() {
             const t = document.getElementById('order-time');
             const selectedDate = dateInput.value;
+            if (!selectedDate) return;
             t.disabled = false;
             t.innerHTML = '<option value="">Выбрать время</option>';
             const currentHour = new Date().getHours();
             const isToday = (selectedDate === todayStr);
-
             for (let h = 9; h <= 21; h++) {
                 if (isToday && h < (currentHour + 3)) continue;
                 let opt = document.createElement('option');
@@ -193,6 +210,9 @@
                 dateInput.value = '';
                 document.getElementById('order-time').disabled = true;
                 document.getElementById('order-time').innerHTML = '<option value="">Обсуждение...</option>';
+            } else {
+                dateInput.value = todayStr;
+                enableTime();
             }
         }
 
@@ -212,7 +232,6 @@
             const name = document.getElementById('c-name').value;
             const phone = document.getElementById('c-phone').value;
             if(!name || phone.length < 17) return tg.showAlert("Введите имя и телефон!");
-            
             const data = {
                 name, phone, method,
                 date: isDisc ? "Обсудить" : dateInput.value,
@@ -223,8 +242,6 @@
             tg.sendData(JSON.stringify(data));
             tg.close();
         }
-
-        window.onload = render;
     </script>
 </body>
 </html>
