@@ -21,21 +21,12 @@
             font-family: 'Montserrat'; font-size: 14px; margin-bottom: 12px; box-sizing: border-box; 
             background: #fafafa; outline: none; color: black !important;
             transition: all 0.2s ease;
-            border-left: 2px solid transparent; /* Тонкая линия */
-        }
-
-        /* Тонкий мигающий слеш (курсор) внутри поля */
-        @keyframes blink-cursor {
-            0% { border-left-color: black; }
-            50% { border-left-color: transparent; }
-            100% { border-left-color: black; }
+            caret-color: black; /* Цвет курсора после букв */
         }
 
         .contact-input:focus {
             background: #fff;
-            padding-left: 14px; /* Небольшой отступ для красоты */
-            border-left: 2px solid black; /* Уменьшил толщину до 2px */
-            animation: blink-cursor 0.8s infinite;
+            border-color: #ddd;
         }
 
         .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px; align-items: center; }
@@ -135,12 +126,13 @@
             'n1': { name: 'Набор Ассорти', price: 30.00 }
         };
 
+        // Настройка даты (блокировка прошедших)
         const dateInput = document.getElementById('order-date');
         const now = new Date();
         const offset = 3 * 60 * 60 * 1000;
         const localNow = new Date(now.getTime() + offset);
         const todayStr = localNow.toISOString().split('T')[0];
-        dateInput.setAttribute('min', todayStr);
+        dateInput.setAttribute('min', todayStr); // Запрещаем всё, что раньше сегодня
 
         function updateDeliveryText() {
             const type = document.getElementById('delivery-type').value;
@@ -157,16 +149,21 @@
             const wrapper = document.getElementById('time-grid-wrapper');
             const selectedDate = document.getElementById('order-date').value;
             if (!selectedDate) { wrapper.style.display = 'none'; return; }
+            
             document.getElementById('discuss-btn').classList.remove('active');
             wrapper.style.display = 'block';
             container.innerHTML = '';
+            
             const currentHour = now.getHours();
             const isToday = (selectedDate === todayStr);
+            
             for (let h = 9; h <= 21; h++) {
                 let btn = document.createElement('button');
                 btn.className = 'time-btn';
                 btn.innerText = h + ':00';
-                if (isToday && h < (currentHour + 2)) {
+                
+                // Изменено на +3 часа от текущего времени
+                if (isToday && h < (currentHour + 3)) {
                     btn.disabled = true;
                 } else {
                     btn.onclick = (e) => { e.preventDefault(); setActiveTime(btn, h + ':00'); };
