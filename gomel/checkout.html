@@ -57,12 +57,15 @@
 
         /* ЕРИП */
         .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 18px; border-radius: 18px; font-size: 11px; line-height: 1.5; color: #555; }
+        
+        /* Стили для кликабельного номера */
         .erip-phone { 
             color: var(--green); font-weight: 900; font-size: 18px; display: block; 
-            margin-top: 8px; letter-spacing: 0.5px; cursor: pointer; position: relative;
+            margin-top: 8px; letter-spacing: 0.5px; cursor: pointer; transition: 0.2s;
+            background: #e9f5ed; padding: 10px; border-radius: 12px; text-align: center;
         }
-        .erip-phone:active { opacity: 0.6; }
-        .copy-hint { font-size: 9px; color: #aaa; text-transform: uppercase; font-weight: 600; display: block; margin-top: 4px; }
+        .erip-phone:active { transform: scale(0.98); background: #d4eedd; }
+        .copy-hint { display: block; text-align: center; font-size: 9px; color: #999; margin-top: 5px; text-transform: uppercase; }
 
         .btn-main { width: 100%; padding: 20px; background: var(--green); color: white; border: none; border-radius: 18px; font-weight: 900; font-size: 15px; text-transform: uppercase; cursor: pointer; margin-top: 15px; }
     </style>
@@ -124,7 +127,7 @@
             <div class="section-title">Оплата (ЕРИП)</div>
             <div class="erip-box">
                 Система Расчета ЕРИП / Банковские, Финансовые услуги / Банки, НКФО / АЛЬФА-БАНК / Пополнение счета
-                <span class="erip-phone" onclick="copyToClipboard('+375296514403', this)">+375 (29) 651-44-03</span>
+                <span class="erip-phone" onclick="copyPhone('+375296514403', this)">+375 (29) 651-44-03</span>
                 <span class="copy-hint">Нажмите на номер, чтобы скопировать</span>
             </div>
             <button class="btn-main" onclick="finishOrder()">Оплатил, заказать</button>
@@ -160,11 +163,16 @@
             enableTime(); 
         };
 
-        function copyToClipboard(text, el) {
-            navigator.clipboard.writeText(text).then(() => {
+        // Функция копирования
+        function copyPhone(num, el) {
+            navigator.clipboard.writeText(num).then(() => {
                 const originalText = el.innerText;
                 el.innerText = "Скопировано!";
-                setTimeout(() => { el.innerText = originalText; }, 1500);
+                el.style.color = "#21a252";
+                setTimeout(() => {
+                    el.innerText = "+375 (29) 651-44-03";
+                    el.style.color = "";
+                }, 1500);
                 if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             });
         }
