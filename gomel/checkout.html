@@ -52,6 +52,7 @@
         .or-divider { text-align: center; font-size: 10px; font-weight: 700; color: #ccc; margin: 10px 0; text-transform: uppercase; }
         .discuss-btn { width: 100%; padding: 14px; background: transparent; color: var(--burgundy); border: 2px dashed #ddd; border-radius: 14px; font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.2s; }
         .discuss-btn.active { background: var(--burgundy); color: white; border-style: solid; border-color: var(--burgundy); }
+        .discuss-hint { display: block; text-align: center; font-size: 10px; color: #aaa; margin-top: 8px; font-style: italic; }
 
         .contact-label { display: block; font-size: 10px; font-weight: 800; color: #bbb; text-transform: uppercase; margin-bottom: 6px; margin-top: 12px; }
 
@@ -103,7 +104,8 @@
             </div>
 
             <div class="or-divider">или</div>
-            <button id="btn-discuss" class="discuss-btn" onclick="toggleDisc()">Обсудить время в переписке</button>
+            <button id="btn-discuss" class="discuss-btn" onclick="toggleDisc()">Согласовать время после оплаты</button>
+            <span class="discuss-hint" id="discuss-hint" style="display: none;">Напишем вам в чат сразу после заказа для уточнения деталей.</span>
         </div>
 
         <div class="checkout-card">
@@ -214,11 +216,16 @@
             }
             isDisc = false;
             document.getElementById('btn-discuss').classList.remove('active');
+            document.getElementById('discuss-hint').style.display = 'none';
         }
 
         function toggleDisc() {
             isDisc = !isDisc;
-            document.getElementById('btn-discuss').classList.toggle('active', isDisc);
+            const btn = document.getElementById('btn-discuss');
+            const hint = document.getElementById('discuss-hint');
+            btn.classList.toggle('active', isDisc);
+            hint.style.display = isDisc ? 'block' : 'none';
+            
             if(isDisc) {
                 dateInput.value = '';
                 document.getElementById('order-time').disabled = true;
