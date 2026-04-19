@@ -7,11 +7,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --accent: #c5a059; --burgundy: #630d16; --dark: #2c1a11; --bg: #fdfaf5; --green: #27ae60; }
+        :root { --accent: #c5a059; --burgundy: #630d16; --dark: #2c1a11; --bg: #fdfaf5; --green: #21a252; }
         body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding: 10px; color: var(--dark); min-height: 100vh; }
         #checkout-screen { display: flex; flex-direction: column; gap: 12px; padding-bottom: 40px; }
         .back-link-top { text-align: left; margin-bottom: 5px; }
-        /* ВАЖНО: Тут ссылка на главную изменена на ../shop.html, так как файл в папке */
         .back-link-top a { color: #aaa; text-decoration: none; font-size: 13px; font-weight: 700; }
         .checkout-card { background: white; border-radius: 20px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .checkout-title { font-weight: 900; font-size: 14px; margin-bottom: 12px; color: var(--burgundy); text-transform: uppercase; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
@@ -26,7 +25,7 @@
 
         .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px; }
         .final-sum { text-align: right; font-weight: 900; color: var(--accent); font-size: 18px; margin-top: 10px; }
-        .btn-main { width: 100%; padding: 18px; background: var(--burgundy); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; }
+        .btn-main { width: 100%; padding: 18px; background: var(--green); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; }
         
         .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 20px; border-radius: 15px; text-align: left; }
         .erip-text { font-size: 11px; color: #555; line-height: 1.6; margin-bottom: 10px; }
@@ -76,8 +75,8 @@
                 <input type="text" id="post-index">
             </div>
             
-            <p style="color:red; font-size:10px; font-weight:700; margin-top: 5px;">
-                *Отправка осуществляется после 100% оплаты заказа. Почтовые услуги оплачиваются отдельно при получении.
+            <p style="color:#666; font-size:10px; font-weight:700; margin-top: 5px;">
+                *Отправка осуществляется после 100% оплаты заказа.
             </p>
         </div>
 
@@ -99,6 +98,25 @@
 
     <script>
         let tg = window.Telegram.WebApp;
+        let lang = localStorage.getItem('selectedLang') || 'ru';
+
+        const productsData = {
+            'q1': { name: {ru:'Орешки со сгущёнкой', by:'Арэшкі са згушчонкай', en:'Nuts with condensed milk'}, price: 1.10 },
+            'q2': { name: {ru:'Орешки + орех', by:'Арэшкі + арэх', en:'Nuts + nut'}, price: 1.50 },
+            'q3': { name: {ru:'Кокос и миндаль', by:'Какос і міндаль', en:'Coconut & Almond'}, price: 1.80 },
+            'q4': { name: {ru:'Nutella и фундук', by:'Nutella і фундук', en:'Nutella & Hazelnut'}, price: 1.80 },
+            'q5': { name: {ru:'Трубочки', by:'Трубачкі', en:'Rolls'}, price: 4.00 },
+            'q6': { name: {ru:'Муравейник', by:'Мурашнік', en:'Ant Hill'}, price: 2.50 },
+            'q7': { name: {ru:'Грибочки', by:'Грыбочкі', en:'Mushrooms'}, price: 2.50 },
+            'q8': { name: {ru:'Сердечки', by:'Сэрцайкі', en:'Hearts'}, price: 2.50 },
+            'q9': { name: {ru:'Кокосовое', by:'Какосавае', en:'Coconut cookies'}, price: 2.50 },
+            'q10': { name: {ru:'Орешки в глазури', by:'Арэшкі ў глазуры', en:'Glazed nuts'}, price: 2.50 },
+            'q11': { name: {ru:'Картошка', by:'Бульба', en:'Kartoshka cake'}, price: 4.00 },
+            'q12': { name: {ru:'Шоколадная колбаса', by:'Шакаладная каўбаса', en:'Chocolate sausage'}, price: 12.00 },
+            't1': { name: {ru:'Медовик 1.1кг', by:'Мядовік 1.1кг', en:'Honey cake 1.1kg'}, price: 65.00 },
+            't2': { name: {ru:'Медовик 2.2кг', by:'Мядовік 2.2кг', en:'Honey cake 2.2kg'}, price: 130.00 },
+            'n1': { name: {ru:'Набор Ассорти', by:'Набор Асарці', en:'Assorted Set'}, price: 30.00 }
+        };
 
         function copyPhone() {
             navigator.clipboard.writeText('+375296514403');
@@ -127,9 +145,11 @@
         function renderOrder() {
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
             let html = '';
-            // Мы не подгружаем массив продуктов здесь для легкости, просто показываем ID и кол-во
             for (let id in cart) {
-                html += `<div class="preview-row"><span>Товар ID: ${id}</span><span>${cart[id]} шт.</span></div>`;
+                const item = productsData[id];
+                if (item) {
+                    html += `<div class="preview-row"><span>${item.name[lang]}</span><span>${cart[id]} шт.</span></div>`;
+                }
             }
             document.getElementById('cart-items-preview').innerHTML = html;
             let total = parseFloat(localStorage.getItem('mara_total') || 0);
