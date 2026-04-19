@@ -131,7 +131,16 @@
             { id: 'n1', name: {ru: 'Набор Ассорти'}, cat: 4, price: 30.00, img: 'oreshki.png', min: 1 }
         ];
 
-        function init() { renderSidebar(); renderProducts(0); }
+        function init() { 
+            // Загружаем сохраненную корзину при старте
+            const savedCart = localStorage.getItem('mara_cart');
+            if (savedCart) {
+                cart = JSON.parse(savedCart);
+            }
+            renderSidebar(); 
+            renderProducts(0);
+            updateTotal(); // Считаем итоги на основе загруженной корзины
+        }
 
         function renderSidebar() {
             const imgs = ['oreshki.png', 'trubochka1.jpg', 'muraveynik.jpg', 'tort 2.jpg', 'oreshki.png'];
@@ -171,6 +180,9 @@
             if (next < p.min && next > 0 && delta < 0) next = 0;
             cart[id] = next;
             if (cart[id] <= 0) delete cart[id];
+            
+            // Сохраняем при каждом изменении, чтобы данные не пропали
+            localStorage.setItem('mara_cart', JSON.stringify(cart));
             updateTotal();
         }
 
@@ -179,12 +191,14 @@
             let itemCount = 0;
             for (let k in cart) {
                 let pr = products.find(x => x.id === k);
-                total += (pr.price * cart[k]);
-                itemCount += cart[k];
-                if (k === 'q11') hasPotato = true;
-                if(document.getElementById(`qty-${k}`)) document.getElementById(`qty-${k}`).innerText = cart[k];
-                let b = document.getElementById(`badge-${k}`);
-                if(b) { b.innerText = cart[k]; b.style.display = 'block'; }
+                if (pr) {
+                    total += (pr.price * cart[k]);
+                    itemCount += cart[k];
+                    if (k === 'q11') hasPotato = true;
+                    if(document.getElementById(`qty-${k}`)) document.getElementById(`qty-${k}`).innerText = cart[k];
+                    let b = document.getElementById(`badge-${k}`);
+                    if(b) { b.innerText = cart[k]; b.style.display = 'block'; }
+                }
             }
             products.forEach(p => { if(!cart[p.id]) {
                 if(document.getElementById(`qty-${p.id}`)) document.getElementById(`qty-${p.id}`).innerText = 0;
@@ -193,6 +207,9 @@
             document.getElementById('total-val').innerText = total.toFixed(2);
             document.getElementById('main-pay-btn').disabled = (total < (hasPotato ? 16 : 20));
             document.getElementById('main-clear-btn').disabled = (itemCount === 0);
+
+            // Также обновляем сумму в localStorage для чекаута
+            localStorage.setItem('mara_total', total.toFixed(2));
 
             if (document.getElementById('cart-modal').style.display === 'flex') showCart();
         }
@@ -206,6 +223,7 @@
             } else {
                 list.innerHTML = entries.map(([id, q]) => {
                     const p = products.find(x => x.id === id);
+                    if (!p) return '';
                     const itemTotal = (p.price * q).toFixed(2);
                     return `
                         <div class="cart-item-row">
@@ -223,15 +241,13 @@
             document.getElementById('cart-modal').style.display = 'flex';
         }
 
-        // ОБНОВЛЕННАЯ ФУНКЦИЯ ПЕРЕХОДА
         function goToCheckout() {
             if (total === 0) return;
             
-            // Сохраняем корзину
+            // Финальное сохранение перед переходом
             localStorage.setItem('mara_cart', JSON.stringify(cart));
             localStorage.setItem('mara_total', total.toFixed(2));
             
-            // Проверяем город и перенаправляем в нужную папку
             const selectedCity = localStorage.getItem('selectedCity');
             
             if (selectedCity === 'Гомель') {
@@ -241,8 +257,19 @@
             }
         }
 
-        function clearCart() { cart = {}; updateTotal(); }
-        function changeCat(i, el) { document.querySelectorAll('.cat-item').forEach(c => c.classList.remove('active')); el.classList.add('active'); renderProducts(i); }
+        function clearCart() { 
+            cart = {}; 
+            localStorage.removeItem('mara_cart');
+            localStorage.setItem('mara_total', '0.00');
+            updateTotal(); 
+        }
+        
+        function changeCat(i, el) { 
+            document.querySelectorAll('.cat-item').forEach(c => c.classList.remove('active')); 
+            el.classList.add('active'); 
+            renderProducts(i); 
+        }
+        
         init();
     </script>
 </body>
