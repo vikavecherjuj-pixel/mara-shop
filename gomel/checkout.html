@@ -36,7 +36,7 @@
         input:focus, textarea:focus { border-color: var(--accent); background: #fff; }
 
         /* Строка даты и времени */
-        .datetime-row { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 15px; }
+        .datetime-row { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 5px; }
         .field-group { flex: 1; display: flex; flex-direction: column; }
         .field-group label { display: block; font-size: 10px; font-weight: 800; color: #bbb; text-transform: uppercase; margin-bottom: 6px; }
 
@@ -49,7 +49,8 @@
         .item-cost { font-weight: 700; color: var(--accent); white-space: nowrap; }
         .final-total { text-align: right; font-weight: 900; color: var(--accent); font-size: 20px; margin-top: 10px; }
 
-        .or-divider { text-align: center; font-size: 10px; font-weight: 700; color: #ccc; margin: 10px 0; text-transform: uppercase; }
+        .or-divider { text-align: center; font-size: 10px; font-weight: 700; color: #ccc; margin: 15px 0; text-transform: uppercase; }
+        
         .discuss-btn { width: 100%; padding: 14px; background: transparent; color: var(--burgundy); border: 2px dashed #ddd; border-radius: 14px; font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.2s; }
         .discuss-btn.active { background: var(--burgundy); color: white; border-style: solid; border-color: var(--burgundy); }
         .discuss-hint { display: block; text-align: center; font-size: 11px; color: #666; margin-top: 10px; font-weight: 500; line-height: 1.4; }
@@ -90,22 +91,27 @@
                 <strong>+375 (29) 651-44-03</strong>
             </div>
 
-            <div class="datetime-row">
-                <div class="field-group">
-                    <label>Дата</label>
-                    <input type="date" id="order-date" onchange="enableTime()">
-                </div>
-                <div class="field-group">
-                    <label>Время</label>
-                    <select id="order-time" disabled>
-                        <option value="">Загрузка...</option>
-                    </select>
+            <div id="time-selection-area">
+                <div class="datetime-row">
+                    <div class="field-group">
+                        <label>Дата</label>
+                        <input type="date" id="order-date" onchange="enableTime()">
+                    </div>
+                    <div class="field-group">
+                        <label>Время</label>
+                        <select id="order-time" disabled>
+                            <option value="">Загрузка...</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
             <div class="or-divider">или</div>
-            <button id="btn-discuss" class="discuss-btn" onclick="toggleDisc()">Согласовать время после оплаты</button>
-            <span class="discuss-hint" id="discuss-hint" style="display: none;">Напишем вам в чат сразу после заказа для уточнения деталей.</span>
+
+            <div id="discuss-selection-area">
+                <button id="btn-discuss" class="discuss-btn" onclick="toggleDisc()">Согласовать время после оплаты</button>
+                <span class="discuss-hint" id="discuss-hint" style="display: none;">Напишем вам в чат сразу после заказа для уточнения деталей.</span>
+            </div>
         </div>
 
         <div class="checkout-card">
@@ -203,6 +209,13 @@
             const t = document.getElementById('order-time');
             const selectedDate = dateInput.value;
             if (!selectedDate) return;
+            
+            // Сбрасываем режим обсуждения при выборе времени
+            isDisc = false;
+            document.getElementById('btn-discuss').classList.remove('active');
+            document.getElementById('discuss-hint').style.display = 'none';
+            document.getElementById('time-selection-area').style.opacity = '1';
+
             t.disabled = false;
             t.innerHTML = '<option value="">Выбрать время</option>';
             const currentHour = new Date().getHours();
@@ -214,23 +227,25 @@
                 opt.innerText = h + ':00';
                 t.appendChild(opt);
             }
-            isDisc = false;
-            document.getElementById('btn-discuss').classList.remove('active');
-            document.getElementById('discuss-hint').style.display = 'none';
         }
 
         function toggleDisc() {
             isDisc = !isDisc;
             const btn = document.getElementById('btn-discuss');
             const hint = document.getElementById('discuss-hint');
+            const timeArea = document.getElementById('time-selection-area');
+            
             btn.classList.toggle('active', isDisc);
             hint.style.display = isDisc ? 'block' : 'none';
             
             if(isDisc) {
+                // Визуально приглушаем выбор даты
+                timeArea.style.opacity = '0.4';
                 dateInput.value = '';
                 document.getElementById('order-time').disabled = true;
                 document.getElementById('order-time').innerHTML = '<option value="">Обсуждение...</option>';
             } else {
+                timeArea.style.opacity = '1';
                 dateInput.value = todayStr;
                 enableTime();
             }
@@ -252,10 +267,16 @@
             const name = document.getElementById('c-name').value;
             const phone = document.getElementById('c-phone').value;
             if(!name || phone.length < 17) return tg.showAlert("Введите имя и телефон!");
+            
+            const timeVal = document.getElementById('order-time').value;
+            if(!isDisc && (!dateInput.value || !timeVal)) {
+                return tg.showAlert("Выберите дату и время или опцию согласования!");
+            }
+
             const data = {
                 name, phone, method,
                 date: isDisc ? "Обсудить" : dateInput.value,
-                time: isDisc ? "Обсудить" : document.getElementById('order-time').value,
+                time: isDisc ? "Обсудить" : timeVal,
                 comment: document.getElementById('c-comment').value,
                 total: document.getElementById('final-sum').innerText
             };
