@@ -23,7 +23,9 @@
         }
         textarea { resize: none; height: 80px; }
 
-        .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px; }
+        .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px; align-items: flex-start; }
+        .item-name { flex: 1; padding-right: 10px; }
+        .item-cost { font-weight: 700; color: var(--accent); white-space: nowrap; }
         .final-sum { text-align: right; font-weight: 900; color: var(--accent); font-size: 18px; margin-top: 10px; }
         .btn-main { width: 100%; padding: 18px; background: var(--green); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; }
         
@@ -41,7 +43,10 @@
         <div class="checkout-card">
             <div class="checkout-title">Ваш заказ</div>
             <div id="cart-items-preview"></div>
-            <div class="preview-row" style="color: var(--burgundy); font-weight:700;"><span>Доставка почтой</span><span>10.00 BYN</span></div>
+            <div class="preview-row" style="color: var(--burgundy); font-weight:700;">
+                <span>Доставка почтой</span>
+                <span class="item-cost">10.00 BYN</span>
+            </div>
             <div class="final-sum" id="final-sum">0.00 BYN</div>
         </div>
 
@@ -148,7 +153,11 @@
             for (let id in cart) {
                 const item = productsData[id];
                 if (item) {
-                    html += `<div class="preview-row"><span>${item.name[lang]}</span><span>${cart[id]} шт.</span></div>`;
+                    const linePrice = (item.price * cart[id]).toFixed(2);
+                    html += `<div class="preview-row">
+                                <span class="item-name">${item.name[lang]} (${cart[id]} шт.)</span>
+                                <span class="item-cost">${linePrice} BYN</span>
+                             </div>`;
                 }
             }
             document.getElementById('cart-items-preview').innerHTML = html;
