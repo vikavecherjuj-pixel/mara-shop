@@ -24,7 +24,7 @@
         textarea { resize: none; height: 80px; }
 
         .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px; align-items: flex-start; }
-        .item-name { flex: 1; padding-right: 10px; }
+        .item-name { flex: 1; padding-right: 10px; line-height: 1.4; }
         .item-cost { font-weight: 700; color: var(--accent); white-space: nowrap; }
         .final-sum { text-align: right; font-weight: 900; color: var(--accent); font-size: 18px; margin-top: 10px; }
         .btn-main { width: 100%; padding: 18px; background: var(--green); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; }
@@ -37,73 +37,106 @@
 </head>
 <body onclick="document.activeElement.blur()">
     <div id="checkout-screen" onclick="event.stopPropagation()">
-        <h2 style="text-align: center; font-weight: 900; font-size: 22px; margin: 15px 0;">ОФОРМЛЕНИЕ</h2>
-        <div class="back-link-top"><a href="../shop.html">← Назад в каталог</a></div>
+        <h2 id="ui-main-title" style="text-align: center; font-weight: 900; font-size: 22px; margin: 15px 0;">ОФОРМЛЕНИЕ</h2>
+        <div class="back-link-top"><a href="../shop.html" id="ui-back">← Назад в каталог</a></div>
         
         <div class="checkout-card">
-            <div class="checkout-title">Ваш заказ</div>
+            <div class="checkout-title" id="ui-order-title">Ваш заказ</div>
             <div id="cart-items-preview"></div>
             <div class="preview-row" style="color: var(--burgundy); font-weight:700;">
-                <span>Доставка почтой</span>
+                <span id="ui-delivery-label">Доставка почтой</span>
                 <span class="item-cost">10.00 BYN</span>
             </div>
             <div class="final-sum" id="final-sum">0.00 BYN</div>
         </div>
 
         <div class="checkout-card">
-            <div class="checkout-title">Контактные данные</div>
-            <label>Фамилия и Имя</label>
-            <input type="text" id="cust-name" placeholder="Для почты нужно полное ФИО">
-            <label>Телефон</label>
+            <div class="checkout-title" id="ui-contact-title">Контактные данные</div>
+            <label id="ui-name-label">Фамилия и Имя</label>
+            <input type="text" id="cust-name" placeholder="">
+            <label id="ui-phone-label">Телефон</label>
             <input type="tel" id="cust-phone" value="+375 ">
         </div>
 
         <div class="checkout-card">
-            <div class="checkout-title">Данные для доставки</div>
+            <div class="checkout-title" id="ui-delivery-title">Данные для доставки</div>
             <select id="post-type" onchange="togglePostFields()">
                 <option value="Европочта">Европочта</option>
                 <option value="Белпочта">Белпочта</option>
             </select>
             
-            <label>Город</label>
-            <input type="text" id="post-city" placeholder="Напр: Минск">
+            <label id="ui-city-label">Город</label>
+            <input type="text" id="post-city" placeholder="">
             
             <div id="euro-box">
-                <label>Номер или адрес отделения</label>
-                <input type="text" id="post-dept" placeholder="Напр: Отделение №142">
+                <label id="ui-dept-label">Номер или адрес отделения</label>
+                <input type="text" id="post-dept" placeholder="">
             </div>
             
             <div id="bel-box" style="display:none;">
-                <label>Полный адрес (Улица, дом, кв)</label>
+                <label id="ui-addr-label">Полный адрес (Улица, дом, кв)</label>
                 <input type="text" id="post-addr">
-                <label>Почтовый индекс</label>
+                <label id="ui-index-label">Почтовый индекс</label>
                 <input type="text" id="post-index">
             </div>
             
-            <p style="color:#666; font-size:10px; font-weight:700; margin-top: 5px;">
+            <p id="ui-note" style="color:#666; font-size:10px; font-weight:700; margin-top: 5px;">
                 *Отправка осуществляется после 100% оплаты заказа.
             </p>
         </div>
 
         <div class="checkout-card">
-            <div class="checkout-title">Комментарий</div>
-            <textarea id="cust-comment" placeholder="Напишите, если есть доп. пожелания..."></textarea>
+            <div class="checkout-title" id="ui-comment-title">Комментарий</div>
+            <textarea id="cust-comment" placeholder="" rows="3"></textarea>
         </div>
 
         <div class="checkout-card">
-            <div class="checkout-title">Оплата (ЕРИП)</div>
+            <div class="checkout-title" id="ui-pay-title">Оплата (ЕРИП)</div>
             <div class="erip-box">
-                <div class="erip-text">Система Расчета ЕРИП / Банковские услуги / Банки / АЛЬФА-БАНК / Пополнение счета:</div>
+                <div class="erip-text" id="ui-erip-text">Система Расчета ЕРИП / Банковские услуги / Банки / АЛЬФА-БАНК / Пополнение счета:</div>
                 <div class="erip-phone">+375 (29) 651-44-03</div>
-                <button class="btn-copy" onclick="copyPhone()">Скопировать номер</button>
+                <button class="btn-copy" id="ui-copy-btn" onclick="copyPhone()">Скопировать номер</button>
             </div>
-            <button class="btn-main" style="margin-top:15px;" onclick="finalSubmit()">Я оплатил, оформить заказ</button>
+            <button class="btn-main" id="ui-finish-btn" style="margin-top:15px;" onclick="finalSubmit()">Я оплатил, оформить заказ</button>
         </div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         let lang = localStorage.getItem('selectedLang') || 'ru';
+
+        const ui = {
+            ru: {
+                title: "ОФОРМЛЕНИЕ", back: "← Назад в каталог", order: "Ваш заказ", del_label: "Доставка почтой",
+                contact: "Контактные данные", name: "Фамилия и Имя", name_ph: "Для почты нужно полное ФИО",
+                phone: "Телефон", del_title: "Данные для доставки", city: "Город", city_ph: "Напр: Минск",
+                dept: "Номер или адрес отделения", dept_ph: "Напр: Отделение №142", addr: "Полный адрес (Улица, дом, кв)",
+                index: "Почтовый индекс", note: "*Отправка осуществляется после 100% оплаты заказа.",
+                comment: "Комментарий", comment_ph: "Напишите, если есть доп. пожелания...",
+                pay: "Оплата (ЕРИП)", copy: "Скопировать номер", finish: "Я оплатил, оформить заказ",
+                alert: "Заполните ФИО, телефон и город!", pcs: "шт.", copied: "Номер скопирован!"
+            },
+            by: {
+                title: "АФАРМЛЕННЕ", back: "← Назад у каталог", order: "Ваша замова", del_label: "Дастаўка поштай",
+                contact: "Кантактныя дадзеныя", name: "Прозвішча і Імя", name_ph: "Для пошты патрэбна поўнае ПІБ",
+                phone: "Тэлефон", del_title: "Дадзеныя для дастаўкі", city: "Горад", city_ph: "Напр: Мінск",
+                dept: "Нумар або адрас аддзялення", dept_ph: "Напр: Аддзяленне №142", addr: "Поўны адрас (Вуліца, дом, кв)",
+                index: "Паштовы індэкс", note: "*Адпраўка ажыццяўляецца пасля 100% аплаты замовы.",
+                comment: "Каментарый", comment_ph: "Напішыце, калі ёсць дадатковыя пажаданні...",
+                pay: "Аплата (АРІП)", copy: "Скапіяваць нумар", finish: "Я аплаціў, аформіць замову",
+                alert: "Запоўніце ПІБ, тэлефон і горад!", pcs: "шт.", copied: "Нумар скапіяваны!"
+            },
+            en: {
+                title: "CHECKOUT", back: "← Back to catalog", order: "Your order", del_label: "Postal delivery",
+                contact: "Contact details", name: "Full Name", name_ph: "Full name required for post",
+                phone: "Phone", del_title: "Delivery details", city: "City", city_ph: "e.g. Minsk",
+                dept: "Department number or address", dept_ph: "e.g. Dept №142", addr: "Full address (Street, house, apt)",
+                index: "Postcode", note: "*Shipping is made after 100% payment.",
+                comment: "Comment", comment_ph: "Add any special requests...",
+                pay: "Payment (ERIP)", copy: "Copy number", finish: "Paid, place order",
+                alert: "Please fill in name, phone and city!", pcs: "pcs.", copied: "Copied!"
+            }
+        };
 
         const productsData = {
             'q1': { name: {ru:'Орешки со сгущёнкой', by:'Арэшкі са згушчонкай', en:'Nuts with condensed milk'}, price: 1.10 },
@@ -123,9 +156,34 @@
             'n1': { name: {ru:'Набор Ассорти', by:'Набор Асарці', en:'Assorted Set'}, price: 30.00 }
         };
 
+        function applyLanguage() {
+            const l = ui[lang];
+            document.getElementById('ui-main-title').innerText = l.title;
+            document.getElementById('ui-back').innerText = l.back;
+            document.getElementById('ui-order-title').innerText = l.order;
+            document.getElementById('ui-delivery-label').innerText = l.del_label;
+            document.getElementById('ui-contact-title').innerText = l.contact;
+            document.getElementById('ui-name-label').innerText = l.name;
+            document.getElementById('cust-name').placeholder = l.name_ph;
+            document.getElementById('ui-phone-label').innerText = l.phone;
+            document.getElementById('ui-delivery-title').innerText = l.del_title;
+            document.getElementById('ui-city-label').innerText = l.city;
+            document.getElementById('post-city').placeholder = l.city_ph;
+            document.getElementById('ui-dept-label').innerText = l.dept;
+            document.getElementById('post-dept').placeholder = l.dept_ph;
+            document.getElementById('ui-addr-label').innerText = l.addr;
+            document.getElementById('ui-index-label').innerText = l.index;
+            document.getElementById('ui-note').innerText = l.note;
+            document.getElementById('ui-comment-title').innerText = l.comment;
+            document.getElementById('cust-comment').placeholder = l.comment_ph;
+            document.getElementById('ui-pay-title').innerText = l.pay;
+            document.getElementById('ui-copy-btn').innerText = l.copy;
+            document.getElementById('ui-finish-btn').innerText = l.finish;
+        }
+
         function copyPhone() {
             navigator.clipboard.writeText('+375296514403');
-            tg.showAlert("Номер скопирован!");
+            tg.showAlert(ui[lang].copied);
         }
 
         function togglePostFields() {
@@ -155,7 +213,7 @@
                 if (item) {
                     const linePrice = (item.price * cart[id]).toFixed(2);
                     html += `<div class="preview-row">
-                                <span class="item-name">${item.name[lang]} (${cart[id]} шт.)</span>
+                                <span class="item-name">${item.name[lang]} (${cart[id]} ${ui[lang].pcs})</span>
                                 <span class="item-cost">${linePrice} BYN</span>
                              </div>`;
                 }
@@ -170,7 +228,7 @@
             const phone = document.getElementById('cust-phone').value;
             const city = document.getElementById('post-city').value;
             
-            if(!name || phone.length < 17 || !city) return tg.showAlert("Заполните ФИО, телефон и город!");
+            if(!name || phone.length < 17 || !city) return tg.showAlert(ui[lang].alert);
 
             const type = document.getElementById('post-type').value;
             let deliveryInfo = `Почта: ${type}, Город: ${city}`;
@@ -183,14 +241,18 @@
                 phone: phone,
                 info: deliveryInfo,
                 comment: document.getElementById('cust-comment').value,
-                total: document.getElementById('final-sum').innerText
+                total: document.getElementById('final-sum').innerText,
+                lang: lang
             };
 
             tg.sendData(JSON.stringify(data));
             tg.close();
         }
 
-        window.onload = renderOrder;
+        window.onload = function() {
+            applyLanguage();
+            renderOrder();
+        };
     </script>
 </body>
 </html>
