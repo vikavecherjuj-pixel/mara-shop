@@ -3,212 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mara Shop</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <title>Start Mara Shop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { 
-            --accent: #c5a059; --burgundy: #630d16; --dark: #2c1a11; --bg: #fdfaf5; 
-            --btn-clear: #e9233a; --btn-order: #21a252; --white: #ffffff;
-        }
-        body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding: 0; height: 100vh; overflow: hidden; }
-        
-        /* Стили стартового экрана */
-        #start-screen { display: flex; flex-direction: column; height: 100vh; text-align: center; background: white; position: fixed; width: 100%; z-index: 1000; }
-        .start-banner { width: 100%; height: 60%; overflow: hidden; }
-        .start-banner img { width: 100%; height: 100%; object-fit: cover; }
-        .content-block { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-around; padding: 20px; }
-        .section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #bbb; margin-bottom: 8px; letter-spacing: 1px; }
-        .select-group { display: flex; gap: 8px; width: 100%; margin-bottom: 10px; }
-        .opt-btn { flex: 1; border: 1px solid #eee; padding: 12px; border-radius: 12px; font-size: 10px; font-weight: 700; cursor: pointer; color: #555; }
+        :root { --accent: #c5a059; --burgundy: #630d16; }
+        body { font-family: 'Montserrat', sans-serif; background: #fff; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; text-align: center; }
+        /* Баннер увеличен на 15% (от изначальных 50% высоты экрана) */
+        .start-banner { width: 100%; height: 65%; background: var(--burgundy); overflow: hidden; }
+        .start-banner img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        /* Удален заголовок, контент центрирован */
+        .content-block { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-around; padding: 15px 25px 25px 25px; background: white; }
+        .section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #bbb; margin: 0 0 8px 0; letter-spacing: 1px; }
+        .select-group { display: flex; gap: 8px; width: 100%; margin-bottom: 5px; }
+        .opt-btn { flex: 1; border: 1px solid #eee; padding: 10px; border-radius: 12px; font-size: 10px; font-weight: 700; cursor: pointer; color: #555; transition: 0.2s; }
         .opt-btn.selected { border-color: var(--accent); background: rgba(197, 160, 89, 0.05); color: var(--accent); }
-        .btn-start { width: 100%; padding: 18px; border: none; border-radius: 16px; font-weight: 900; text-transform: uppercase; background: var(--burgundy); color: white; font-size: 15px; cursor: pointer; }
-
-        /* Стили каталога */
-        #shop-screen { display: none; flex-direction: column; height: 100vh; }
-        .header-container { background: white; flex-shrink: 0; position: relative; }
-        .back-floating-btn { position: absolute; top: 15px; left: 15px; z-index: 100; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(5px); border: none; padding: 8px 14px; border-radius: 20px; font-weight: 700; font-size: 11px; color: var(--burgundy); cursor: pointer; }
-        .promo-banner { width: 100%; height: 140px; overflow: hidden; }
-        .promo-banner img { width: 100%; height: 100%; object-fit: cover; }
-        .logo-area { padding: 10px 20px; border-bottom: 1px solid #eee; background: white; }
-        .logo-area img { max-width: 100px; }
-        .main-area { flex-grow: 1; display: flex; overflow: hidden; }
-        .sidebar { width: 80px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; align-items: center; padding-top: 10px; overflow-y: auto; }
-        .cat-item { margin-bottom: 15px; text-align: center; font-size: 8px; color: #555; width: 100%; font-weight: 700; cursor: pointer; }
-        .cat-item img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid transparent; object-fit: cover; }
-        .cat-item.active { color: var(--burgundy); }
-        .cat-item.active img { border-color: var(--burgundy); }
-        .menu-grid { flex-grow: 1; overflow-y: auto; padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-content: start; padding-bottom: 150px; }
-        .product-card { background: white; border-radius: 12px; padding: 8px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative; }
-        .product-card img { width: 100%; height: 80px; object-fit: cover; border-radius: 8px; }
-        .price { font-weight: 900; color: var(--accent); font-size: 11px; margin: 5px 0; }
-        .qty-badge { position: absolute; top: -5px; right: -5px; background: var(--burgundy); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; line-height: 18px; border: 2px solid white; display: none; }
-        .payment-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1512; padding: 15px; z-index: 500; border-radius: 20px 20px 0 0; }
-        .btn-pay { width: 100%; padding: 15px; border: none; border-radius: 12px; background: var(--btn-order); color: white; font-weight: 900; text-transform: uppercase; }
-        #cart-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; display: none; align-items: flex-end; }
-        .modal-content { background: var(--bg); width: 100%; border-radius: 20px 20px 0 0; padding: 20px; }
+        .btn-start { width: 100%; padding: 18px; border: none; border-radius: 16px; font-weight: 900; text-transform: uppercase; background: var(--burgundy); color: white; font-size: 15px; cursor: pointer; margin-top: 5px; }
     </style>
 </head>
 <body>
-
-    <div id="start-screen">
-        <div class="start-banner"><img src="shokoladnya oreshki.jpg"></div>
-        <div class="content-block">
-            <div>
-                <div class="section-label" id="lbl-city">Ваш город / Ваш горад</div>
-                <div class="select-group" id="city-btns">
-                    <div class="opt-btn selected" onclick="setCity('Гомель', this)">Гомель</div>
-                    <div class="opt-btn" onclick="setCity('Другой', this)">Другие города РБ</div>
-                </div>
-                <div class="section-label" id="lbl-lang">Выберите язык / Мова</div>
-                <div class="select-group" id="lang-btns">
-                    <div class="opt-btn selected" onclick="setLang('ru', this)">Русский</div>
-                    <div class="opt-btn" onclick="setLang('by', this)">Беларуская</div>
-                    <div class="opt-btn" onclick="setLang('en', this)">English</div>
-                </div>
+    <div class="start-banner"><img src="shokoladnya oreshki.jpg"></div>
+    <div class="content-block">
+        <div>
+            <div class="section-label" id="lbl-city">Ваш город / Ваш горад</div>
+            <div class="select-group" id="city-btns">
+                <div class="opt-btn selected" onclick="setCity('Гомель', this)">Гомель</div>
+                <div class="opt-btn" onclick="setCity('Другой', this)">Другие города РБ</div>
             </div>
-            <button class="btn-start" id="btn-main-start" onclick="openShop()">Начать заказ</button>
-        </div>
-    </div>
-
-    <div id="shop-screen">
-        <div class="header-container">
-            <button class="back-floating-btn" onclick="location.reload()">← Назад</button>
-            <div class="promo-banner"><img src="shokoladnya oreshki.jpg"></div>
-            <div class="logo-area"><img src="Logo.png"></div>
-        </div>
-        <div class="main-area">
-            <div class="sidebar" id="sidebar"></div>
-            <div class="menu-grid" id="menu-grid"></div>
-        </div>
-        <div class="payment-footer">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; color: white;">
-                <span id="ui-total-text" style="font-size: 12px;">ИТОГО:</span>
-                <span style="font-size: 20px; font-weight: 900; color: var(--accent);"><span id="total-val">0.00</span> BYN</span>
+            <div class="section-label" id="lbl-lang">Выберите язык / Мова</div>
+            <div class="select-group" id="lang-btns">
+                <div class="opt-btn selected" onclick="setLang('ru', this)">Русский</div>
+                <div class="opt-btn" onclick="setLang('by', this)">Беларуская</div>
+                <div class="opt-btn" onclick="setLang('en', this)">English</div>
             </div>
-            <button class="btn-pay" id="btn-checkout" onclick="goToCheckout()" disabled>Оформить</button>
         </div>
+        <button class="btn-start" id="main-start-btn" onclick="window.location.href='shop.html'">Начать заказ</button>
     </div>
-
     <script>
         let tg = window.Telegram.WebApp; tg.expand();
-        let lang = 'ru';
-        let city = 'Гомель';
-        let cart = {}; let total = 0;
-
-        const i18n = {
-            ru: { start: "Начать заказ", city: "Ваш город", lang: "Выберите язык", total: "ИТОГО", pay: "Оформить", from: "от", pcs: "шт." },
-            by: { start: "Пачаць заказ", city: "Ваш горад", lang: "Абярыце мову", total: "ВЫНІК", pay: "Аформіць", from: "ад", pcs: "шт." },
-            en: { start: "Start Order", city: "Your City", lang: "Select Language", total: "TOTAL", pay: "Checkout", from: "from", pcs: "pcs." }
+        const i18n = { 
+            ru: { start: "Начать заказ", city: "Ваш город", lang: "Выберите язык" },
+            by: { start: "Пачаць замова", city: "Ваш горад", lang: "Абярыце мову" },
+            en: { start: "Start Order", city: "Your City", lang: "Select Language" }
         };
-
-        const products = [
-            { id: 'q1', cat: 0, name: {ru: 'Орешки со сгущёнкой', by: 'Арэшкі са згушчонкай', en: 'Nuts with condensed milk'}, price: 1.10, img: 'oreshki.png', min: 20 },
-            { id: 'q2', cat: 0, name: {ru: 'Орешки + орех', by: 'Арэшкі + арэх', en: 'Nuts + nut'}, price: 1.50, img: 'oreshki sguchenka oreh.png', min: 20 },
-            { id: 'q3', cat: 0, name: {ru: 'Какос и миндаль', by: 'Какос і міндаль', en: 'Coconut & Almond'}, price: 1.80, img: 'oreshki kokos.jpg', min: 20 },
-            { id: 'q4', cat: 0, name: {ru: 'Nutella и фундук', by: 'Nutella і фундук', en: 'Nutella & Hazelnut'}, price: 1.80, img: 'shokoladnya oreshki.jpg', min: 20 },
-            { id: 'q5', cat: 1, name: {ru: 'Трубочки', by: 'Трубачкі', en: 'Rolls'}, price: 4.00, img: 'trubochka1.jpg', min: 6 },
-            { id: 'q11', cat: 2, name: {ru: 'Картошка', by: 'Бульба', en: 'Kartoshka cake'}, price: 4.00, img: 'kartoshka.jpg', min: 4 }
-        ];
-
         function setLang(l, el) {
-            lang = l;
+            localStorage.setItem('selectedLang', l);
             document.querySelectorAll('#lang-btns .opt-btn').forEach(b => b.classList.remove('selected'));
             el.classList.add('selected');
-            document.getElementById('btn-main-start').innerText = i18n[l].start;
+            document.getElementById('main-start-btn').innerText = i18n[l].start;
             document.getElementById('lbl-lang').innerText = i18n[l].lang;
             document.getElementById('lbl-city').innerText = i18n[l].city;
         }
-
         function setCity(c, el) {
-            city = c;
+            localStorage.setItem('selectedCity', c);
             document.querySelectorAll('#city-btns .opt-btn').forEach(b => b.classList.remove('selected'));
             el.classList.add('selected');
         }
-
-        function openShop() {
-            document.getElementById('start-screen').style.display = 'none';
-            document.getElementById('shop-screen').style.display = 'flex';
-            document.getElementById('ui-total-text').innerText = i18n[lang].total;
-            document.getElementById('btn-checkout').innerText = i18n[lang].pay;
-            renderSidebar();
-            renderProducts(0);
-        }
-
-        function renderSidebar() {
-            const names = { ru: ["ОРЕШКИ", "ТРУБОЧКИ", "ПИРОЖНЫЕ"], by: ["АРЭШКІ", "ТРУБАЧКІ", "ПІРОЖНЫЯ"], en: ["NUTS", "ROLLS", "PASTRIES"] };
-            const imgs = ['oreshki.png', 'trubochka1.jpg', 'kartoshka.jpg'];
-            document.getElementById('sidebar').innerHTML = names[lang].map((n, i) => `
-                <div class="cat-item ${i==0?'active':''}" onclick="changeCat(${i}, this)">
-                    <img src="${imgs[i]}"><br>${n}
-                </div>`).join('');
-        }
-
-        function renderProducts(cat) {
-            const grid = document.getElementById('menu-grid');
-            grid.innerHTML = products.filter(p => p.cat === cat).map(p => {
-                const q = cart[p.id] || 0;
-                return `
-                    <div class="product-card">
-                        <div class="qty-badge" id="badge-${p.id}" style="display:${q>0?'block':'none'}">${q}</div>
-                        <img src="${p.img}">
-                        <div style="font-size:9px; font-weight:700; margin-top:5px; height:24px;">${p.name[lang]}</div>
-                        <div class="price">${p.price.toFixed(2)} BYN</div>
-                        <div style="display:flex; justify-content:center; align-items:center; gap:10px;">
-                            <button onclick="changeQty('${p.id}', -1)" style="border:1px solid #ddd; background:white; border-radius:50%; width:24px; height:24px;">-</button>
-                            <span id="qty-${p.id}">${q}</span>
-                            <button onclick="changeQty('${p.id}', 1)" style="border:1px solid #ddd; background:white; border-radius:50%; width:24px; height:24px;">+</button>
-                        </div>
-                    </div>`;
-            }).join('');
-        }
-
-        function changeQty(id, delta) {
-            const p = products.find(x => x.id === id);
-            let cur = cart[id] || 0;
-            if (cur === 0 && delta === 1) delta = p.min;
-            let next = cur + delta;
-            if (next < 0) return;
-            if (next < p.min && next > 0 && delta < 0) next = 0;
-            if (next === 0) delete cart[id]; else cart[id] = next;
-            updateTotal();
-        }
-
-        function updateTotal() {
-            total = 0;
-            for (let id in cart) {
-                const p = products.find(x => x.id === id);
-                total += p.price * cart[id];
-                if(document.getElementById(`qty-${id}`)) document.getElementById(`qty-${id}`).innerText = cart[id];
-                if(document.getElementById(`badge-${id}`)) {
-                    document.getElementById(`badge-${id}`).innerText = cart[id];
-                    document.getElementById(`badge-${id}`).style.display = 'block';
-                }
-            }
-            products.forEach(p => { if(!cart[p.id]) {
-                if(document.getElementById(`qty-${p.id}`)) document.getElementById(`qty-${p.id}`).innerText = 0;
-                if(document.getElementById(`badge-${p.id}`)) document.getElementById(`badge-${p.id}`).style.display = 'none';
-            }});
-            document.getElementById('total-val').innerText = total.toFixed(2);
-            document.getElementById('btn-checkout').disabled = total < 20;
-        }
-
-        function changeCat(i, el) {
-            document.querySelectorAll('.cat-item').forEach(c => c.classList.remove('active'));
-            el.classList.add('active');
-            renderProducts(i);
-        }
-
-        function goToCheckout() {
-            let orderText = "📦 ЗАКАЗ:\n";
-            for(let id in cart) {
-                const p = products.find(x => x.id === id);
-                orderText += `• ${p.name[lang]} - ${cart[id]} шт.\n`;
-            }
-            orderText += `\n💰 ИТОГО: ${total.toFixed(2)} BYN\n📍 Город: ${city}`;
-            tg.sendData(JSON.stringify({ text: orderText }));
-            tg.close();
-        }
+        localStorage.setItem('selectedLang', 'ru'); localStorage.setItem('selectedCity', 'Гомель');
     </script>
 </body>
 </html>
