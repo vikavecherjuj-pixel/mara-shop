@@ -42,7 +42,13 @@
         .btn-pay { background: var(--btn-order); color: white; }
         #cart-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 2000; display: none; justify-content: center; align-items: flex-end; }
         .modal-content { background: #fdfaf5; width: 100%; border-radius: 25px 25px 0 0; padding: 20px; max-height: 80vh; overflow-y: auto; box-sizing: border-box; }
-        .cart-item-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        
+        /* Стили для строк в корзине */
+        .cart-item-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px; font-size: 13px; }
+        .cart-item-info { flex: 1; margin-right: 10px; color: var(--dark); font-weight: 400; }
+        .cart-item-controls { display: flex; align-items: center; gap: 10px; }
+        .cart-qty-val { min-width: 40px; text-align: center; font-weight: 400; font-size: 12px; }
+        .btn-qty-small { width: 24px; height: 24px; border-radius: 50%; border: 1px solid #ddd; background: white; color: var(--burgundy); font-weight: 900; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -105,8 +111,6 @@
             { id: 'q12', cat: 2, name: {ru: 'Шоколадная колбаса', by: 'Шакаладная каўбаса', en: 'Chocolate sausage'}, price: 12.00, img: 'shokoladnaya kolbasa.jpg', min: 1 },
             { id: 't1', name: {ru: 'Медовик 1.1кг', by: 'Мядовік 1.1кг', en: 'Honey cake 1.1kg'}, cat: 3, price: 65.00, img: 'tort 2.jpg', min: 1 },
             { id: 't2', name: {ru: 'Медовик 2.2кг', by: 'Мядовік 2.2кг', en: 'Honey cake 2.2kg'}, cat: 3, price: 130.00, img: 'tort 2.jpg', min: 1 },
-            
-            // КАТЕГОРИЯ НАБОРЫ С ИСПРАВЛЕННЫМ РАСШИРЕНИЕМ .PNG И ВАШИМИ ОПИСАНИЯМИ
             { id: 'n1', cat: 4, name: {ru: 'Набор 1', by: 'Набор 1', en: 'Set 1'}, desc: {ru: '20 половинок орешков со сгущенкой и орехами', by: '20 палавінак арэшкаў са згушчонкай і арэхамі', en: '20 nut halves with condensed milk and nuts'}, price: 22.00, img: 'nabor1.PNG', min: 1 },
             { id: 'n2', cat: 4, name: {ru: 'Набор 2', by: 'Набор 2', en: 'Set 2'}, desc: {ru: '12 орешков со сгущенкой, покрытых шоколадной глазурью', by: '12 арэшкаў са згушчонкай, пакрытых шакаладнай глазурай', en: '12 nuts with condensed milk covered in chocolate glaze'}, price: 32.00, img: 'nabor2.PNG', min: 1 },
             { id: 'n3', cat: 4, name: {ru: 'Набор 3', by: 'Набор 3', en: 'Set 3'}, desc: {ru: '3 орешка в глазури, 3 кокосовых пирожных, 3 муравейника, 4 грибочка со сгущенкой', by: '3 арэшкі ў глазуры, 3 какосавыя пірожныя, 3 мурашнікі, 4 грыбочкі са згушчонкай', en: '3 glazed nuts, 3 coconut pastries, 3 ant-hills, 4 mushrooms with condensed milk'}, price: 34.00, img: 'nabor3.PNG', min: 1 },
@@ -168,6 +172,11 @@
             cart[id] = next;
             if (cart[id] <= 0) delete cart[id];
             updateTotal();
+            
+            // Если модалка открыта, перерисовываем её содержимое
+            if(document.getElementById('cart-modal').style.display === 'flex') {
+                showCart();
+            }
         }
 
         function updateTotal() {
@@ -200,10 +209,22 @@
             if (!entries.length) {
                 list.innerHTML = `<div style="text-align:center; color:#999; padding:20px;">${ui[lang].empty}</div>`;
                 document.getElementById('cart-total-modal').innerText = "";
+                // Если корзина пуста, можно закрыть модалку через секунду или оставить так
             } else {
                 list.innerHTML = entries.map(([id, q]) => {
                     const p = products.find(x => x.id === id);
-                    return `<div class="cart-item-row"><span style="flex:1; font-weight:700;">${p.name[lang]} (${q})</span><span>${(p.price * q).toFixed(2)} BYN</span></div>`;
+                    return `
+                    <div class="cart-item-row">
+                        <div class="cart-item-info">
+                            ${p.name[lang]}<br>
+                            <span style="color: var(--accent); font-weight: 700;">${(p.price * q).toFixed(2)} BYN</span>
+                        </div>
+                        <div class="cart-item-controls">
+                            <button class="btn-qty-small" onclick="changeQty('${id}', -1)">-</button>
+                            <span class="cart-qty-val">${q} ${ui[lang].pcs}</span>
+                            <button class="btn-qty-small" onclick="changeQty('${id}', 1)">+</button>
+                        </div>
+                    </div>`;
                 }).join('');
                 document.getElementById('cart-total-modal').innerText = ui[lang].total + ": " + total.toFixed(2) + " BYN";
             }
