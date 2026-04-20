@@ -31,7 +31,7 @@
         .product-card { background: white; border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 3px 8px rgba(0,0,0,0.05); position: relative; display: flex; flex-direction: column; gap: 4px; }
         .product-card img { width: 100%; height: 80px; object-fit: contain; margin-bottom: 4px; }
         .product-card h3 { font-size: 9px; margin: 0; font-weight: 700; color: var(--dark); min-height: 22px; display: flex; align-items: center; justify-content: center; }
-        .product-card p { font-size: 7.5px; color: #777; margin: 0; min-height: 18px; }
+        .product-card p { font-size: 7.5px; color: #777; margin: 0; min-height: 18px; line-height: 1.2; }
         .product-card .price { font-size: 11px; font-weight: 900; color: var(--accent); margin: 4px 0; }
         
         .counter-controls { display: flex; align-items: center; justify-content: space-between; background: #f8f8f8; border-radius: 20px; padding: 2px; border: 1px solid #eee; margin-top: auto; }
@@ -118,7 +118,13 @@
             { id: 'q12', cat: 2, name: {ru: 'Шоколадная колбаса', by: 'Шакаладная каўбаса', en: 'Chocolate sausage'}, price: 12.00, img: 'shokoladnaya kolbasa.jpg', min: 1 },
             { id: 't1', name: {ru: 'Медовик 1.1кг', by: 'Мядовік 1.1кг', en: 'Honey cake 1.1kg'}, cat: 3, price: 65.00, img: 'tort 2.jpg', min: 1 },
             { id: 't2', name: {ru: 'Медовик 2.2кг', by: 'Мядовік 2.2кг', en: 'Honey cake 2.2kg'}, cat: 3, price: 130.00, img: 'tort 2.jpg', min: 1 },
-            { id: 'n1', name: {ru: 'Набор Ассорти', by: 'Набор Асарці', en: 'Assorted Set'}, cat: 4, price: 30.00, img: 'oreshki.png', min: 1 }
+            // Новые наборы
+            { id: 'n1', cat: 4, name: {ru: 'Набор 1: 20 половинок с орехом', by: 'Набор 1: 20 палавінак з арэхам', en: 'Set 1: 20 nut halves'}, desc: '20 половинок орешков со сгущенкой и орехами', price: 22.00, img: 'nabor1.jpg', min: 1 },
+            { id: 'n2', cat: 4, name: {ru: 'Набор 2: 12 орешков в глазури', by: 'Набор 2: 12 арэшкаў у глазуры', en: 'Set 2: 12 glazed nuts'}, desc: '12 орешков со сгущенкой, покрытых шоколадной глазурью', price: 32.00, img: 'nabor2.jpg', min: 1 },
+            { id: 'n3', cat: 4, name: {ru: 'Набор 3: Ассорти десертов', by: 'Набор 3: Асарці дэсертаў', en: 'Set 3: Dessert Mix'}, desc: '3 орешка в глазури, 3 кокосовых пирожных, 3 муравейника, 4 грибочка со сгущенкой', price: 34.00, img: 'nabor3.jpg', min: 1 },
+            { id: 'n4', cat: 4, name: {ru: 'Набор 4: Сердечки и трубочки', by: 'Набор 4: Сэрцайкі і трубачкі', en: 'Set 4: Hearts & Rolls'}, desc: '12 орешков, 4 сердечка и 5 трубочек со сгущенкой', price: 45.00, img: 'nabor4.jpg', min: 1 },
+            { id: 'n5', cat: 4, name: {ru: 'Набор 5: Орешки и муравейники', by: 'Набор 5: Арэшкі і мурашнікі', en: 'Set 5: Nuts & Anthills'}, desc: '9 орешков, 3 муравейника, 3 кокосовых пирожных и 3 трубочки', price: 38.00, img: 'nabor5.jpg', min: 1 },
+            { id: 'n6', cat: 4, name: {ru: 'Набор 6: Макси Ассорти', by: 'Набор 6: Максі Асарці', en: 'Set 6: Maxi Mix'}, desc: '3 трубочки, 16 орешков, 5 грибочков и 2 кокосовых пирожных', price: 54.00, img: 'nabor6.jpg', min: 1 }
         ];
 
         function applyLanguage() {
@@ -141,7 +147,7 @@
         }
 
         function renderSidebar() {
-            const imgs = ['oreshki.png', 'trubochka1.jpg', 'muraveynik.jpg', 'tort 2.jpg', 'oreshki.png'];
+            const imgs = ['oreshki.png', 'trubochka1.jpg', 'muraveynik.jpg', 'tort 2.jpg', 'nabor1.jpg'];
             const names = {
                 ru: ["ОРЕШКИ", "ТРУБОЧКИ", "ПИРОЖНЫЕ", "ТОРТ", "НАБОРЫ"],
                 by: ["АРЭШКІ", "ТРУБАЧКІ", "ПІРОЖНЫЯ", "ТОРТ", "НАБОРЫ"],
@@ -157,12 +163,14 @@
             const grid = document.getElementById('menu-grid');
             grid.innerHTML = products.filter(p => p.cat === cat).map(p => {
                 const q = cart[p.id] || 0;
+                // Для наборов выводим описание вместо "от Х шт"
+                const subtext = p.cat === 4 ? (p.desc || "") : `${ui[lang].from} ${p.min} ${ui[lang].pcs}`;
                 return `
                     <div class="product-card">
                         <div class="qty-badge" id="badge-${p.id}" style="display:${q>0?'block':'none'}">${q}</div>
                         <img src="${p.img}">
                         <h3>${p.name[lang]}</h3>
-                        <p>${ui[lang].from} ${p.min} ${ui[lang].pcs}</p>
+                        <p>${subtext}</p>
                         <div class="price">${p.price.toFixed(2)} BYN</div>
                         <div class="counter-controls">
                             <button class="btn-qty" onclick="changeQty('${p.id}', -1)">-</button>
