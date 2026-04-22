@@ -296,20 +296,38 @@
             e.target.value = formatted;
         });
 
-        function finishOrder() {
+      function finishOrder() {
             const name = document.getElementById('c-name').value;
             const phone = document.getElementById('c-phone').value;
+            
             if(!name || phone.length < 17) return tg.showAlert(ui[lang].alert);
             const timeVal = document.getElementById('order-time').value;
             if(!isDisc && (!dateInput.value || !timeVal)) return tg.showAlert(ui[lang].alert_time);
+
+            // Собираем список товаров из корзины
+            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
+            let itemsList = "";
+            for (let id in cart) {
+                const item = productsData[id];
+                if (item) {
+                    itemsList += `${item.name[lang]} (${cart[id]} ${ui[lang].pcs}); `;
+                }
+            }
+
+            // Формируем пакет данных для бота
             const data = {
-                name, phone, method,
-                date: isDisc ? "Discuss" : dateInput.value,
-                time: isDisc ? "Discuss" : timeVal,
-                comment: document.getElementById('c-comment').value,
-                total: document.getElementById('final-sum').innerText,
-                lang: lang
+                city_type: "ГОМЕЛЬ",
+                name: name,
+                phone: phone,
+                method: method, // Самовывоз или Доставка
+                date: isDisc ? "Согласовать время" : dateInput.value,
+                time: isDisc ? "Согласовать время" : timeVal,
+                address: document.getElementById('c-comment').value, // Тут адрес или коммент
+                items: itemsList,
+                total: document.getElementById('final-sum').innerText
             };
+
+            // Передаем данные боту и закрываем сайт
             tg.sendData(JSON.stringify(data));
             tg.close();
         }
