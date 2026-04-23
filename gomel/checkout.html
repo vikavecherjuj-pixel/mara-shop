@@ -38,9 +38,22 @@
         .erip-phone { color: var(--green); font-weight: 900; font-size: 18px; display: block; margin-top: 8px; letter-spacing: 0.5px; }
         .copy-btn { width: 100%; padding: 12px; background: var(--gray); color: var(--burgundy); border: none; border-radius: 14px; font-weight: 700; font-size: 11px; text-transform: uppercase; cursor: pointer; margin-top: 12px; transition: all 0.2s; }
         .btn-main { width: 100%; padding: 20px; background: var(--green); color: white; border: none; border-radius: 18px; font-weight: 900; font-size: 15px; text-transform: uppercase; cursor: pointer; margin-top: 15px; }
+
+        /* ОКНО СПАСИБО */
+        #thanks-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.98); z-index: 1000; align-items: center; justify-content: center; text-align: center;
+        }
     </style>
 </head>
 <body>
+    <div id="thanks-overlay">
+        <div style="padding: 30px;">
+            <h2 id="ui-thanks-title" style="color: var(--burgundy); font-weight: 900; font-size: 24px;">СПАСИБО ЗА ЗАКАЗ! ❤️</h2>
+            <p id="ui-thanks-text" style="font-weight: 600; color: #666;">Перенаправляем вас в чат...</p>
+        </div>
+    </div>
+
     <div id="checkout-screen">
         <div class="back-link-container">
             <a href="../shop.html" id="ui-back">← Назад в каталог</a>
@@ -121,7 +134,7 @@
                 hint: "Напишем вам в чат сразу после заказа для уточнения деталей.", data: "Ваши данные", name: "Имя", phone: "Телефон",
                 comment: "Комментарий", comment_ph: "Адрес доставки или пожелания", name_ph: "Введите ваше имя", pay: "Оплата (ЕРИП)",
                 copy: "Скопировать номер", copied: "Номер скопирован!", finish: "Оплачено, заказать", alert: "Введите имя и телефон!", alert_time: "Выберите дату и время!",
-                pcs: "шт."
+                pcs: "шт.", thanks_title: "СПАСИБО ЗА ЗАКАЗ! ❤️", thanks_text: "Перенаправляем вас в чат..."
             },
             by: {
                 back: "← Назад у каталог", choice: "Ваш выбар", method: "Спосаб атрымання", pickup: "Самавываз", delivery: "Дастаўка",
@@ -130,7 +143,7 @@
                 hint: "Напішам вам у чат адразу пасля замовы для ўдакладнення дэталяў.", data: "Вашы дадзеныя", name: "Імя", phone: "Тэлефон",
                 comment: "Каментарый", comment_ph: "Адрас дастаўкі або пажаданні", name_ph: "Увядзіце ваша імя", pay: "Аплата (АРІП)",
                 copy: "Скапіяваць нумар", copied: "Нумар скапіяваны!", finish: "Аплачана, заказаць", alert: "Увядзіце імя і тэлефон!", alert_time: "Абярыце дату і час!",
-                pcs: "шт."
+                pcs: "шт.", thanks_title: "ДЗЯКУЙ ЗА ЗАМОВУ! ❤️", thanks_text: "Перанакіроўваем вас у чат..."
             },
             en: {
                 back: "← Back to catalog", choice: "Your selection", method: "Pickup method", pickup: "Pickup", delivery: "Delivery",
@@ -139,14 +152,14 @@
                 hint: "We will message you right after the order to clarify details.", data: "Your details", name: "Name", phone: "Phone",
                 comment: "Comment", comment_ph: "Delivery address or wishes", name_ph: "Enter your name", pay: "Payment (ERIP)",
                 copy: "Copy number", copied: "Number copied!", finish: "Paid, order now", alert: "Enter name and phone!", alert_time: "Select date and time!",
-                pcs: "pcs."
+                pcs: "pcs.", thanks_title: "THANK YOU FOR ORDER! ❤️", thanks_text: "Redirecting to chat..."
             }
         };
 
         const productsData = {
             'q1': { name: {ru:'Орешки со сгущёнкой', by:'Арэшкі са згушчонкай', en:'Nuts with condensed milk'}, price: 1.10 },
             'q2': { name: {ru:'Орешки + орех', by:'Арэшкі + арэх', en:'Nuts + nut'}, price: 1.50 },
-            'q3': { name: {ru:'Кокос и миндаль', by:'Какос і миндаль', en:'Coconut & Almond'}, price: 1.80 },
+            'q3': { name: {ru:'Кокос и миндаль', by:'Какос і міндаль', en:'Coconut & Almond'}, price: 1.80 },
             'q4': { name: {ru:'Nutella и фундук', by:'Nutella і фундук', en:'Nutella & Hazelnut'}, price: 1.80 },
             'q5': { name: {ru:'Трубочки', by:'Трубачкі', en:'Rolls'}, price: 4.00 },
             'q6': { name: {ru:'Муравейник', by:'Мурашнік', en:'Ant Hill'}, price: 2.50 },
@@ -202,6 +215,8 @@
             document.getElementById('ui-pay-title').innerText = l.pay;
             document.getElementById('ui-copy').innerText = l.copy;
             document.getElementById('ui-finish').innerText = l.finish;
+            document.getElementById('ui-thanks-title').innerText = l.thanks_title;
+            document.getElementById('ui-thanks-text').innerText = l.thanks_text;
             setDeliv(method);
         }
 
@@ -303,28 +318,23 @@
             const timeVal = document.getElementById('order-time').value;
             if(!isDisc && (!dateInput.value || !timeVal)) return tg.showAlert(ui[lang].alert_time);
             
-            // ФОРМИРУЕМ СПИСОК ТОВАРОВ ДЛЯ БОТА
-            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
-            let itemsString = "";
-            for (let id in cart) {
-                const item = productsData[id];
-                if (item) itemsString += `${item.name[lang]} (${cart[id]} ${ui[lang].pcs}); `;
-            }
-
             const data = {
-                city: "ГОМЕЛЬ",
-                name, 
-                phone, 
-                method,
-                items: itemsString,
-                date: isDisc ? "Уточнить" : dateInput.value,
-                time: isDisc ? "Уточнить" : timeVal,
+                name, phone, method,
+                date: isDisc ? "Discuss" : dateInput.value,
+                time: isDisc ? "Discuss" : timeVal,
                 comment: document.getElementById('c-comment').value,
                 total: document.getElementById('final-sum').innerText,
                 lang: lang
             };
-            tg.sendData(JSON.stringify(data));
-            tg.close();
+
+            // ПОЯВЛЕНИЕ ОКНА
+            document.getElementById('thanks-overlay').style.display = 'flex';
+            
+            // ЗАДЕРЖКА ПЕРЕД ОТПРАВКОЙ
+            setTimeout(() => {
+                tg.sendData(JSON.stringify(data));
+                tg.close();
+            }, 1800);
         }
     </script>
 </body>
