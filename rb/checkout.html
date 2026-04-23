@@ -3,44 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mara Shop - РБ</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>Mara Shop - Доставка по РБ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: 'Montserrat'; background: #fdfaf5; padding: 15px; }
-        .card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        input, select { width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; border: 1px solid #eee; box-sizing: border-box; }
-        .btn-main { width: 100%; padding: 20px; background: #21a252; color: white; border: none; border-radius: 15px; font-weight: 900; text-transform: uppercase; }
+        :root { --accent: #c5a059; --burgundy: #630d16; --dark: #2c1a11; --bg: #fdfaf5; --green: #21a252; }
+        body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding: 10px; color: var(--dark); min-height: 100vh; }
+        #checkout-screen { display: flex; flex-direction: column; gap: 12px; padding-bottom: 40px; }
+        .back-link-top { text-align: left; margin-bottom: 5px; }
+        .back-link-top a { color: #aaa; text-decoration: none; font-size: 13px; font-weight: 700; }
+        .checkout-card { background: white; border-radius: 20px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .checkout-title { font-weight: 900; font-size: 14px; margin-bottom: 12px; color: var(--burgundy); text-transform: uppercase; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
+        label { display: block; font-size: 10px; font-weight: 700; margin-bottom: 6px; color: #888; text-transform: uppercase; }
+        input, select, textarea { width: 100%; padding: 14px; border: 1px solid #f0f0f0; border-radius: 12px; font-family: 'Montserrat'; font-size: 14px; margin-bottom: 12px; box-sizing: border-box; background: #fafafa; outline: none; color: black !important; caret-color: black !important; }
+        textarea { resize: none; height: 80px; }
+        .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px; align-items: flex-start; }
+        .item-cost { font-weight: 700; color: var(--accent); white-space: nowrap; }
+        .final-sum { text-align: right; font-weight: 900; color: var(--accent); font-size: 18px; margin-top: 10px; }
+        .btn-main { width: 100%; padding: 18px; background: var(--green); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; }
+        .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 20px; border-radius: 15px; text-align: left; }
+        .erip-phone { color: var(--green); font-weight: 900; font-size: 20px; display: block; margin: 10px 0; letter-spacing: 0.5px; }
+
+        /* ПЛАШКА */
+        #thanks-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.95); z-index:1000; align-items:center; justify-content:center; text-align:center; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h3>Оформление по РБ</h3>
-        <input type="text" id="cust-name" placeholder="ФИО полностью">
-        <input type="tel" id="cust-phone" value="+375 ">
-        <select id="post-type">
-            <option value="Европочта">Европочта</option>
-            <option value="Белпочта">Белпочта</option>
-        </select>
-        <input type="text" id="post-city" placeholder="Город">
-        <input type="text" id="post-addr" placeholder="Отделение или адрес">
-        <button class="btn-main" onclick="finalSubmit()">Я оплатил, заказать</button>
+    <div id="thanks-overlay">
+        <div style="padding:30px;">
+            <h2 style="color:var(--burgundy); font-weight:900;">СПАСИБО ЗА ЗАКАЗ! ❤️</h2>
+            <p>Сейчас вы вернетесь в чат с ботом...</p>
+        </div>
+    </div>
+
+    <div id="checkout-screen">
+        <h2 style="text-align: center; font-weight: 900; font-size: 22px; margin: 15px 0;">ОФОРМЛЕНИЕ</h2>
+        <div class="back-link-top"><a href="../shop.html">← Назад в каталог</a></div>
+        
+        <div class="checkout-card">
+            <div class="checkout-title">Ваш заказ</div>
+            <div id="cart-items-preview"></div>
+            <div class="preview-row" style="color: var(--burgundy); font-weight:700;">
+                <span>Доставка почтой</span>
+                <span class="item-cost">10.00 BYN</span>
+            </div>
+            <div class="final-sum" id="final-sum">0.00 BYN</div>
+        </div>
+
+        <div class="checkout-card">
+            <div class="checkout-title">Контактные данные</div>
+            <label>Фамилия и Имя</label>
+            <input type="text" id="cust-name" placeholder="Полное ФИО">
+            <label>Телефон</label>
+            <input type="tel" id="cust-phone" value="+375 ">
+        </div>
+
+        <div class="checkout-card">
+            <div class="checkout-title">Данные для доставки</div>
+            <select id="post-type" onchange="togglePostFields()">
+                <option value="Европочта">Европочта</option>
+                <option value="Белпочта">Белпочта</option>
+            </select>
+            <label>Город</label>
+            <input type="text" id="post-city">
+            <div id="euro-box">
+                <label>Отделение (номер или адрес)</label>
+                <input type="text" id="post-dept">
+            </div>
+            <div id="bel-box" style="display:none;">
+                <label>Адрес и Индекс</label>
+                <input type="text" id="post-addr" placeholder="Улица, дом, кв, индекс">
+            </div>
+        </div>
+
+        <div class="checkout-card">
+            <div class="checkout-title">Оплата (ЕРИП)</div>
+            <div class="erip-box">
+                <div style="font-size:11px; color:#555;">Альфа-Банк / Пополнение счета:</div>
+                <div class="erip-phone">+375 (29) 651-44-03</div>
+            </div>
+            <button class="btn-main" style="margin-top:15px;" onclick="finalSubmit()">Я оплатил, оформить заказ</button>
+        </div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
+        function togglePostFields() {
+            const type = document.getElementById('post-type').value;
+            document.getElementById('euro-box').style.display = type === 'Европочта' ? 'block' : 'none';
+            document.getElementById('bel-box').style.display = type === 'Белпочта' ? 'block' : 'none';
+        }
+
         function finalSubmit() {
+            const name = document.getElementById('cust-name').value;
+            const phone = document.getElementById('cust-phone').value;
+            const city = document.getElementById('post-city').value;
+            if(!name || phone.length < 10 || !city) return tg.showAlert("Заполните данные!");
+
             const data = {
                 city_type: "РБ (ПОЧТА)",
-                name: document.getElementById('cust-name').value,
-                phone: document.getElementById('cust-phone').value,
+                name: name,
+                phone: phone,
                 method: document.getElementById('post-type').value,
-                address: document.getElementById('post-city').value + ", " + document.getElementById('post-addr').value,
+                address: city + ", " + (document.getElementById('post-dept').value || document.getElementById('post-addr').value),
                 total: localStorage.getItem('mara_total') + " BYN"
             };
-            tg.sendData(JSON.stringify(data));
-            tg.close();
+
+            document.getElementById('thanks-overlay').style.display = 'flex';
+            setTimeout(() => {
+                tg.sendData(JSON.stringify(data));
+                tg.close();
+            }, 1500);
         }
+        
+        // Подсчет суммы при загрузке
+        window.onload = () => {
+           document.getElementById('final-sum').innerText = (parseFloat(localStorage.getItem('mara_total') || 0) + 10).toFixed(2) + " BYN";
+        };
     </script>
 </body>
 </html>
