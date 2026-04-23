@@ -12,47 +12,39 @@
             --btn-clear: #e9233a; --btn-order: #21a252; --white: #ffffff;
         }
         body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding: 0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
-
         .header-container { background: white; flex-shrink: 0; position: relative; display: flex; flex-direction: column; }
         .back-floating-btn { position: absolute; top: 15px; left: 15px; z-index: 100; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(5px); border: none; padding: 8px 14px; border-radius: 20px; font-weight: 700; font-size: 11px; color: var(--burgundy); cursor: pointer; }
         .promo-banner { width: 100%; height: 160px; overflow: hidden; }
         .promo-banner img { width: 100%; height: 100%; object-fit: cover; }
         .logo-area { padding: 12px 20px; border-bottom: 1px solid #eee; background: white; }
         .logo-area img { max-width: 120px; height: auto; }
-
         .main-area { flex-grow: 1; display: flex; overflow: hidden; }
         .sidebar { width: 85px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; align-items: center; padding-top: 10px; flex-shrink: 0; overflow-y: auto; }
         .cat-item { margin-bottom: 15px; text-align: center; font-size: 8px; color: #555; width: 100%; font-weight: 700; cursor: pointer; text-transform: uppercase; }
         .cat-item img { width: 40px; height: 40px; border-radius: 50%; background: #eee; margin-bottom: 4px; border: 2px solid transparent; object-fit: cover; }
         .cat-item.active { color: var(--burgundy); }
         .cat-item.active img { border-color: var(--burgundy); box-shadow: 0 0 10px rgba(99, 13, 22, 0.2); }
-
         .menu-grid { flex-grow: 1; overflow-y: auto; padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; padding-bottom: 180px; }
         .product-card { background: white; border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 3px 8px rgba(0,0,0,0.05); position: relative; display: flex; flex-direction: column; gap: 4px; }
         .product-card img { width: 100%; height: 80px; object-fit: contain; margin-bottom: 4px; }
         .product-card h3 { font-size: 9px; margin: 0; font-weight: 700; color: var(--dark); min-height: 22px; display: flex; align-items: center; justify-content: center; }
         .product-card p { font-size: 7.5px; color: #777; margin: 0; min-height: 18px; }
         .product-card .price { font-size: 11px; font-weight: 900; color: var(--accent); margin: 4px 0; }
-        
         .counter-controls { display: flex; align-items: center; justify-content: space-between; background: #f8f8f8; border-radius: 20px; padding: 2px; border: 1px solid #eee; margin-top: auto; }
         .btn-qty { width: 28px; height: 28px; border-radius: 50%; border: none; background: white; color: var(--burgundy); font-weight: 900; font-size: 16px; cursor: pointer; }
         .qty-badge { position: absolute; top: -4px; right: -4px; background: var(--burgundy); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; line-height: 18px; display: none; border: 2px solid white; font-weight: 900; z-index: 10; }
-
         .payment-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1512; padding: 10px 15px 25px 15px; z-index: 500; border-radius: 20px 20px 0 0; }
         .footer-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .total-price { font-size: 20px; color: var(--accent); font-weight: 900; }
         .btn-footer { flex: 1; padding: 14px; border: none; border-radius: 12px; font-weight: 900; text-transform: uppercase; cursor: pointer; font-size: 12px; font-family: 'Montserrat'; }
-        
         .btn-view-order {
             background: rgba(255, 255, 255, 0.1);
             color: white; border: none; border-radius: 10px; padding: 10px 12px;
             font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 500;
             text-transform: uppercase; cursor: pointer; white-space: nowrap;
         }
-
         .btn-clear { background: var(--btn-clear); color: white; margin-right: 10px; }
         .btn-pay { background: var(--btn-order); color: white; }
-
         #cart-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 2000; display: none; justify-content: center; align-items: flex-end; }
         .modal-content { background: #fdfaf5; width: 100%; border-radius: 25px 25px 0 0; padding: 20px; max-height: 80vh; overflow-y: auto; box-sizing: border-box; }
         .cart-item-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #eee; }
@@ -95,7 +87,12 @@
     <script>
         let tg = window.Telegram.WebApp;
         let cart = {}; let total = 0;
-        let lang = localStorage.getItem('selectedLang') || 'ru';
+        
+        // ИЗМЕНЕНО: чтение параметров из URL
+        const urlParams = new URLSearchParams(window.location.search);
+        let lang = urlParams.get('lang') || localStorage.getItem('selectedLang') || 'ru';
+        let cityFromUrl = urlParams.get('city') || localStorage.getItem('selectedCity') || 'Гомель';
+        localStorage.setItem('selectedCity', cityFromUrl);
 
         const ui = {
             ru: { back: "← Назад", view: "🛒 Просмотреть заказ", clear: "Очистить", pay: "Оформить", your_order: "ВАШ ЗАКАЗ", total: "ИТОГО", from: "от", pcs: "шт.", empty: "Пусто" },
@@ -236,18 +233,19 @@
             document.getElementById('cart-modal').style.display = 'flex';
         }
 
+        // ИЗМЕНЕНО: Логика перехода по городам через параметры URL
         function goToCheckout() {
             if (total === 0) return;
             localStorage.setItem('mara_cart', JSON.stringify(cart));
             localStorage.setItem('mara_total', total.toFixed(2));
-
-            // Защищенный выбор города
-            let city = (localStorage.getItem('selectedCity') || "").trim();
-
-            if (city === 'Гомель') {
-                window.location.href = 'gomel/checkout.html';
+                
+            const urlParams = new URLSearchParams(window.location.search);
+            const selectedCity = urlParams.get('city') || localStorage.getItem('selectedCity') || 'Гомель';
+                
+            if (selectedCity === 'Гомель') {
+                window.location.href = 'gomel/checkout.html?city=Гомель&lang=' + lang;
             } else {
-                window.location.href = 'rb/checkout.html';
+                window.location.href = 'rb/checkout.html?city=Другой&lang=' + lang;
             }
         }
 
