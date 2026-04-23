@@ -38,6 +38,11 @@
         .erip-phone { color: var(--green); font-weight: 900; font-size: 18px; display: block; margin-top: 8px; letter-spacing: 0.5px; }
         .copy-btn { width: 100%; padding: 12px; background: var(--gray); color: var(--burgundy); border: none; border-radius: 14px; font-weight: 700; font-size: 11px; text-transform: uppercase; cursor: pointer; margin-top: 12px; transition: all 0.2s; }
         .btn-main { width: 100%; padding: 20px; background: var(--green); color: white; border: none; border-radius: 18px; font-weight: 900; font-size: 15px; text-transform: uppercase; cursor: pointer; margin-top: 15px; }
+        
+        /* Стили для экрана благодарности */
+        #thanks-screen { display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 80vh; padding: 20px; }
+        .thanks-title { font-weight: 900; font-size: 24px; color: var(--burgundy); margin-bottom: 15px; text-transform: uppercase; }
+        .thanks-text { font-size: 14px; color: #555; line-height: 1.6; margin-bottom: 30px; }
     </style>
 </head>
 <body>
@@ -107,6 +112,12 @@
         </div>
     </div>
 
+    <div id="thanks-screen">
+        <div class="thanks-title" id="thanks-title">Спасибо за заказ!</div>
+        <div class="thanks-text" id="thanks-text">Ваша заявка принята. Мы свяжемся с вами в ближайшее время для подтверждения.</div>
+        <button class="btn-main" onclick="location.href='../shop.html'">Вернуться в каталог</button>
+    </div>
+
     <script>
         let tg = window.Telegram.WebApp;
         let lang = localStorage.getItem('selectedLang') || 'ru';
@@ -121,16 +132,16 @@
                 hint: "Напишем вам в чат сразу после заказа для уточнения деталей.", data: "Ваши данные", name: "Имя", phone: "Телефон",
                 comment: "Комментарий", comment_ph: "Адрес доставки или пожелания", name_ph: "Введите ваше имя", pay: "Оплата (ЕРИП)",
                 copy: "Скопировать номер", copied: "Номер скопирован!", finish: "Оплачено, заказать", alert: "Введите имя и телефон!", alert_time: "Выберите дату и время!",
-                pcs: "шт."
+                pcs: "шт.", thanks_t: "Спасибо за заказ!", thanks_m: "Ваша заявка принята. Мы свяжемся с вами в ближайшее время для подтверждения."
             },
             by: {
                 back: "← Назад у каталог", choice: "Ваш выбар", method: "Спосаб атрымання", pickup: "Самавываз", delivery: "Дастаўка",
                 note_pickup: "Свірыдава 11, 6 пад'езд. Патэлефануйце за 10 хв:", note_delivery: "Адпраўляем праз Яндекс.Дастаўка. Аплата дастаўкі — за кошт кліента.",
                 date: "Дата", time: "Час", loading: "Загрузка...", select_time: "Абраць час", or: "або", discuss: "Узгадніць час пасля аплаты",
                 hint: "Напішам вам у чат адразу пасля замовы для ўдакладнення дэталяў.", data: "Вашы дадзеныя", name: "Імя", phone: "Тэлефон",
-                comment: "Каментарый", comment_ph: "Адрас дастаўкі або пажаданні", name_ph: "Увядзіце ваша імя", pay: "Оплата (АРІП)",
+                comment: "Каментарый", comment_ph: "Адрас дастаўкі або пажаданні", name_ph: "Увядзіце ваша імя", pay: "Аплата (АРІП)",
                 copy: "Скапіяваць нумар", copied: "Нумар скапіяваны!", finish: "Аплачана, заказаць", alert: "Увядзіце імя і тэлефон!", alert_time: "Абярыце дату і час!",
-                pcs: "шт."
+                pcs: "шт.", thanks_t: "Дзякуй за замовy!", thanks_m: "Ваша заяўка прынята. Мы звяжамся з вамі ў бліжэйшы час для пацверджання."
             },
             en: {
                 back: "← Back to catalog", choice: "Your selection", method: "Pickup method", pickup: "Pickup", delivery: "Delivery",
@@ -139,14 +150,14 @@
                 hint: "We will message you right after the order to clarify details.", data: "Your details", name: "Name", phone: "Phone",
                 comment: "Comment", comment_ph: "Delivery address or wishes", name_ph: "Enter your name", pay: "Payment (ERIP)",
                 copy: "Copy number", copied: "Number copied!", finish: "Paid, order now", alert: "Enter name and phone!", alert_time: "Select date and time!",
-                pcs: "pcs."
+                pcs: "pcs.", thanks_t: "Thank you for your order!", thanks_m: "Your application has been accepted. We will contact you shortly for confirmation."
             }
         };
 
         const productsData = {
             'q1': { name: {ru:'Орешки со сгущёнкой', by:'Арэшкі са згушчонкай', en:'Nuts with condensed milk'}, price: 1.10 },
             'q2': { name: {ru:'Орешки + орех', by:'Арэшкі + арэх', en:'Nuts + nut'}, price: 1.50 },
-            'q3': { name: {ru:'Кокос и миндаль', by:'Какос і миндаль', en:'Coconut & Almond'}, price: 1.80 },
+            'q3': { name: {ru:'Кокос и миндаль', by:'Какос і міндаль', en:'Coconut & Almond'}, price: 1.80 },
             'q4': { name: {ru:'Nutella и фундук', by:'Nutella і фундук', en:'Nutella & Hazelnut'}, price: 1.80 },
             'q5': { name: {ru:'Трубочки', by:'Трубачкі', en:'Rolls'}, price: 4.00 },
             'q6': { name: {ru:'Муравейник', by:'Мурашнік', en:'Ant Hill'}, price: 2.50 },
@@ -202,6 +213,8 @@
             document.getElementById('ui-pay-title').innerText = l.pay;
             document.getElementById('ui-copy').innerText = l.copy;
             document.getElementById('ui-finish').innerText = l.finish;
+            document.getElementById('thanks-title').innerText = l.thanks_t;
+            document.getElementById('thanks-text').innerText = l.thanks_m;
             setDeliv(method);
         }
 
@@ -225,7 +238,7 @@
                     html += `<div class="preview-row">
                                 <span class="item-name">${item.name[lang]} (${cart[id]} ${ui[lang].pcs})</span>
                                 <span class="item-cost">${linePrice} BYN</span>
-                            </div>`;
+                             </div>`;
                 }
             }
             document.getElementById('cart-list').innerHTML = html;
@@ -302,31 +315,33 @@
             if(!name || phone.length < 17) return tg.showAlert(ui[lang].alert);
             const timeVal = document.getElementById('order-time').value;
             if(!isDisc && (!dateInput.value || !timeVal)) return tg.showAlert(ui[lang].alert_time);
-
-            // Сбор данных о товарах для бота
+            
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
-            let itemsStr = "";
-            for (let id in cart) { 
-                if(productsData[id]) {
-                    itemsStr += productsData[id].name[lang] + " (" + cart[id] + " шт); ";
-                }
+            let itemsText = "";
+            for (let id in cart) {
+                itemsText += productsData[id].name[lang] + " (" + cart[id] + "); ";
             }
 
             const data = {
-                city_type: "ГОМЕЛЬ",
-                name: name,
-                phone: phone,
-                method: method,
-                items: itemsStr,
-                address: method === 'Самовывоз' ? 'Самовывоз (Свиридова 11)' : 'Яндекс Доставка',
-                date: isDisc ? "Согласовать" : dateInput.value,
-                time: isDisc ? "Согласовать" : timeVal,
-                comment: document.getElementById('c-comment').value || "-",
+                city: "ГОМЕЛЬ",
+                name, phone, method,
+                items: itemsText,
+                date: isDisc ? "Discuss" : dateInput.value,
+                time: isDisc ? "Discuss" : timeVal,
+                comment: document.getElementById('c-comment').value,
                 total: document.getElementById('final-sum').innerText,
                 lang: lang
             };
+
+            // Отправляем данные боту
             tg.sendData(JSON.stringify(data));
-            tg.close();
+            
+            // Показываем экран благодарности и скрываем форму заказа
+            document.getElementById('checkout-screen').style.display = 'none';
+            document.getElementById('thanks-screen').style.display = 'flex';
+            
+            // Очищаем корзину после успешной отправки
+            localStorage.removeItem('mara_cart');
         }
     </script>
 </body>
