@@ -146,7 +146,7 @@
         const productsData = {
             'q1': { name: {ru:'Орешки со сгущёнкой', by:'Арэшкі са згушчонкай', en:'Nuts with condensed milk'}, price: 1.10 },
             'q2': { name: {ru:'Орешки + орех', by:'Арэшкі + арэх', en:'Nuts + nut'}, price: 1.50 },
-            'q3': { name: {ru:'Кокос и миндаль', by:'Какос і міндаль', en:'Coconut & Almond'}, price: 1.80 },
+            'q3': { name: {ru:'Кокос и миндаль', by:'Какос і миндаль', en:'Coconut & Almond'}, price: 1.80 },
             'q4': { name: {ru:'Nutella и фундук', by:'Nutella і фундук', en:'Nutella & Hazelnut'}, price: 1.80 },
             'q5': { name: {ru:'Трубочки', by:'Трубачкі', en:'Rolls'}, price: 4.00 },
             'q6': { name: {ru:'Муравейник', by:'Мурашнік', en:'Ant Hill'}, price: 2.50 },
@@ -302,10 +302,23 @@
             if(!name || phone.length < 17) return tg.showAlert(ui[lang].alert);
             const timeVal = document.getElementById('order-time').value;
             if(!isDisc && (!dateInput.value || !timeVal)) return tg.showAlert(ui[lang].alert_time);
+            
+            // ФОРМИРУЕМ СПИСОК ТОВАРОВ ДЛЯ БОТА
+            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
+            let itemsString = "";
+            for (let id in cart) {
+                const item = productsData[id];
+                if (item) itemsString += `${item.name[lang]} (${cart[id]} ${ui[lang].pcs}); `;
+            }
+
             const data = {
-                name, phone, method,
-                date: isDisc ? "Discuss" : dateInput.value,
-                time: isDisc ? "Discuss" : timeVal,
+                city: "ГОМЕЛЬ",
+                name, 
+                phone, 
+                method,
+                items: itemsString,
+                date: isDisc ? "Уточнить" : dateInput.value,
+                time: isDisc ? "Уточнить" : timeVal,
                 comment: document.getElementById('c-comment').value,
                 total: document.getElementById('final-sum').innerText,
                 lang: lang
