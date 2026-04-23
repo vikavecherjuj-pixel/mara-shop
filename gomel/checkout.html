@@ -1,125 +1,54 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mara Shop - Оформление (Гомель)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap" rel="stylesheet">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        :root { --accent: #c5a059; --burgundy: #630d16; --dark: #2c1a11; --bg: #fdfaf5; --green: #21a252; --gray: #f4f4f4; }
-        body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding: 12px; color: var(--dark); min-height: 100vh; }
-        #checkout-screen { display: flex; flex-direction: column; gap: 16px; padding-bottom: 50px; }
-        .back-link-container { margin-bottom: 5px; }
-        .back-link-container a { color: #aaa; text-decoration: none; font-size: 13px; font-weight: 700; display: inline-block; padding: 5px 0; }
-        .checkout-card { background: white; border-radius: 24px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
-        .section-title { font-weight: 900; font-size: 13px; margin-bottom: 16px; color: var(--burgundy); text-transform: uppercase; border-bottom: 1px solid #f8f8f8; padding-bottom: 10px; }
-        .delivery-selector { display: flex; background: var(--gray); padding: 4px; border-radius: 14px; margin-bottom: 12px; }
-        .delivery-option { flex: 1; padding: 12px; text-align: center; font-size: 12px; font-weight: 700; border-radius: 11px; cursor: pointer; color: #888; transition: all 0.2s; }
-        .delivery-option.active { background: white; color: var(--burgundy); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        #delivery-note { font-size: 11px; color: #888; line-height: 1.5; margin-bottom: 15px; background: #fffcf5; padding: 12px; border-radius: 12px; border-left: 3px solid var(--accent); }
-        input, select, textarea { width: 100%; border: 1px solid transparent; border-radius: 14px; font-family: 'Montserrat'; font-size: 14px; box-sizing: border-box; background: var(--gray); outline: none; color: black !important; caret-color: black; padding: 14px; }
-        .field-group label { display: block; font-size: 10px; font-weight: 800; color: #bbb; text-transform: uppercase; margin-bottom: 6px; }
-        .preview-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; border-bottom: 1px dashed #eee; padding-bottom: 6px; }
-        .item-cost { font-weight: 700; color: var(--accent); }
-        .final-total { text-align: right; font-weight: 900; color: var(--accent); font-size: 20px; }
-        .btn-main { width: 100%; padding: 20px; background: var(--green); color: white; border: none; border-radius: 18px; font-weight: 900; font-size: 15px; text-transform: uppercase; cursor: pointer; }
-        .discuss-btn { width: 100%; padding: 14px; background: transparent; color: var(--burgundy); border: 2px dashed #ddd; border-radius: 14px; font-weight: 700; font-size: 12px; }
-        .discuss-btn.active { background: var(--burgundy); color: white; border-style: solid; }
-        
-        /* ПЛАШКА СПАСИБО */
-        #thanks-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.98); z-index: 1000; align-items: center; justify-content: center; text-align: center;
-        }
-    </style>
-</head>
-<body>
-    <div id="thanks-overlay">
-        <div style="padding: 30px;">
-            <h2 style="color: var(--burgundy); font-weight: 900; font-size: 24px;">СПАСИБО ЗА ЗАКАЗ! ❤️</h2>
-            <p id="thanks-text" style="font-weight: 600; color: #666;">Перенаправляем вас в чат...</p>
-        </div>
-    </div>
-
-    <div id="checkout-screen">
-        <div class="back-link-container"><a href="../shop.html" id="ui-back">← Назад в каталог</a></div>
-
-        <div class="checkout-card">
-            <div class="section-title" id="ui-choice">Ваш выбор</div>
-            <div id="cart-list"></div>
-            <div class="final-total" id="final-sum">0.00 BYN</div>
-        </div>
-
-        <div class="checkout-card">
-            <div class="section-title" id="ui-method">Способ получения</div>
-            <div class="delivery-selector">
-                <div class="delivery-option active" id="opt-pickup" onclick="setDeliv('Самовывоз')">Самовывоз</div>
-                <div class="delivery-option" id="opt-delivery" onclick="setDeliv('Доставка')">Доставка</div>
-            </div>
-            <div id="delivery-note"></div>
-            <div id="time-selection-area">
-                <div style="display:flex; gap:10px;">
-                    <div class="field-group" style="flex:1;">
-                        <label id="ui-date">Дата</label>
-                        <input type="date" id="order-date" onchange="enableTime()">
-                    </div>
-                    <div class="field-group" style="flex:1;">
-                        <label id="ui-time">Время</label>
-                        <select id="order-time" disabled><option value="">...</option></select>
-                    </div>
-                </div>
-            </div>
-            <div style="text-align:center; margin:10px 0; font-size:10px; color:#ccc;">ИЛИ</div>
-            <button id="btn-discuss" class="discuss-btn" onclick="toggleDisc()">Согласовать время после оплаты</button>
-            <span id="discuss-hint" style="display:none; font-size:11px; text-align:center; margin-top:10px; color:#666;">Напишем вам в чат для уточнения.</span>
-        </div>
-
-        <div class="checkout-card">
-            <div class="section-title" id="ui-data">Ваши данные</div>
-            <label class="field-group"><label id="ui-name">Имя</label><input type="text" id="c-name"></label>
-            <label class="field-group" style="margin-top:10px;"><label id="ui-phone">Телефон</label><input type="tel" id="c-phone" value="+375 "></label>
-            <label class="field-group" style="margin-top:10px;"><label id="ui-comment">Комментарий</label><textarea id="c-comment" rows="3"></textarea></label>
-        </div>
-
-        <div class="checkout-card">
-            <div class="section-title">Оплата (ЕРИП)</div>
-            <div style="background:#f9fdf9; padding:15px; border-radius:15px; font-size:11px;">
-                ЕРИП / Альфа-Банк / Пополнение счета: <br>
-                <strong style="font-size:18px; color:var(--green);">+375 (29) 651-44-03</strong>
-                <button class="btn-main" style="background:var(--gray); color:var(--burgundy); padding:10px; font-size:10px; margin-top:10px;" onclick="copyNumber('+375296514403', this)">Скопировать номер</button>
-            </div>
-            <button class="btn-main" style="margin-top:20px;" onclick="finishOrder()">Оплачено, заказать</button>
-        </div>
-    </div>
-
-    <script>
+<script>
         let tg = window.Telegram.WebApp;
         let lang = localStorage.getItem('selectedLang') || 'ru';
         let method = "Самовывоз";
         let isDisc = false;
 
         const ui = {
-            ru: { pickup: "Самовывоз", delivery: "Доставка", alert: "Заполните имя и телефон!", alert_time: "Выберите дату и время!", pcs: "шт.", thanks: "Перенаправляем в чат..." },
-            by: { pickup: "Самавываз", delivery: "Дастаўка", alert: "Увядзіце імя і тэлефон!", alert_time: "Абярыце дату і час!", pcs: "шт.", thanks: "Перанакіроўваем у чат..." },
-            en: { pickup: "Pickup", delivery: "Delivery", alert: "Enter name and phone!", alert_time: "Select date and time!", pcs: "pcs.", thanks: "Redirecting to chat..." }
+            ru: {
+                back: "← Назад в каталог", choice: "Ваш выбор", method: "Способ получения", pickup: "Самовывоз", delivery: "Доставка",
+                note_pickup: "Свиридова 11, 6 подъезд. Позвоните за 10 мин:", note_delivery: "Отправляем через Яндекс.Доставка. Оплата доставки — за счет клиента.",
+                date: "Дата", time: "Время", loading: "Загрузка...", select_time: "Выбрать время", or: "или", discuss: "Согласовать время после оплаты",
+                hint: "Напишем вам в чат сразу после заказа для уточнения деталей.", data: "Ваши данные", name: "Имя", phone: "Телефон",
+                comment: "Комментарий", comment_ph: "Адрес доставки или пожелания", name_ph: "Введите ваше имя", pay: "Оплата (ЕРИП)",
+                copy: "Скопировать номер", copied: "Номер скопирован!", finish: "Оплачено, заказать", alert: "Введите имя и телефон!", alert_time: "Выберите дату и время!",
+                pcs: "шт.", thanks: "✅ ЗАКАЗ ОТПРАВЛЕН!\nВернитесь в чат с ботом."
+            },
+            by: {
+                back: "← Назад у каталог", choice: "Ваш выбар", method: "Спосаб атрымання", pickup: "Самавываз", delivery: "Дастаўка",
+                note_pickup: "Свірыдава 11, 6 пад'езд. Патэлефануйце за 10 хв:", note_delivery: "Адпраўляем праз Яндекс.Дастаўка. Аплата дастаўкі — за кошт кліента.",
+                date: "Дата", time: "Час", loading: "Загрузка...", select_time: "Абраць час", or: "або", discuss: "Узгадніць час пасля аплаты",
+                hint: "Напішам вам у чат адразу пасля замовы для ўдакладнення дэталяў.", data: "Вашы дадзеныя", name: "Імя", phone: "Тэлефон",
+                comment: "Каментарый", comment_ph: "Адрас дастаўкі або пажаданні", name_ph: "Увядзіце ваша імя", pay: "Оплата (АРІП)",
+                copy: "Скапіяваць нумар", copied: "Нумар скапіяваны!", finish: "Аплачана, заказаць", alert: "Увядзіце імя і тэлефон!", alert_time: "Абярыце дату і час!",
+                pcs: "шт.", thanks: "✅ ЗАМОВА АДПРАЎЛЕНА!\nВярніцеся ў чат з ботам."
+            },
+            en: {
+                back: "← Back to catalog", choice: "Your selection", method: "Pickup method", pickup: "Pickup", delivery: "Delivery",
+                note_pickup: "Sviridova 11, entrance 6. Call 10 min before:", note_delivery: "Sent via Yandex Delivery. Delivery fee is paid by the customer.",
+                date: "Date", time: "Time", loading: "Loading...", select_time: "Select time", or: "or", discuss: "Arrange time after payment",
+                hint: "We will message you right after the order to clarify details.", data: "Your details", name: "Name", phone: "Phone",
+                comment: "Comment", comment_ph: "Delivery address or wishes", name_ph: "Enter your name", pay: "Payment (ERIP)",
+                copy: "Copy number", copied: "Number copied!", finish: "Paid, order now", alert: "Enter name and phone!", alert_time: "Select date and time!",
+                pcs: "pcs.", thanks: "✅ ORDER SENT!\nGo back to the bot chat."
+            }
         };
 
         const productsData = {
-            'q1': { name: {ru:'Орешки со сгущёнкой', by:'Арэшкі са згушчонкай', en:'Nuts'}, price: 1.10 },
+            'q1': { name: {ru:'Орешки со сгущёнкой', by:'Арэшкі са згушчонкай', en:'Nuts with condensed milk'}, price: 1.10 },
             'q2': { name: {ru:'Орешки + орех', by:'Арэшкі + арэх', en:'Nuts + nut'}, price: 1.50 },
-            'q3': { name: {ru:'Кокос и миндаль', by:'Какос і міндаль', en:'Coconut'}, price: 1.80 },
-            'q4': { name: {ru:'Nutella и фундук', by:'Nutella і фундук', en:'Nutella'}, price: 1.80 },
+            'q3': { name: {ru:'Кокос и миндаль', by:'Какос і міндаль', en:'Coconut & Almond'}, price: 1.80 },
+            'q4': { name: {ru:'Nutella и фундук', by:'Nutella і фундук', en:'Nutella & Hazelnut'}, price: 1.80 },
             'q5': { name: {ru:'Трубочки', by:'Трубачкі', en:'Rolls'}, price: 4.00 },
             'q6': { name: {ru:'Муравейник', by:'Мурашнік', en:'Ant Hill'}, price: 2.50 },
             'q7': { name: {ru:'Грибочки', by:'Грыбочкі', en:'Mushrooms'}, price: 2.50 },
             'q8': { name: {ru:'Сердечки', by:'Сэрцайкі', en:'Hearts'}, price: 2.50 },
             'q9': { name: {ru:'Кокосовое', by:'Какосавае', en:'Coconut cookies'}, price: 2.50 },
             'q10': { name: {ru:'Орешки в глазури', by:'Арэшкі ў глазуры', en:'Glazed nuts'}, price: 2.50 },
-            'q11': { name: {ru:'Картошка', by:'Бульба', en:'Kartoshka'}, price: 4.00 },
-            'q12': { name: {ru:'Шоколадная колбаса', by:'Шакаладная каўбаса', en:'Sausage'}, price: 12.00 },
-            't1': { name: {ru:'Медовик 1.1кг', by:'Мядовік 1.1кг', en:'Honey cake'}, price: 65.00 },
-            't2': { name: {ru:'Медовик 2.2кг', by:'Мядовік 2.2кг', en:'Honey cake'}, price: 130.00 },
+            'q11': { name: {ru:'Картошка', by:'Бульба', en:'Kartoshka cake'}, price: 4.00 },
+            'q12': { name: {ru:'Шоколадная колбаса', by:'Шакаладная каўбаса', en:'Chocolate sausage'}, price: 12.00 },
+            't1': { name: {ru:'Медовик 1.1кг', by:'Мядовік 1.1кг', en:'Honey cake 1.1kg'}, price: 65.00 },
+            't2': { name: {ru:'Медовик 2.2кг', by:'Мядовік 2.2кг', en:'Honey cake 2.2kg'}, price: 130.00 },
             'n1': { name: {ru:'Набор 1', by:'Набор 1', en:'Set 1'}, price: 22.00 },
             'n2': { name: {ru:'Набор 2', by:'Набор 2', en:'Set 2'}, price: 32.00 },
             'n3': { name: {ru:'Набор 3', by:'Набор 3', en:'Set 3'}, price: 34.00 },
@@ -128,85 +57,172 @@
             'n6': { name: {ru:'Набор 6', by:'Набор 6', en:'Set 6'}, price: 54.00 }
         };
 
+        const dateInput = document.getElementById('order-date');
+        const now = new Date();
+        const offset = 3 * 60 * 60 * 1000;
+        const localNow = new Date(now.getTime() + offset);
+        const todayStr = localNow.toISOString().split('T')[0];
+
         window.onload = function() {
+            applyLanguage();
             render();
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('order-date').setAttribute('min', today);
-            document.getElementById('order-date').value = today;
-            enableTime();
+            dateInput.setAttribute('min', todayStr);
+            dateInput.value = todayStr; 
+            enableTime(); 
         };
+
+        function applyLanguage() {
+            const l = ui[lang];
+            document.getElementById('ui-back').innerText = l.back;
+            document.getElementById('ui-choice').innerText = l.choice;
+            document.getElementById('ui-method').innerText = l.method;
+            document.getElementById('opt-pickup').innerText = l.pickup;
+            document.getElementById('opt-delivery').innerText = l.delivery;
+            document.getElementById('ui-date').innerText = l.date;
+            document.getElementById('ui-time').innerText = l.time;
+            document.getElementById('ui-loading').innerText = l.loading;
+            document.getElementById('ui-or').innerText = l.or;
+            document.getElementById('btn-discuss').innerText = l.discuss;
+            document.getElementById('discuss-hint').innerText = l.hint;
+            document.getElementById('ui-data').innerText = l.data;
+            document.getElementById('ui-name').innerText = l.name;
+            document.getElementById('ui-phone').innerText = l.phone;
+            document.getElementById('ui-comment').innerText = l.comment;
+            document.getElementById('c-comment').placeholder = l.comment_ph;
+            document.getElementById('c-name').placeholder = l.name_ph;
+            document.getElementById('ui-pay-title').innerText = l.pay;
+            document.getElementById('ui-copy').innerText = l.copy;
+            document.getElementById('ui-finish').innerText = l.finish;
+            setDeliv(method);
+        }
+
+        function copyNumber(num, btn) {
+            navigator.clipboard.writeText(num).then(() => {
+                const originalText = btn.innerText;
+                btn.innerText = ui[lang].copied;
+                setTimeout(() => { btn.innerText = originalText; }, 2000);
+                if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+            });
+        }
 
         function render() {
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
+            const total = localStorage.getItem('mara_total') || '0.00';
             let html = '';
             for (let id in cart) {
                 const item = productsData[id];
-                if (item) html += `<div class="preview-row"><span>${item.name[lang]} (${cart[id]} ${ui[lang].pcs})</span><span class="item-cost">${(item.price * cart[id]).toFixed(2)} BYN</span></div>`;
+                if (item) {
+                    const linePrice = (item.price * cart[id]).toFixed(2);
+                    html += `<div class="preview-row">
+                                <span class="item-name">${item.name[lang]} (${cart[id]} ${ui[lang].pcs})</span>
+                                <span class="item-cost">${linePrice} BYN</span>
+                            </div>`;
+                }
             }
             document.getElementById('cart-list').innerHTML = html;
-            document.getElementById('final-sum').innerText = (localStorage.getItem('mara_total') || '0.00') + " BYN";
+            document.getElementById('final-sum').innerText = total + " BYN";
         }
 
         function setDeliv(m) {
             method = m;
             document.getElementById('opt-pickup').classList.toggle('active', m === 'Самовывоз');
             document.getElementById('opt-delivery').classList.toggle('active', m === 'Доставка');
-            document.getElementById('delivery-note').innerHTML = (m === 'Самовывоз') 
-                ? `Свиридова 11, 6 подъезд. Позвоните за 10 мин: <br><strong>+375 (29) 651-44-03</strong>` 
-                : `Отправляем через Яндекс.Доставка. Оплата доставки — за счет клиента.`;
+            const note = document.getElementById('delivery-note');
+            if (m === 'Самовывоз') {
+                note.innerHTML = `${ui[lang].note_pickup} <br><strong>+375 (29) 651-44-03</strong>`;
+            } else {
+                note.innerHTML = ui[lang].note_delivery;
+            }
         }
 
         function enableTime() {
             const t = document.getElementById('order-time');
+            const selectedDate = dateInput.value;
+            if (!selectedDate) return;
+            isDisc = false;
+            document.getElementById('btn-discuss').classList.remove('active');
+            document.getElementById('discuss-hint').style.display = 'none';
+            document.getElementById('time-selection-area').style.opacity = '1';
             t.disabled = false;
-            t.innerHTML = '';
+            t.innerHTML = `<option value="">${ui[lang].select_time}</option>`;
+            const currentHour = new Date().getHours();
+            const isToday = (selectedDate === todayStr);
             for (let h = 9; h <= 21; h++) {
+                if (isToday && h < (currentHour + 3)) continue;
                 let opt = document.createElement('option');
-                opt.value = h + ':00'; opt.innerText = h + ':00'; t.appendChild(opt);
+                opt.value = h + ':00';
+                opt.innerText = h + ':00';
+                t.appendChild(opt);
             }
         }
 
         function toggleDisc() {
             isDisc = !isDisc;
-            document.getElementById('btn-discuss').classList.toggle('active', isDisc);
-            document.getElementById('discuss-hint').style.display = isDisc ? 'block' : 'none';
-            document.getElementById('time-selection-area').style.opacity = isDisc ? '0.3' : '1';
+            const btn = document.getElementById('btn-discuss');
+            const hint = document.getElementById('discuss-hint');
+            const timeArea = document.getElementById('time-selection-area');
+            btn.classList.toggle('active', isDisc);
+            hint.style.display = isDisc ? 'block' : 'none';
+            if(isDisc) {
+                timeArea.style.opacity = '0.4';
+                dateInput.value = '';
+                document.getElementById('order-time').disabled = true;
+                document.getElementById('order-time').innerHTML = `<option value="">...</option>`;
+            } else {
+                timeArea.style.opacity = '1';
+                dateInput.value = todayStr;
+                enableTime();
+            }
         }
 
-        function copyNumber(num, btn) {
-            navigator.clipboard.writeText(num);
-            btn.innerText = "СКОПИРОВАНО";
-            setTimeout(() => btn.innerText = "СКОПИРОВАТЬ НОМЕР", 2000);
-        }
+        document.getElementById('c-phone').addEventListener('input', function(e) {
+            let val = e.target.value;
+            if (!val.startsWith('+375 ')) { e.target.value = '+375 '; return; }
+            let digits = val.substring(5).replace(/\D/g, '');
+            let formatted = '+375 ';
+            if (digits.length > 0) formatted += '(' + digits.substring(0, 2);
+            if (digits.length >= 3) formatted += ') ' + digits.substring(2, 5);
+            if (digits.length >= 6) formatted += '-' + digits.substring(5, 7);
+            if (digits.length >= 8) formatted += '-' + digits.substring(7, 9);
+            e.target.value = formatted;
+        });
 
         function finishOrder() {
             const name = document.getElementById('c-name').value;
             const phone = document.getElementById('c-phone').value;
-            if(!name || phone.length < 10) return tg.showAlert(ui[lang].alert);
+            if(!name || phone.length < 17) return tg.showAlert(ui[lang].alert);
+            const timeVal = document.getElementById('order-time').value;
+            if(!isDisc && (!dateInput.value || !timeVal)) return tg.showAlert(ui[lang].alert_time);
 
+            // СБОР ТОВАРОВ ИЗ КОРЗИНЫ ДЛЯ БОТА
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
             let itemsStr = "";
-            for (let id in cart) { if(productsData[id]) itemsStr += productsData[id].name[lang] + " ("+cart[id]+" шт); "; }
+            for (let id in cart) { 
+                if(productsData[id]) {
+                    itemsStr += productsData[id].name[lang] + " (" + cart[id] + " шт); ";
+                }
+            }
 
             const data = {
                 city_type: "ГОМЕЛЬ",
                 name: name,
                 phone: phone,
                 method: method,
+                address: method === 'Самовывоз' ? 'Самовывоз (Свиридова 11)' : 'Яндекс Доставка',
                 items: itemsStr,
-                address: method === 'Самовывоз' ? 'Самовывоз (Свиридова 11)' : 'Яндекс Доставка (Адрес в комментарии)',
-                date: isDisc ? "Согласовать" : document.getElementById('order-date').value,
-                time: isDisc ? "Согласовать" : document.getElementById('order-time').value,
-                comment: document.getElementById('c-comment').value,
-                total: document.getElementById('final-sum').innerText
+                date: isDisc ? "Согласовать" : dateInput.value,
+                time: isDisc ? "Согласовать" : timeVal,
+                comment: document.getElementById('c-comment').value || "-",
+                total: document.getElementById('final-sum').innerText,
+                lang: lang
             };
 
-            document.getElementById('thanks-overlay').style.display = 'flex';
-            setTimeout(() => {
-                tg.sendData(JSON.stringify(data));
-                tg.close();
-            }, 1800);
+            // Красивое уведомление перед закрытием
+            tg.showAlert(ui[lang].thanks);
+            
+            tg.sendData(JSON.stringify(data));
+            
+            // Закрываем через маленькую паузу, чтобы данные успели уйти
+            setTimeout(() => { tg.close(); }, 500);
         }
     </script>
-</body>
-</html>
