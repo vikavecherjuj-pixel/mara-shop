@@ -98,7 +98,7 @@
         </div>
 
         <div class="checkout-card">
-            <div class="section-title" id="ui-data">Ваши данные</div>
+            <div class="section-title" id="ui-data">Ваш данные</div>
             <label class="contact-label" id="ui-name">Имя</label>
             <input type="text" id="c-name" placeholder="">
             
@@ -318,11 +318,32 @@
             const timeVal = document.getElementById('order-time').value;
             if(!isDisc && (!dateInput.value || !timeVal)) return tg.showAlert(ui[lang].alert_time);
             
+            // Собираем данные корзины
+            const cartData = JSON.parse(localStorage.getItem('mara_cart') || '{}');
+            let orderItems = [];
+            for (let id in cartData) {
+                if (productsData[id]) {
+                    orderItems.push({
+                        name: productsData[id].name[lang],
+                        qty: cartData[id],
+                        price: productsData[id].price
+                    });
+                }
+            }
+
             const data = {
-                name, phone, method,
-                date: isDisc ? "Discuss" : dateInput.value,
-                time: isDisc ? "Discuss" : timeVal,
-                comment: document.getElementById('c-comment').value,
+                items: orderItems,
+                customer: {
+                    name: name,
+                    phone: phone,
+                    comment: document.getElementById('c-comment').value
+                },
+                delivery: {
+                    method: method,
+                    date: isDisc ? "Согласовать" : dateInput.value,
+                    time: isDisc ? "Согласовать" : timeVal,
+                    city: "Гомель"
+                },
                 total: document.getElementById('final-sum').innerText,
                 lang: lang
             };
@@ -330,7 +351,7 @@
             // ПОЯВЛЕНИЕ ОКНА
             document.getElementById('thanks-overlay').style.display = 'flex';
             
-            // ЗАДЕРЖКА ПЕРЕД ОТПРАВКОЙ
+            // ОТПРАВКА ДАННЫХ БОТУ И ЗАКРЫТИЕ
             setTimeout(() => {
                 tg.sendData(JSON.stringify(data));
                 tg.close();
