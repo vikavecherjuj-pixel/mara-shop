@@ -39,7 +39,7 @@
                 <div class="opt-btn" onclick="setLang('en', this)">English</div>
             </div>
         </div>
-        <button class="btn-start" id="main-start-btn" onclick="window.location.href='shop.html'">Начать заказ</button>
+        <button class="btn-start" id="main-start-btn" onclick="goToShop()">Начать заказ</button>
     </div>
 
     <script>
@@ -71,6 +71,12 @@
             localStorage.setItem('selectedCity', c); // Сохраняем выбранный город в память
             document.querySelectorAll('#city-btns .opt-btn').forEach(b => b.classList.remove('selected'));
             el.classList.add('selected');
+        }
+
+        function goToShop() {
+            const city = localStorage.getItem('selectedCity') || 'Гомель';
+            const lang = localStorage.getItem('selectedLang') || 'ru';
+            window.location.href = 'shop.html?city=' + encodeURIComponent(city) + '&lang=' + lang;
         }
     </script>
 </body>
