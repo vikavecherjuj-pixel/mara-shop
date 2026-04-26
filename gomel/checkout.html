@@ -299,19 +299,33 @@
         function finishOrder() {
             const name = document.getElementById('c-name').value;
             const phone = document.getElementById('c-phone').value;
-            if(!name || phone.length < 17) return tg.showAlert(ui[lang].alert);
+            if (!name || phone.length < 17) return tg.showAlert(ui[lang].alert);
             const timeVal = document.getElementById('order-time').value;
-            if(!isDisc && (!dateInput.value || !timeVal)) return tg.showAlert(ui[lang].alert_time);
+            if (!isDisc && (!dateInput.value || !timeVal)) return tg.showAlert(ui[lang].alert_time);
+
+            // Собираем товары
+            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
+            let itemsStr = "";
+            for (let id in cart) {
+                const item = productsData[id];
+                if (item) itemsStr += item.name[lang] + " (" + cart[id] + " шт); ";
+            }
+
             const data = {
-                name, phone, method,
-                date: isDisc ? "Discuss" : dateInput.value,
-                time: isDisc ? "Discuss" : timeVal,
+                name:    name,
+                phone:   phone,
+                method:  method,
+                date:    isDisc ? "Согласовать" : dateInput.value,
+                time:    isDisc ? "Согласовать" : timeVal,
                 comment: document.getElementById('c-comment').value,
-                total: document.getElementById('final-sum').innerText,
-                lang: lang
+                total:   document.getElementById('final-sum').innerText,
+                items:   itemsStr,
+                city:    "ГОМЕЛЬ",
+                lang:    lang
             };
+
+            // Сначала отправляем данные — потом закрываем (sendData закроет сам)
             tg.sendData(JSON.stringify(data));
-            tg.close();
         }
     </script>
 </body>
