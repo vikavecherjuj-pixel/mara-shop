@@ -19,7 +19,7 @@
         .logo-area { padding: 12px 20px; border-bottom: 1px solid #eee; background: white; }
         .logo-area img { max-width: 120px; height: auto; }
         
-        /* Исправленный блок Main Area и Sidebar */
+        /* Исправленный блок Main Area и Sidebar для работы скролла везде */
         .main-area { flex-grow: 1; display: flex; overflow: hidden; min-height: 0; }
         .sidebar { 
             width: 85px; 
@@ -30,8 +30,16 @@
             align-items: center; 
             padding-top: 10px; 
             flex-shrink: 0; 
-            overflow-y: auto; /* Включаем вертикальный скролл */
-            -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
+            overflow-y: auto; 
+            height: 100%;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; /* Скрыть скроллбар в Firefox */
+            -ms-overflow-style: none;  /* Скрыть скроллбар в IE/Edge */
+        }
+        
+        /* Скрыть скроллбар в Chrome/Safari/Webkit */
+        .sidebar::-webkit-scrollbar {
+            display: none;
         }
         
         .cat-item { margin-bottom: 15px; text-align: center; font-size: 8px; color: #555; width: 100%; font-weight: 700; cursor: pointer; text-transform: uppercase; flex-shrink: 0; }
