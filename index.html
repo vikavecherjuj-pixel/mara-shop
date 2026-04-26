@@ -29,12 +29,12 @@
         <div>
             <div class="section-label" id="lbl-city">Ваш город / Ваш горад</div>
             <div class="select-group" id="city-btns">
-                <div class="opt-btn selected" onclick="setCity('Гомель', this)">Гомель</div>
+                <div class="opt-btn" onclick="setCity('Гомель', this)">Гомель</div>
                 <div class="opt-btn" onclick="setCity('Другой', this)">Другие города РБ</div>
             </div>
             <div class="section-label" id="lbl-lang">Выберите язык / Мова</div>
             <div class="select-group" id="lang-btns">
-                <div class="opt-btn selected" onclick="setLang('ru', this)">Русский</div>
+                <div class="opt-btn" onclick="setLang('ru', this)">Русский</div>
                 <div class="opt-btn" onclick="setLang('by', this)">Беларуская</div>
                 <div class="opt-btn" onclick="setLang('en', this)">English</div>
             </div>
@@ -52,23 +52,19 @@
             en: { start: "Start Order", city: "Your City", lang: "Select Language" }
         };
 
-        // Инициализация значений при первом входе
-        if (!localStorage.getItem('selectedLang')) localStorage.setItem('selectedLang', 'ru');
-        if (!localStorage.getItem('selectedCity')) localStorage.setItem('selectedCity', 'Гомель');
-
         function setLang(l, el) {
-            localStorage.setItem('selectedLang', l); // Сохраняем выбранный язык в память
+            localStorage.setItem('selectedLang', l); // Сохраняем выбранный язык
             document.querySelectorAll('#lang-btns .opt-btn').forEach(b => b.classList.remove('selected'));
             el.classList.add('selected');
             
-            // Обновляем текст на текущей странице
+            // Обновляем текст на странице
             document.getElementById('main-start-btn').innerText = i18n[l].start;
             document.getElementById('lbl-lang').innerText = i18n[l].lang;
             document.getElementById('lbl-city').innerText = i18n[l].city;
         }
 
         function setCity(c, el) {
-            localStorage.setItem('selectedCity', c); // Сохраняем выбранный город в память
+            localStorage.setItem('selectedCity', c); // Сохраняем выбранный город
             document.querySelectorAll('#city-btns .opt-btn').forEach(b => b.classList.remove('selected'));
             el.classList.add('selected');
         }
