@@ -300,9 +300,11 @@
             const name = document.getElementById('c-name').value;
             const phone = document.getElementById('c-phone').value;
             
-            // Заменено: убрана строгая проверка
+            // ЗАМЕНЕНО: теперь проверка на 10 символов
             if (!name || phone.length < 10) return tg.showAlert(ui[lang].alert);
-            const timeVal = document.getElementById('order-time').value || "Не указано";
+            
+            const timeVal = document.getElementById('order-time').value;
+            if (!isDisc && (!dateInput.value || !timeVal)) return tg.showAlert(ui[lang].alert_time);
 
             // Собираем товары
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
