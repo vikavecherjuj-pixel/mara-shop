@@ -9,8 +9,12 @@
     <style>
         :root { --accent: #c5a059; --burgundy: #630d16; }
         body { font-family: 'Montserrat', sans-serif; background: #fff; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; text-align: center; }
+        
+        /* Баннер: 65% высоты экрана */
         .start-banner { width: 100%; height: 65%; background: var(--burgundy); overflow: hidden; }
         .start-banner img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        
+        /* Контент центрирован */
         .content-block { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-around; padding: 15px 25px 25px 25px; background: white; }
         .section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #bbb; margin: 0 0 8px 0; letter-spacing: 1px; }
         .select-group { display: flex; gap: 8px; width: 100%; margin-bottom: 5px; }
@@ -35,7 +39,7 @@
                 <div class="opt-btn" onclick="setLang('en', this)">English</div>
             </div>
         </div>
-        <button class="btn-start" id="main-start-btn" onclick="goToShop()">Начать заказ</button>
+        <button class="btn-start" id="main-start-btn" onclick="window.location.href='shop.html'">Начать заказ</button>
     </div>
 
     <script>
@@ -48,29 +52,25 @@
             en: { start: "Start Order", city: "Your City", lang: "Select Language" }
         };
 
+        // Инициализация значений при первом входе
         if (!localStorage.getItem('selectedLang')) localStorage.setItem('selectedLang', 'ru');
         if (!localStorage.getItem('selectedCity')) localStorage.setItem('selectedCity', 'Гомель');
 
         function setLang(l, el) {
-            localStorage.setItem('selectedLang', l);
+            localStorage.setItem('selectedLang', l); // Сохраняем выбранный язык в память
             document.querySelectorAll('#lang-btns .opt-btn').forEach(b => b.classList.remove('selected'));
             el.classList.add('selected');
+            
+            // Обновляем текст на текущей странице
             document.getElementById('main-start-btn').innerText = i18n[l].start;
             document.getElementById('lbl-lang').innerText = i18n[l].lang;
             document.getElementById('lbl-city').innerText = i18n[l].city;
         }
 
         function setCity(c, el) {
-            localStorage.setItem('selectedCity', c);
+            localStorage.setItem('selectedCity', c); // Сохраняем выбранный город в память
             document.querySelectorAll('#city-btns .opt-btn').forEach(b => b.classList.remove('selected'));
             el.classList.add('selected');
-        }
-
-        // ДОБАВЛЕНО: функция перехода с параметрами
-        function goToShop() {
-            const city = localStorage.getItem('selectedCity') || 'Гомель';
-            const lang = localStorage.getItem('selectedLang') || 'ru';
-            window.location.href = 'shop.html?city=' + encodeURIComponent(city) + '&lang=' + lang;
         }
     </script>
 </body>
