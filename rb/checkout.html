@@ -110,6 +110,8 @@
 
     <script>
         let tg = window.Telegram.WebApp;
+        let lang = localStorage.getItem('selectedLang') || 'ru';
+
         const productsData = {
             'q1': { name: 'Орешки со сгущёнкой', price: 1.10 },
             'q2': { name: 'Орешки + орех', price: 1.50 },
@@ -133,18 +135,15 @@
             'n6': { name: 'Набор 6', price: 54.00 }
         };
 
-        // Логика отображения полей
         function togglePostFields() {
             const type = document.getElementById('post-type').value;
             document.getElementById('euro-box').style.display = (type === 'Европочта') ? 'block' : 'none';
             document.getElementById('bel-box').style.display = (type === 'Белпочта') ? 'block' : 'none';
         }
 
-        // ЗАПРЕТ БУКВ И ФОРМАТ ТЕЛЕФОНА
         document.getElementById('cust-phone').addEventListener('input', function(e) {
             let val = e.target.value;
             if (!val.startsWith('+375 ')) { e.target.value = '+375 '; return; }
-            
             let digits = val.substring(5).replace(/\D/g, ''); 
             let formatted = '+375 ';
             if (digits.length > 0) formatted += '(' + digits.substring(0, 2);
@@ -154,7 +153,6 @@
             e.target.value = formatted.substring(0, 19);
         });
 
-        // Загрузка чека
         window.onload = function() {
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
             const baseTotal = parseFloat(localStorage.getItem('mara_total') || 0);
@@ -185,10 +183,17 @@
             
             if(!name || phone.length < 17 || !city) return tg.showAlert("Заполните ФИО, телефон и город!");
 
-            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
-            let itemsStr = "";
-            for (let id in cart) {
-                if(productsData[id]) itemsStr += productsData[id].name + " ("+cart[id]+" шт); ";
+            // Собираем детализацию заказа
+            const cartData = JSON.parse(localStorage.getItem('mara_cart') || '{}');
+            let orderItems = [];
+            for (let id in cartData) {
+                if (productsData[id]) {
+                    orderItems.push({
+                        name: productsData[id].name,
+                        qty: cartData[id],
+                        price: productsData[id].price
+                    });
+                }
             }
 
             const method = document.getElementById('post-type').value;
@@ -198,16 +203,23 @@
 
             const data = {
                 city_type: "РБ (ПОЧТА)",
-                name: name,
-                phone: phone,
-                method: method,
-                items: itemsStr,
-                address: city + ", " + detailAddress,
-                comment: document.getElementById('cust-comment').value,
-                total: document.getElementById('final-sum').innerText
+                items: orderItems,
+                customer: {
+                    name: name,
+                    phone: phone,
+                    comment: document.getElementById('cust-comment').value
+                },
+                delivery: {
+                    method: method,
+                    city: city,
+                    address_detail: detailAddress
+                },
+                total: document.getElementById('final-sum').innerText,
+                lang: lang
             };
 
             document.getElementById('thanks-overlay').style.display = 'flex';
+            
             setTimeout(() => {
                 tg.sendData(JSON.stringify(data));
                 tg.close();
