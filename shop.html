@@ -160,7 +160,10 @@
     <script>
         let tg = window.Telegram.WebApp;
         let cart = {}; let total = 0;
-        let lang = localStorage.getItem('selectedLang') || 'ru';
+        const urlParams = new URLSearchParams(window.location.search);
+        let lang = urlParams.get('lang') || localStorage.getItem('selectedLang') || 'ru';
+        let cityFromUrl = urlParams.get('city') || localStorage.getItem('selectedCity') || 'Гомель';
+        localStorage.setItem('selectedCity', cityFromUrl); // сохраняем на всякий случай
 
         const ui = {
             ru: { back: "← Назад", view: "🛒 Просмотреть заказ", clear: "Очистить", pay: "Оформить", your_order: "ВАШ ЗАКАЗ", total: "ИТОГО", from: "от", pcs: "шт.", empty: "Пусто" },
@@ -304,8 +307,19 @@
         }
 
         function goToCheckout() {
-            const city = localStorage.getItem('selectedCity');
-            window.location.href = (city === 'Гомель') ? 'gomel/checkout.html' : 'rb/checkout.html';
+            if (total === 0) return;
+            localStorage.setItem('mara_cart', JSON.stringify(cart));
+            localStorage.setItem('mara_total', total.toFixed(2));
+            
+            // Берём город из URL — это надёжнее чем localStorage
+            const urlParams = new URLSearchParams(window.location.search);
+            const selectedCity = urlParams.get('city') || localStorage.getItem('selectedCity') || 'Гомель';
+            
+            if (selectedCity === 'Гомель') {
+                window.location.href = 'gomel/checkout.html?city=Гомель&lang=' + lang;
+            } else {
+                window.location.href = 'rb/checkout.html?city=Другой&lang=' + lang;
+            }
         }
 
         function clearCart() { cart = {}; localStorage.removeItem('mara_cart'); updateTotal(); }
