@@ -10,17 +10,18 @@
         :root { --accent: #c5a059; --burgundy: #630d16; }
         body { font-family: 'Montserrat', sans-serif; background: #fff; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; text-align: center; }
         
-        /* Баннер: 65% высоты экрана */
         .start-banner { width: 100%; height: 65%; background: var(--burgundy); overflow: hidden; }
         .start-banner img { width: 100%; height: 100%; object-fit: cover; display: block; }
         
-        /* Контент центрирован */
         .content-block { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-around; padding: 15px 25px 25px 25px; background: white; }
         .section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #bbb; margin: 0 0 8px 0; letter-spacing: 1px; }
         .select-group { display: flex; gap: 8px; width: 100%; margin-bottom: 5px; }
         .opt-btn { flex: 1; border: 1px solid #eee; padding: 10px; border-radius: 12px; font-size: 10px; font-weight: 700; cursor: pointer; color: #555; transition: 0.2s; }
         .opt-btn.selected { border-color: var(--accent); background: rgba(197, 160, 89, 0.05); color: var(--accent); }
-        .btn-start { width: 100%; padding: 18px; border: none; border-radius: 16px; font-weight: 900; text-transform: uppercase; background: var(--burgundy); color: white; font-size: 15px; cursor: pointer; margin-top: 5px; }
+        
+        /* Стили для неактивной кнопки */
+        .btn-start { width: 100%; padding: 18px; border: none; border-radius: 16px; font-weight: 900; text-transform: uppercase; background: var(--burgundy); color: white; font-size: 15px; cursor: pointer; margin-top: 5px; transition: 0.3s; }
+        .btn-start:disabled { opacity: 0.3; cursor: not-allowed; transform: scale(0.98); }
     </style>
 </head>
 <body>
@@ -39,12 +40,15 @@
                 <div class="opt-btn" onclick="setLang('en', this)">English</div>
             </div>
         </div>
-        <button class="btn-start" id="main-start-btn" onclick="window.location.href='shop.html'">Начать заказ</button>
+        <button class="btn-start" id="main-start-btn" onclick="window.location.href='shop.html'" disabled>Начать заказ</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp; 
         tg.expand();
+
+        let citySelected = false;
+        let langSelected = false;
 
         const i18n = { 
             ru: { start: "Начать заказ", city: "Ваш город", lang: "Выберите язык" },
@@ -52,21 +56,34 @@
             en: { start: "Start Order", city: "Your City", lang: "Select Language" }
         };
 
+        // Очищаем старые данные, чтобы при перезагрузке кнопка снова была заблокирована
+        localStorage.removeItem('selectedLang');
+        localStorage.removeItem('selectedCity');
+
+        function checkSelection() {
+            if (citySelected && langSelected) {
+                document.getElementById('main-start-btn').disabled = false;
+            }
+        }
+
         function setLang(l, el) {
-            localStorage.setItem('selectedLang', l); // Сохраняем выбранный язык
+            localStorage.setItem('selectedLang', l);
+            langSelected = true;
             document.querySelectorAll('#lang-btns .opt-btn').forEach(b => b.classList.remove('selected'));
             el.classList.add('selected');
             
-            // Обновляем текст на странице
             document.getElementById('main-start-btn').innerText = i18n[l].start;
             document.getElementById('lbl-lang').innerText = i18n[l].lang;
             document.getElementById('lbl-city').innerText = i18n[l].city;
+            checkSelection();
         }
 
         function setCity(c, el) {
-            localStorage.setItem('selectedCity', c); // Сохраняем выбранный город
+            localStorage.setItem('selectedCity', c);
+            citySelected = true;
             document.querySelectorAll('#city-btns .opt-btn').forEach(b => b.classList.remove('selected'));
             el.classList.add('selected');
+            checkSelection();
         }
     </script>
 </body>
