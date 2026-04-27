@@ -8,7 +8,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { --accent: #c5a059; --burgundy: #630d16; --dark: #2c1a11; --bg: #fdfaf5; --green: #21a252; }
-        body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding: 10px; color: var(--dark); min-height: 100vh; }
+        body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding: 10px; color: var(--dark); min-height: 100vh; overflow-x: hidden; }
         #checkout-screen { display: flex; flex-direction: column; gap: 12px; padding-bottom: 40px; }
         .back-link-top { text-align: left; margin-bottom: 5px; }
         .back-link-top a { color: #aaa; text-decoration: none; font-size: 13px; font-weight: 700; }
@@ -103,6 +103,13 @@
 
     <script>
         let tg = window.Telegram.WebApp;
+
+        // Настройки полноэкранного режима и цвета
+        tg.expand();
+        tg.ready();
+        tg.setHeaderColor('#fdfaf5');
+        tg.setBackgroundColor('#fdfaf5');
+
         let lang = localStorage.getItem('selectedLang') || 'ru';
 
         const ui = {
@@ -240,7 +247,6 @@
             if(type === 'Европочта') deliveryInfo += `, Отд: ${document.getElementById('post-dept').value}`;
             else deliveryInfo += `, Адрес: ${document.getElementById('post-addr').value}, Индекс: ${document.getElementById('post-index').value}`;
 
-            // Сбор товаров для текста сообщения
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
             let itemsStr = "";
             for (let id in cart) {
