@@ -324,7 +324,26 @@
                 lang:    lang
             };
 
-            tg.sendData(JSON.stringify(data));setTimeout(function() { tg.close(); }, 500);
+            const userId = tg.initDataUnsafe?.user?.id;
+            fetch('https://api.telegram.org/bot8661108407:AAHorrust7ahLa_4eAb-qSucV08YPcDjTew/sendMessage', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    chat_id: userId,
+                    text: '✅ Заказ оформлен!\n\n🙏 Пришлите скриншот чека об оплате (ЕРИП).'
+                })
+            }).then(() => {
+                fetch('https://api.telegram.org/bot8661108407:AAHorrust7ahLa_4eAb-qSucV08YPcDjTew/sendMessage', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        chat_id: -1003720631950,
+                        text: 'НОВЫЙ ЗАКАЗ: ' + data.city + '\n\nКлиент: ' + data.name + '\nТел: ' + data.phone + '\nСпособ: ' + data.method + '\nДата/Время: ' + data.date + ' в ' + data.time + '\nТовары: ' + data.items + '\nКомментарий: ' + data.comment + '\nИТОГО: ' + data.total
+                    })
+                });
+            }).finally(() => {
+                setTimeout(function() { tg.close(); }, 1000);
+            });
         }
     </script>
 </body>
