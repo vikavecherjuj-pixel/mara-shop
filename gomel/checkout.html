@@ -120,7 +120,7 @@
                 date: "Дата", time: "Время", loading: "Загрузка...", select_time: "Выбрать время", or: "или", discuss: "Согласовать время после оплаты",
                 hint: "Напишем вам в чат сразу после заказа для уточнения деталей.", data: "Ваши данные", name: "Имя", phone: "Телефон",
                 comment: "Комментарий", comment_ph: "Адрес доставки или пожелания", name_ph: "Введите ваше имя", pay: "Оплата (ЕРИП)",
-                copy: "Скопировать номер", copied: "Номер скопирован!", finish: "Оплачено, заказать", alert: "Введите имя и телефон!", alert_time: "Выберите дату и время!",
+                copy: "Скопировать номер", copied: "Номер скопирован!", finish: "Оплачено, заказать", alert: "Введите имя!", alert_time: "Выберите дату и время!",
                 pcs: "шт."
             },
             by: {
@@ -129,7 +129,7 @@
                 date: "Дата", time: "Час", loading: "Загрузка...", select_time: "Абраць час", or: "або", discuss: "Узгадніць час пасля аплаты",
                 hint: "Напішам вам у чат адразу пасля замовы для ўдакладнення дэталяў.", data: "Вашы дадзеныя", name: "Імя", phone: "Тэлефон",
                 comment: "Каментарый", comment_ph: "Адрас дастаўкі або пажаданні", name_ph: "Увядзіце ваша імя", pay: "Аплата (АРІП)",
-                copy: "Скапіяваць нумар", copied: "Нумар скапіяваны!", finish: "Аплачана, заказаць", alert: "Увядзіце імя і тэлефон!", alert_time: "Абярыце дату і час!",
+                copy: "Скапіяваць нумар", copied: "Нумар скапіяваны!", finish: "Аплачана, заказаць", alert: "Увядзіце імя!", alert_time: "Абярыце дату і час!",
                 pcs: "шт."
             },
             en: {
@@ -138,7 +138,7 @@
                 date: "Date", time: "Time", loading: "Loading...", select_time: "Select time", or: "or", discuss: "Arrange time after payment",
                 hint: "We will message you right after the order to clarify details.", data: "Your details", name: "Name", phone: "Phone",
                 comment: "Comment", comment_ph: "Delivery address or wishes", name_ph: "Enter your name", pay: "Payment (ERIP)",
-                copy: "Copy number", copied: "Number copied!", finish: "Paid, order now", alert: "Enter name and phone!", alert_time: "Select date and time!",
+                copy: "Copy number", copied: "Number copied!", finish: "Paid, order now", alert: "Enter name!", alert_time: "Select date and time!",
                 pcs: "pcs."
             }
         };
@@ -300,11 +300,11 @@
             const name = document.getElementById('c-name').value;
             const phone = document.getElementById('c-phone').value;
             
-            // ЗАМЕНЕНО: теперь проверка на 10 символов
-            if (!name || phone.length < 10) return tg.showAlert(ui[lang].alert);
+            // ПРАВКА СТРОКИ 304: Проверка только имени
+            if (!name) return tg.showAlert(ui[lang].alert);
             
+            // ПРАВКА СТРОКИ 307: Проверка времени отключена
             const timeVal = document.getElementById('order-time').value;
-            if (!isDisc && (!dateInput.value || !timeVal)) return tg.showAlert(ui[lang].alert_time);
 
             // Собираем товары
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
@@ -327,7 +327,6 @@
                 lang:    lang
             };
 
-            // Сначала отправляем данные — потом закрываем (sendData закроет сам)
             tg.sendData(JSON.stringify(data));
         }
     </script>
