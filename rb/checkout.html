@@ -240,18 +240,50 @@
             if(type === 'Европочта') deliveryInfo += `, Отд: ${document.getElementById('post-dept').value}`;
             else deliveryInfo += `, Адрес: ${document.getElementById('post-addr').value}, Индекс: ${document.getElementById('post-index').value}`;
 
+            // Сбор товаров для текста сообщения
+            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
+            let itemsStr = "";
+            for (let id in cart) {
+                const item = productsData[id];
+                if (item) itemsStr += item.name[lang] + " (" + cart[id] + " шт); ";
+            }
+
             const data = {
-                city: "РБ",
                 name: name,
                 phone: phone,
-                info: deliveryInfo,
+                method: type,
+                address: deliveryInfo,
                 comment: document.getElementById('cust-comment').value,
-                total: document.getElementById('final-sum').innerText,
-                lang: lang
+                items: itemsStr,
+                total: document.getElementById('final-sum').innerText
             };
 
-            tg.sendData(JSON.stringify(data));
-            tg.close();
+            const userId = tg.initDataUnsafe?.user?.id;
+            fetch('https://api.telegram.org/bot8661108407:AAHorrust7ahLa_4eAb-qSucV08YPcDjTew/sendMessage', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    chat_id: userId,
+                    text: '✅ Заказ оформлен!\n\n🙏 Пришлите скриншот чека об оплате (ЕРИП).'
+                })
+            }).then(() => {
+                fetch('https://api.telegram.org/bot8661108407:AAHorrust7ahLa_4eAb-qSucV08YPcDjTew/sendMessage', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        chat_id: -1003720631950,
+                        text: 'НОВЫЙ ЗАКАЗ: РБ (ПОЧТА)\n\nКлиент: ' + data.name + '\nТел: ' + data.phone + '\nСпособ: ' + data.method + '\nАдрес: ' + data.address + '\nТовары: ' + data.items + '\nКомментарий: ' + (data.comment || '-') + '\nИТОГО: ' + data.total
+                    })
+                });
+            }).finally(() => {
+                document.getElementById('checkout-screen').innerHTML = `
+                    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:80vh; text-align:center; padding:30px;">
+                        <div style="font-size:60px;">❤️</div>
+                        <h2 style="color:#630d16; font-weight:900; font-size:24px; margin:20px 0 10px;">СПАСИБО ЗА ЗАКАЗ!</h2>
+                        <p style="color:#666; font-weight:600;">Переходим в чат...</p>
+                    </div>`;
+                setTimeout(function() { tg.close(); }, 2000);
+            });
         }
 
         window.onload = function() {
