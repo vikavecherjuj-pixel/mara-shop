@@ -11,7 +11,7 @@
             --accent: #c5a059; 
             --burgundy: #630d16; 
             --dark: #2c1a11; 
-            --bg: var(--tg-theme-bg-color, #fdfaf5); 
+            --bg: var(--tg-theme-bg-color, #ffffff); 
             --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
             --text: var(--tg-theme-text-color, #2c1a11);
             --green: #21a252; 
@@ -29,32 +29,48 @@
         #checkout-screen { display: flex; flex-direction: column; gap: 16px; padding-bottom: 50px; }
         .back-link-container { margin-bottom: 5px; }
         .back-link-container a { color: #aaa; text-decoration: none; font-size: 13px; font-weight: 700; display: inline-block; padding: 5px 0; }
-        .checkout-card { background: var(--card-bg); border-radius: 24px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
-        .section-title { font-weight: 900; font-size: 13px; margin-bottom: 16px; color: var(--burgundy); text-transform: uppercase; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 10px; }
+        
+        /* Карточки теперь белые с легкой тенью для эффекта глубины */
+        .checkout-card { background: white; border-radius: 24px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); border: 1px solid #f0f0f0; }
+        
+        .section-title { font-weight: 900; font-size: 13px; margin-bottom: 16px; color: var(--burgundy); text-transform: uppercase; border-bottom: 1px solid #f8f8f8; padding-bottom: 10px; }
         .delivery-selector { display: flex; background: var(--gray); padding: 4px; border-radius: 14px; margin-bottom: 12px; }
         .delivery-option { flex: 1; padding: 12px; text-align: center; font-size: 12px; font-weight: 700; border-radius: 11px; cursor: pointer; color: #888; transition: all 0.2s; }
         .delivery-option.active { background: white; color: var(--burgundy); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        #delivery-note { font-size: 11px; color: #888; line-height: 1.5; margin-bottom: 15px; background: rgba(197, 160, 89, 0.05); padding: 12px; border-radius: 12px; border-left: 3px solid var(--accent); }
-        input, select, textarea { width: 100%; border: 1px solid transparent; border-radius: 14px; font-family: 'Montserrat'; font-size: 14px; box-sizing: border-box; background: var(--gray); outline: none; color: black !important; caret-color: black; }
+        
+        #delivery-note { font-size: 11px; color: #888; line-height: 1.5; margin-bottom: 15px; background: #fffcf5; padding: 12px; border-radius: 12px; border-left: 3px solid var(--accent); }
+        
+        input, select, textarea { 
+            width: 100%; border: 1px solid transparent; border-radius: 14px; 
+            font-family: 'Montserrat'; font-size: 14px; box-sizing: border-box; 
+            background: var(--gray); outline: none; color: black !important; caret-color: black; 
+        }
         input:focus, textarea:focus { border-color: var(--accent); background: #fff; }
+        
         .datetime-row { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 5px; }
         .field-group { flex: 1; display: flex; flex-direction: column; }
         .field-group label { display: block; font-size: 10px; font-weight: 800; color: #bbb; text-transform: uppercase; margin-bottom: 6px; }
+        
         input[type="date"], #order-time { height: 48px; padding: 0 12px; -webkit-appearance: none; }
         textarea { padding: 14px; resize: none; margin-top: 5px; }
+        
         .preview-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; border-bottom: 1px dashed #eee; padding-bottom: 6px; align-items: flex-start; }
         .item-name { flex: 1; padding-right: 10px; line-height: 1.4; }
         .item-cost { font-weight: 700; color: var(--accent); white-space: nowrap; }
+        
         .final-total { text-align: right; font-weight: 900; color: var(--accent); font-size: 20px; margin-top: 10px; }
         .or-divider { text-align: center; font-size: 10px; font-weight: 700; color: #ccc; margin: 15px 0; text-transform: uppercase; }
+        
         .discuss-btn { width: 100%; padding: 14px; background: transparent; color: var(--burgundy); border: 2px dashed #ddd; border-radius: 14px; font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.2s; }
         .discuss-btn.active { background: var(--burgundy); color: white; border-style: solid; border-color: var(--burgundy); }
         .discuss-hint { display: block; text-align: center; font-size: 11px; color: #666; margin-top: 10px; font-weight: 500; line-height: 1.4; }
+        
         .contact-label { display: block; font-size: 10px; font-weight: 800; color: #bbb; text-transform: uppercase; margin-bottom: 6px; margin-top: 12px; }
-        .erip-box { background: rgba(33, 162, 82, 0.03); border: 1px solid #eef7ee; padding: 18px; border-radius: 18px; font-size: 11px; line-height: 1.5; color: #555; }
+        .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 18px; border-radius: 18px; font-size: 11px; line-height: 1.5; color: #555; }
         .erip-phone { color: var(--green); font-weight: 900; font-size: 18px; display: block; margin-top: 8px; letter-spacing: 0.5px; }
-        .copy-btn { width: 100%; padding: 12px; background: var(--gray); color: var(--burgundy); border: none; border-radius: 14px; font-weight: 700; font-size: 11px; text-transform: uppercase; cursor: pointer; margin-top: 12px; transition: all 0.2s; }
-        .btn-main { width: 100%; padding: 20px; background: var(--green); color: white; border: none; border-radius: 18px; font-weight: 900; font-size: 15px; text-transform: uppercase; cursor: pointer; margin-top: 15px; }
+        
+        .copy-btn { width: 100%; padding: 12px; background: var(--gray); color: var(--burgundy); border: none; border-radius: 14px; font-weight: 700; font-size: 11px; text-transform: uppercase; cursor: pointer; margin-top: 12px; }
+        .btn-main { width: 100%; padding: 20px; background: var(--green); color: white; border: none; border-radius: 18px; font-weight: 900; font-size: 15px; text-transform: uppercase; cursor: pointer; margin-top: 15px; box-shadow: 0 10px 20px rgba(33, 162, 82, 0.2); }
     </style>
 </head>
 <body>
@@ -127,7 +143,7 @@
     <script>
         let tg = window.Telegram.WebApp;
         
-        // Команда развертывания на весь экран
+        // КОМАНДА РАЗВЕРТЫВАНИЯ НА ВЕСЬ ЭКРАН
         tg.expand();
         tg.ready();
 
