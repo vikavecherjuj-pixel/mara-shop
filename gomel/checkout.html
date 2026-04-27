@@ -330,7 +330,7 @@
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     chat_id: userId,
-                    text: '✅ Заказ оформлен!\n\n🙏 Пришлите скриншот чека об оплате (ЕРИП).'
+                    text: 'Пришлите чек об оплате, после этого ваш заказ будет принят в обработку'
                 })
             }).then(() => {
                 fetch('https://api.telegram.org/bot8661108407:AAHorrust7ahLa_4eAb-qSucV08YPcDjTew/sendMessage', {
