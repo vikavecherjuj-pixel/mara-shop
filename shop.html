@@ -152,6 +152,12 @@
 
     <script>
         let tg = window.Telegram.WebApp;
+        
+        // РАЗВОРАЧИВАЕМ ПРИЛОЖЕНИЕ И КРАСИМ ВЕРХ
+        tg.expand();
+        tg.setHeaderColor('#ffffff');
+        tg.setBackgroundColor('#ffffff');
+
         let cart = {}; let total = 0;
         const urlParams = new URLSearchParams(window.location.search);
         let lang = urlParams.get('lang') || localStorage.getItem('selectedLang') || 'ru';
