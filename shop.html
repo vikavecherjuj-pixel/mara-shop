@@ -258,3 +258,71 @@
                     if(b) { b.innerText = cart[k]; b.style.display = 'block'; }
                 }
             }
+            products.forEach(p => { if(!cart[p.id]) {
+                if(document.getElementById(`qty-${p.id}`)) document.getElementById(`qty-${p.id}`).innerText = 0;
+                if(document.getElementById(`badge-${p.id}`)) document.getElementById(`badge-${p.id}`).style.display = 'none';
+            }});
+            document.getElementById('total-val').innerText = total.toFixed(2);
+            document.getElementById('main-pay-btn').disabled = (total < (hasPotato ? 16 : 20));
+            document.getElementById('main-clear-btn').disabled = (itemCount === 0);
+            localStorage.setItem('mara_cart', JSON.stringify(cart));
+            localStorage.setItem('mara_total', total.toFixed(2));
+        }
+
+        function showCart() {
+            const list = document.getElementById('cart-items-list');
+            const entries = Object.entries(cart);
+            if (!entries.length) {
+                list.innerHTML = `<div style="text-align:center; color:#999; padding:20px;">${ui[lang].empty}</div>`;
+                document.getElementById('cart-total-modal').innerText = "";
+            } else {
+                list.innerHTML = entries.map(([id, q]) => {
+                    const p = products.find(x => x.id === id);
+                    return `
+                    <div class="cart-item-row">
+                        <div class="cart-item-info">
+                            ${p.name[lang]}<br>
+                            <span style="color: var(--accent); font-weight: 700;">${(p.price * q).toFixed(2)} BYN</span>
+                        </div>
+                        <div class="cart-item-controls">
+                            <button class="btn-qty-small" onclick="changeQty('${id}', -1)">-</button>
+                            <span class="cart-qty-val">${q} ${ui[lang].pcs}</span>
+                            <button class="btn-qty-small" onclick="changeQty('${id}', 1)">+</button>
+                        </div>
+                    </div>`;
+                }).join('');
+                document.getElementById('cart-total-modal').innerText = ui[lang].total + ": " + total.toFixed(2) + " BYN";
+            }
+            document.getElementById('cart-modal').style.display = 'flex';
+        }
+
+        function goToCheckout() {
+            if (total === 0) return;
+            localStorage.setItem('mara_cart', JSON.stringify(cart));
+            localStorage.setItem('mara_total', total.toFixed(2));
+            const urlParams = new URLSearchParams(window.location.search);
+            const selectedCity = urlParams.get('city') || localStorage.getItem('selectedCity') || 'Гомель';
+            if (selectedCity === 'Гомель') {
+                window.location.href = 'gomel/checkout.html?city=Гомель&lang=' + lang;
+            } else {
+                window.location.href = 'rb/checkout.html?city=Другой&lang=' + lang;
+            }
+        }
+
+        function clearCart() { cart = {}; localStorage.removeItem('mara_cart'); updateTotal(); }
+        function changeCat(i, el) { 
+            document.querySelectorAll('.cat-item').forEach(c => c.classList.remove('active')); 
+            el.classList.add('active'); renderProducts(i); 
+        }
+        function applyLanguage() {
+            document.getElementById('btn-back').innerText = ui[lang].back;
+            document.getElementById('btn-view-cart').innerText = ui[lang].view;
+            document.getElementById('main-clear-btn').innerText = ui[lang].clear;
+            document.getElementById('main-pay-btn').innerText = ui[lang].pay;
+            document.getElementById('modal-title').innerText = ui[lang].your_order;
+        }
+
+        init();
+    </script>
+</body>
+</html>
