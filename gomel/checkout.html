@@ -109,8 +109,6 @@
 
     <script>
         let tg = window.Telegram.WebApp;
-        
-        // Развертывание и настройки цвета шапки
         tg.expand();
         tg.ready();
         tg.setHeaderColor('#fdfaf5'); 
@@ -174,10 +172,7 @@
         };
 
         const dateInput = document.getElementById('order-date');
-        const now = new Date();
-        const offset = 3 * 60 * 60 * 1000;
-        const localNow = new Date(now.getTime() + offset);
-        const todayStr = localNow.toISOString().split('T')[0];
+        const todayStr = new Date(new Date().getTime() + 3*3600*1000).toISOString().split('T')[0];
 
         window.onload = function() {
             applyLanguage();
@@ -217,7 +212,6 @@
                 const originalText = btn.innerText;
                 btn.innerText = ui[lang].copied;
                 setTimeout(() => { btn.innerText = originalText; }, 2000);
-                if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
             });
         }
 
@@ -228,10 +222,9 @@
             for (let id in cart) {
                 const item = productsData[id];
                 if (item) {
-                    const linePrice = (item.price * cart[id]).toFixed(2);
                     html += `<div class="preview-row">
                                 <span class="item-name">${item.name[lang]} (${cart[id]} ${ui[lang].pcs})</span>
-                                <span class="item-cost">${linePrice} BYN</span>
+                                <span class="item-cost">${(item.price * cart[id]).toFixed(2)} BYN</span>
                              </div>`;
                 }
             }
@@ -243,18 +236,13 @@
             method = m;
             document.getElementById('opt-pickup').classList.toggle('active', m === 'Самовывоз');
             document.getElementById('opt-delivery').classList.toggle('active', m === 'Доставка');
-            const note = document.getElementById('delivery-note');
-            if (m === 'Самовывоз') {
-                note.innerHTML = `${ui[lang].note_pickup} <br><strong>+375 (29) 651-44-03</strong>`;
-            } else {
-                note.innerHTML = ui[lang].note_delivery;
-            }
+            document.getElementById('delivery-note').innerHTML = m === 'Самовывоз' ? 
+                `${ui[lang].note_pickup} <br><strong>+375 (29) 651-44-03</strong>` : ui[lang].note_delivery;
         }
 
         function enableTime() {
             const t = document.getElementById('order-time');
-            const selectedDate = dateInput.value;
-            if (!selectedDate) return;
+            if (!dateInput.value) return;
             isDisc = false;
             document.getElementById('btn-discuss').classList.remove('active');
             document.getElementById('discuss-hint').style.display = 'none';
@@ -262,101 +250,72 @@
             t.disabled = false;
             t.innerHTML = `<option value="">${ui[lang].select_time}</option>`;
             const currentHour = new Date().getHours();
-            const isToday = (selectedDate === todayStr);
             for (let h = 9; h <= 21; h++) {
-                if (isToday && h < (currentHour + 3)) continue;
+                if (dateInput.value === todayStr && h < (currentHour + 3)) continue;
                 let opt = document.createElement('option');
-                opt.value = h + ':00';
-                opt.innerText = h + ':00';
-                t.appendChild(opt);
+                opt.value = h + ':00'; opt.innerText = h + ':00'; t.appendChild(opt);
             }
         }
 
         function toggleDisc() {
             isDisc = !isDisc;
-            const btn = document.getElementById('btn-discuss');
-            const hint = document.getElementById('discuss-hint');
-            const timeArea = document.getElementById('time-selection-area');
-            btn.classList.toggle('active', isDisc);
-            hint.style.display = isDisc ? 'block' : 'none';
+            document.getElementById('btn-discuss').classList.toggle('active', isDisc);
+            document.getElementById('discuss-hint').style.display = isDisc ? 'block' : 'none';
+            document.getElementById('time-selection-area').style.opacity = isDisc ? '0.4' : '1';
             if(isDisc) {
-                timeArea.style.opacity = '0.4';
                 dateInput.value = '';
                 document.getElementById('order-time').disabled = true;
                 document.getElementById('order-time').innerHTML = `<option value="">...</option>`;
             } else {
-                timeArea.style.opacity = '1';
-                dateInput.value = todayStr;
-                enableTime();
+                dateInput.value = todayStr; enableTime();
             }
         }
 
         document.getElementById('c-phone').addEventListener('input', function(e) {
-            let val = e.target.value;
-            if (!val.startsWith('+375 ')) { e.target.value = '+375 '; return; }
-            let digits = val.substring(5).replace(/\D/g, '');
-            let formatted = '+375 ';
-            if (digits.length > 0) formatted += '(' + digits.substring(0, 2);
-            if (digits.length >= 3) formatted += ') ' + digits.substring(2, 5);
-            if (digits.length >= 6) formatted += '-' + digits.substring(5, 7);
-            if (digits.length >= 8) formatted += '-' + digits.substring(7, 9);
-            e.target.value = formatted;
+            let digits = e.target.value.substring(5).replace(/\D/g, '');
+            let f = '+375 ';
+            if (digits.length > 0) f += '(' + digits.substring(0, 2);
+            if (digits.length >= 3) f += ') ' + digits.substring(2, 5);
+            if (digits.length >= 6) f += '-' + digits.substring(5, 7);
+            if (digits.length >= 8) f += '-' + digits.substring(7, 9);
+            e.target.value = f;
         });
 
+        // ЦЕНТРАЛЬНОЕ ИЗМЕНЕНИЕ: ОТПРАВЛЯЕМ ДАННЫЕ БОТУ
         function finishOrder() {
             const name = document.getElementById('c-name').value;
             const phone = document.getElementById('c-phone').value;
-            
-            if (!name) return tg.showAlert(ui[lang].alert);
-            
-            const timeVal = document.getElementById('order-time').value;
+            if (!name || phone.length < 17) return tg.showAlert(ui[lang].alert);
 
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
             let itemsStr = "";
             for (let id in cart) {
-                const item = productsData[id];
-                if (item) itemsStr += item.name[lang] + " (" + cart[id] + " шт); ";
+                if (productsData[id]) itemsStr += productsData[id].name[lang] + " (" + cart[id] + " шт); ";
             }
 
             const data = {
-                name:    name,
-                phone:   phone,
-                method:  method,
-                date:    isDisc ? "Согласовать" : dateInput.value,
-                time:    isDisc ? "Согласовать" : timeVal,
+                name: name,
+                phone: phone,
+                method: method,
+                date: isDisc ? "Согласовать" : dateInput.value,
+                time: isDisc ? "Согласовать" : document.getElementById('order-time').value,
                 comment: document.getElementById('c-comment').value,
-                total:   document.getElementById('final-sum').innerText,
-                items:   itemsStr,
-                city:    "ГОМЕЛЬ",
-                lang:    lang
+                total: document.getElementById('final-sum').innerText,
+                items: itemsStr,
+                city: "ГОМЕЛЬ"
             };
 
-            const userId = tg.initDataUnsafe?.user?.id;
-            fetch('https://api.telegram.org/bot8661108407:AAHorrust7ahLa_4eAb-qSucV08YPcDjTew/sendMessage', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    chat_id: userId,
-                    text: 'Пришлите чек об оплате, после этого ваш заказ будет принят в обработку ✅'
-                })
-            }).then(() => {
-                fetch('https://api.telegram.org/bot8661108407:AAHorrust7ahLa_4eAb-qSucV08YPcDjTew/sendMessage', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        chat_id: -1003720631950,
-                        text: 'НОВЫЙ ЗАКАЗ: ' + data.city + '\n\nКлиент: ' + data.name + '\nТел: ' + data.phone + '\nСпособ: ' + data.method + '\nДата/Время: ' + data.date + ' в ' + data.time + '\nТовары: ' + data.items + '\nКомментарий: ' + data.comment + '\nИТОГО: ' + data.total
-                    })
-                });
-            }).finally(() => {
-                document.getElementById('checkout-screen').innerHTML = `
-                    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:80vh; text-align:center; padding:30px;">
-                        <div style="font-size:60px;">❤️</div>
-                        <h2 style="color:#630d16; font-weight:900; font-size:24px; margin:20px 0 10px;">СПАСИБО ЗА ЗАКАЗ!</h2>
-                        <p style="color:#666; font-weight:600;">Переходим в чат...</p>
-                    </div>`;
-                setTimeout(function() { tg.close(); }, 2000);
-            });
+            // Отправляем объект боту
+            tg.sendData(JSON.stringify(data));
+            
+            // Красивый финал
+            document.getElementById('checkout-screen').innerHTML = `
+                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:80vh; text-align:center;">
+                    <div style="font-size:60px;">✅</div>
+                    <h2 style="color:#630d16; font-weight:900;">ЗАКАЗ ОТПРАВЛЕН</h2>
+                    <p style="color:#666;">Пришлите чек в чат бота</p>
+                </div>`;
+            setTimeout(() => { tg.close(); }, 2000);
         }
     </script>
 </body>
