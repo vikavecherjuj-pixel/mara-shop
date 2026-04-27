@@ -300,13 +300,12 @@
             const name = document.getElementById('c-name').value;
             const phone = document.getElementById('c-phone').value;
             
-            // ПРАВКА СТРОКИ 304: Проверка только имени
+            // ПРАВКА: Проверка только имени
             if (!name) return tg.showAlert(ui[lang].alert);
             
-            // ПРАВКА СТРОКИ 307: Проверка времени отключена
+            // ПРАВКА: Проверка времени отключена
             const timeVal = document.getElementById('order-time').value;
 
-            // Собираем товары
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
             let itemsStr = "";
             for (let id in cart) {
@@ -327,7 +326,8 @@
                 lang:    lang
             };
 
-            tg.sendData(JSON.stringify(data));
+            // ПРАВКА: Алерт для теста + отправка
+            alert("КНОПКА РАБОТАЕТ! Данные: " + JSON.stringify(data));tg.sendData(JSON.stringify(data));
         }
     </script>
 </body>
