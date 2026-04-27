@@ -45,7 +45,11 @@
 
     <script>
         let tg = window.Telegram.WebApp; 
-        tg.expand();
+        
+        // Настройки для эффекта полного погружения (как сайт)
+        tg.expand(); // Развернуть на весь экран
+        tg.setHeaderColor('#ffffff'); // Белый цвет заголовка
+        tg.setBackgroundColor('#ffffff'); // Белый фон приложения
 
         let citySelected = false;
         let langSelected = false;
@@ -56,7 +60,7 @@
             en: { start: "Start Order", city: "Your City", lang: "Select Language" }
         };
 
-        // Очищаем старые данные, чтобы при перезагрузке кнопка снова была заблокирована
+        // Очищаем старые данные при входе
         localStorage.removeItem('selectedLang');
         localStorage.removeItem('selectedCity');
 
