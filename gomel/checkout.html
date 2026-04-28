@@ -45,22 +45,18 @@
         <div class="back-link-container">
             <a href="../shop.html" id="ui-back">← Назад в каталог</a>
         </div>
-
         <div class="checkout-card">
             <div class="section-title" id="ui-choice">Ваш выбор</div>
             <div id="cart-list"></div>
             <div class="final-total" id="final-sum">0.00 BYN</div>
         </div>
-
         <div class="checkout-card">
             <div class="section-title" id="ui-method">Способ получения</div>
             <div class="delivery-selector">
                 <div class="delivery-option active" id="opt-pickup" onclick="setDeliv('Самовывоз')">Самовывоз</div>
                 <div class="delivery-option" id="opt-delivery" onclick="setDeliv('Доставка')">Доставка</div>
             </div>
-
             <div id="delivery-note"></div>
-
             <div id="time-selection-area">
                 <div class="datetime-row">
                     <div class="field-group">
@@ -75,27 +71,21 @@
                     </div>
                 </div>
             </div>
-
             <div class="or-divider" id="ui-or">или</div>
-
             <div id="discuss-selection-area">
                 <button id="btn-discuss" class="discuss-btn" onclick="toggleDisc()">Согласовать время после оплаты</button>
                 <span class="discuss-hint" id="discuss-hint" style="display: none;">Напишем вам в чат сразу после заказа для уточнения деталей.</span>
             </div>
         </div>
-
         <div class="checkout-card">
             <div class="section-title" id="ui-data">Ваши данные</div>
             <label class="contact-label" id="ui-name">Имя</label>
             <input type="text" id="c-name" placeholder="">
-            
             <label class="contact-label" id="ui-phone">Телефон</label>
             <input type="tel" id="c-phone" value="+375 ">
-            
             <label class="contact-label" id="ui-comment">Комментарий</label>
             <textarea id="c-comment" placeholder="" rows="3"></textarea>
         </div>
-
         <div class="checkout-card">
             <div class="section-title" id="ui-pay-title">Оплата (ЕРИП)</div>
             <div class="erip-box" id="ui-erip-info">
@@ -111,7 +101,7 @@
         let tg = window.Telegram.WebApp;
         tg.expand();
         tg.ready();
-        tg.setHeaderColor('#fdfaf5'); 
+        tg.setHeaderColor('#fdfaf5');
         tg.setBackgroundColor('#fdfaf5');
 
         let lang = localStorage.getItem('selectedLang') || 'ru';
@@ -178,8 +168,8 @@
             applyLanguage();
             render();
             dateInput.setAttribute('min', todayStr);
-            dateInput.value = todayStr; 
-            enableTime(); 
+            dateInput.value = todayStr;
+            enableTime();
         };
 
         function applyLanguage() {
@@ -236,7 +226,7 @@
             method = m;
             document.getElementById('opt-pickup').classList.toggle('active', m === 'Самовывоз');
             document.getElementById('opt-delivery').classList.toggle('active', m === 'Доставка');
-            document.getElementById('delivery-note').innerHTML = m === 'Самовывоз' ? 
+            document.getElementById('delivery-note').innerHTML = m === 'Самовывоз' ?
                 `${ui[lang].note_pickup} <br><strong>+375 (29) 651-44-03</strong>` : ui[lang].note_delivery;
         }
 
@@ -262,7 +252,7 @@
             document.getElementById('btn-discuss').classList.toggle('active', isDisc);
             document.getElementById('discuss-hint').style.display = isDisc ? 'block' : 'none';
             document.getElementById('time-selection-area').style.opacity = isDisc ? '0.4' : '1';
-            if(isDisc) {
+            if (isDisc) {
                 dateInput.value = '';
                 document.getElementById('order-time').disabled = true;
                 document.getElementById('order-time').innerHTML = `<option value="">...</option>`;
@@ -281,11 +271,10 @@
             e.target.value = f;
         });
 
-        // ЦЕНТРАЛЬНОЕ ИЗМЕНЕНИЕ: ОТПРАВЛЯЕМ ДАННЫЕ БОТУ
         function finishOrder() {
             const name = document.getElementById('c-name').value;
             const phone = document.getElementById('c-phone').value;
-            if (!name || phone.length < 17) return tg.showAlert(ui[lang].alert);
+            if (!name) return tg.showAlert(ui[lang].alert);
 
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
             let itemsStr = "";
@@ -294,26 +283,26 @@
             }
 
             const data = {
-                name: name,
-                phone: phone,
-                method: method,
-                date: isDisc ? "Согласовать" : dateInput.value,
-                time: isDisc ? "Согласовать" : document.getElementById('order-time').value,
+                name:    name,
+                phone:   phone,
+                method:  method,
+                date:    isDisc ? "Согласовать" : dateInput.value,
+                time:    isDisc ? "Согласовать" : document.getElementById('order-time').value,
                 comment: document.getElementById('c-comment').value,
-                total: document.getElementById('final-sum').innerText,
-                items: itemsStr,
-                city: "ГОМЕЛЬ"
+                total:   document.getElementById('final-sum').innerText,
+                items:   itemsStr,
+                city:    "ГОМЕЛЬ"
             };
 
-            // Отправляем объект боту
+            // Отправляем данные боту через sendData
             tg.sendData(JSON.stringify(data));
-            
-            // Красивый финал
+
+            // Показываем экран "Спасибо"
             document.getElementById('checkout-screen').innerHTML = `
-                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:80vh; text-align:center;">
+                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:80vh; text-align:center; padding:30px;">
                     <div style="font-size:60px;">✅</div>
-                    <h2 style="color:#630d16; font-weight:900;">ЗАКАЗ ОТПРАВЛЕН</h2>
-                    <p style="color:#666;">Пришлите чек в чат бота</p>
+                    <h2 style="color:#630d16; font-weight:900; font-size:24px; margin:20px 0 10px;">ЗАКАЗ ОТПРАВЛЕН</h2>
+                    <p style="color:#666; font-weight:600;">Пришлите чек в чат бота</p>
                 </div>`;
             setTimeout(() => { tg.close(); }, 2000);
         }
