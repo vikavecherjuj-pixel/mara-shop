@@ -15,20 +15,17 @@
         .checkout-card { background: white; border-radius: 20px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .checkout-title { font-weight: 900; font-size: 14px; margin-bottom: 12px; color: var(--burgundy); text-transform: uppercase; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
         label { display: block; font-size: 10px; font-weight: 700; margin-bottom: 6px; color: #888; text-transform: uppercase; }
-        
-        input, select, textarea { 
-            width: 100%; padding: 14px; border: 1px solid #f0f0f0; border-radius: 12px; 
-            font-family: 'Montserrat'; font-size: 14px; margin-bottom: 12px; box-sizing: border-box; 
+        input, select, textarea {
+            width: 100%; padding: 14px; border: 1px solid #f0f0f0; border-radius: 12px;
+            font-family: 'Montserrat'; font-size: 14px; margin-bottom: 12px; box-sizing: border-box;
             background: #fafafa; outline: none; color: black !important; caret-color: black !important;
         }
         textarea { resize: none; height: 80px; }
-
         .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px; align-items: flex-start; }
         .item-name { flex: 1; padding-right: 10px; line-height: 1.4; }
         .item-cost { font-weight: 700; color: var(--accent); white-space: nowrap; }
         .final-sum { text-align: right; font-weight: 900; color: var(--accent); font-size: 18px; margin-top: 10px; }
         .btn-main { width: 100%; padding: 18px; background: var(--green); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; }
-        
         .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 20px; border-radius: 15px; text-align: left; }
         .erip-text { font-size: 11px; color: #555; line-height: 1.6; margin-bottom: 10px; }
         .erip-phone { color: var(--green); font-weight: 900; font-size: 20px; display: block; margin: 10px 0; letter-spacing: 0.5px; }
@@ -39,7 +36,7 @@
     <div id="checkout-screen" onclick="event.stopPropagation()">
         <h2 id="ui-main-title" style="text-align: center; font-weight: 900; font-size: 22px; margin: 15px 0;">ОФОРМЛЕНИЕ</h2>
         <div class="back-link-top"><a href="../shop.html" id="ui-back">← Назад в каталог</a></div>
-        
+
         <div class="checkout-card">
             <div class="checkout-title" id="ui-order-title">Ваш заказ</div>
             <div id="cart-items-preview"></div>
@@ -64,22 +61,18 @@
                 <option value="Европочта">Европочта</option>
                 <option value="Белпочта">Белпочта</option>
             </select>
-            
             <label id="ui-city-label">Город</label>
             <input type="text" id="post-city" placeholder="">
-            
             <div id="euro-box">
                 <label id="ui-dept-label">Номер или адрес отделения</label>
                 <input type="text" id="post-dept" placeholder="">
             </div>
-            
             <div id="bel-box" style="display:none;">
                 <label id="ui-addr-label">Полный адрес (Улица, дом, кв)</label>
                 <input type="text" id="post-addr">
                 <label id="ui-index-label">Почтовый индекс</label>
                 <input type="text" id="post-index">
             </div>
-            
             <p id="ui-note" style="color:#666; font-size:10px; font-weight:700; margin-top: 5px;">
                 *Отправка осуществляется после 100% оплаты заказа.
             </p>
@@ -103,8 +96,6 @@
 
     <script>
         let tg = window.Telegram.WebApp;
-
-        // Настройки полноэкранного режима и цвета
         tg.expand();
         tg.ready();
         tg.setHeaderColor('#fdfaf5');
@@ -204,8 +195,7 @@
             document.getElementById('bel-box').style.display = type === 'Белпочта' ? 'block' : 'none';
         }
 
-        const phoneInput = document.getElementById('cust-phone');
-        phoneInput.addEventListener('input', function(e) {
+        document.getElementById('cust-phone').addEventListener('input', function(e) {
             let val = e.target.value;
             if (!val.startsWith('+375 ')) { e.target.value = '+375 '; return; }
             let digits = val.substring(5).replace(/\D/g, '');
@@ -223,10 +213,9 @@
             for (let id in cart) {
                 const item = productsData[id];
                 if (item) {
-                    const linePrice = (item.price * cart[id]).toFixed(2);
                     html += `<div class="preview-row">
                                 <span class="item-name">${item.name[lang]} (${cart[id]} ${ui[lang].pcs})</span>
-                                <span class="item-cost">${linePrice} BYN</span>
+                                <span class="item-cost">${(item.price * cart[id]).toFixed(2)} BYN</span>
                              </div>`;
                 }
             }
@@ -236,60 +225,44 @@
         }
 
         function finalSubmit() {
-            const name = document.getElementById('cust-name').value;
+            const name  = document.getElementById('cust-name').value;
             const phone = document.getElementById('cust-phone').value;
-            const city = document.getElementById('post-city').value;
-            
-            if(!name || phone.length < 17 || !city) return tg.showAlert(ui[lang].alert);
+            const city  = document.getElementById('post-city').value;
+            if (!name || phone.length < 17 || !city) return tg.showAlert(ui[lang].alert);
 
             const type = document.getElementById('post-type').value;
             let deliveryInfo = `Почта: ${type}, Город: ${city}`;
-            if(type === 'Европочта') deliveryInfo += `, Отд: ${document.getElementById('post-dept').value}`;
+            if (type === 'Европочта') deliveryInfo += `, Отд: ${document.getElementById('post-dept').value}`;
             else deliveryInfo += `, Адрес: ${document.getElementById('post-addr').value}, Индекс: ${document.getElementById('post-index').value}`;
 
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
             let itemsStr = "";
             for (let id in cart) {
-                const item = productsData[id];
-                if (item) itemsStr += item.name[lang] + " (" + cart[id] + " шт); ";
+                if (productsData[id]) itemsStr += productsData[id].name[lang] + " (" + cart[id] + " шт); ";
             }
 
             const data = {
-                name: name,
-                phone: phone,
-                method: type,
+                name:    name,
+                phone:   phone,
+                method:  type,
                 address: deliveryInfo,
                 comment: document.getElementById('cust-comment').value,
-                items: itemsStr,
-                total: document.getElementById('final-sum').innerText
+                items:   itemsStr,
+                total:   document.getElementById('final-sum').innerText,
+                city:    "РБ_ПОЧТА"
             };
 
-            const userId = tg.initDataUnsafe?.user?.id;
-            fetch('https://api.telegram.org/bot8661108407:AAHorrust7ahLa_4eAb-qSucV08YPcDjTew/sendMessage', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    chat_id: userId,
-                    text: 'Пришлите чек об оплате, после этого ваш заказ будет принят в обработку ✅'
-                })
-            }).then(() => {
-                fetch('https://api.telegram.org/bot8661108407:AAHorrust7ahLa_4eAb-qSucV08YPcDjTew/sendMessage', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        chat_id: -1003720631950,
-                        text: 'НОВЫЙ ЗАКАЗ: РБ (ПОЧТА)\n\nКлиент: ' + data.name + '\nТел: ' + data.phone + '\nСпособ: ' + data.method + '\nАдрес: ' + data.address + '\nТовары: ' + data.items + '\nКомментарий: ' + (data.comment || '-') + '\nИТОГО: ' + data.total
-                    })
-                });
-            }).finally(() => {
-                document.getElementById('checkout-screen').innerHTML = `
-                    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:80vh; text-align:center; padding:30px;">
-                        <div style="font-size:60px;">❤️</div>
-                        <h2 style="color:#630d16; font-weight:900; font-size:24px; margin:20px 0 10px;">СПАСИБО ЗА ЗАКАЗ!</h2>
-                        <p style="color:#666; font-weight:600;">Переходим в чат...</p>
-                    </div>`;
-                setTimeout(function() { tg.close(); }, 2000);
-            });
+            // Отправляем данные боту через sendData
+            tg.sendData(JSON.stringify(data));
+
+            // Показываем экран "Спасибо"
+            document.getElementById('checkout-screen').innerHTML = `
+                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:80vh; text-align:center; padding:30px;">
+                    <div style="font-size:60px;">✅</div>
+                    <h2 style="color:#630d16; font-weight:900; font-size:24px; margin:20px 0 10px;">ЗАКАЗ ОТПРАВЛЕН</h2>
+                    <p style="color:#666; font-weight:600;">Пришлите чек в чат бота</p>
+                </div>`;
+            setTimeout(() => { tg.close(); }, 2000);
         }
 
         window.onload = function() {
