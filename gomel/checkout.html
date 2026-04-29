@@ -294,8 +294,8 @@
                 city:    "ГОМЕЛЬ"
             };
 
-            // Отправляем через fetch — работает через любую кнопку
             const userId = tg.initDataUnsafe?.user?.id;
+            
             fetch('https://api.telegram.org/bot8661108407:AAHorrust7ahLa_4eAb-qSucV08YPcDjTew/sendMessage', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -303,16 +303,15 @@
                     chat_id: userId,
                     text: JSON.stringify(data)
                 })
+            }).then(() => {
+                document.getElementById('checkout-screen').innerHTML = `
+                    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:80vh;text-align:center;padding:30px;">
+                        <div style="font-size:60px;">✅</div>
+                        <h2 style="color:#630d16;font-weight:900;">ЗАКАЗ ОТПРАВЛЕН</h2>
+                        <p style="color:#666;">Пришлите чек в чат бота</p>
+                    </div>`;
+                setTimeout(() => { tg.close(); }, 2000);
             });
-
-            // Показываем экран "Спасибо"
-            document.getElementById('checkout-screen').innerHTML = `
-                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:80vh; text-align:center; padding:30px;">
-                    <div style="font-size:60px;">✅</div>
-                    <h2 style="color:#630d16; font-weight:900; font-size:24px; margin:20px 0 10px;">ЗАКАЗ ОТПРАВЛЕН</h2>
-                    <p style="color:#666; font-weight:600;">Пришлите чек в чат бота</p>
-                </div>`;
-            setTimeout(() => { tg.close(); }, 2000);
         }
     </script>
 </body>
