@@ -123,7 +123,7 @@
                 note_pickup: "Свірыдава 11, 6 пад'езд. Патэлефануйце за 10 хв:", note_delivery: "Адпраўляем праз Яндекс.Дастаўка. Аплата дастаўкі — за кошт кліента.",
                 date: "Дата", time: "Час", loading: "Загрузка...", select_time: "Абраць час", or: "або", discuss: "Узгадніць час пасля аплаты",
                 hint: "Напішам вам у чат адразу пасля замовы для ўдакладнення дэталяў.", data: "Вашы дадзеныя", name: "Імя", phone: "Тэлефон",
-                comment: "Каментарый", comment_ph: "Адрас дастаўкі або пажаданні", name_ph: "Увядзіце ваша імя", pay: "Аплата (АРІП)",
+                comment: "Каментарый", comment_ph: "Адрас дастаўкі або пажаданні", name_ph: "Увядзіце ваша імя", pay: "Оплата (АРІП)",
                 copy: "Скапіяваць нумар", copied: "Нумар скапіяваны!", finish: "Аплачана, заказаць", alert: "Увядзіце імя!", alert_time: "Абярыце дату і час!",
                 pcs: "шт."
             },
@@ -291,27 +291,12 @@
                 comment: document.getElementById('c-comment').value,
                 total:   document.getElementById('final-sum').innerText,
                 items:   itemsStr,
-                city:    "ГОМЕЛЬ"
+                city:    "ГОМЕЛЬ",
+                lang:    lang
             };
 
-            const userId = tg.initDataUnsafe?.user?.id;
-            
-            fetch('https://api.telegram.org/bot8661108407:AAHorrust7ahLa_4eAb-qSucV08YPcDjTew/sendMessage', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    chat_id: userId,
-                    text: JSON.stringify(data)
-                })
-            }).then(() => {
-                document.getElementById('checkout-screen').innerHTML = `
-                    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:80vh;text-align:center;padding:30px;">
-                        <div style="font-size:60px;">✅</div>
-                        <h2 style="color:#630d16;font-weight:900;">ЗАКАЗ ОТПРАВЛЕН</h2>
-                        <p style="color:#666;">Пришлите чек в чат бота</p>
-                    </div>`;
-                setTimeout(() => { tg.close(); }, 2000);
-            });
+            // Отправляем данные боту и закрываем приложение
+            tg.sendData(JSON.stringify(data));
         }
     </script>
 </body>
