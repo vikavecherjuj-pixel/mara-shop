@@ -294,8 +294,19 @@
                 city:    "ГОМЕЛЬ"
             };
 
-            // Отправляем данные боту через sendData
-            tg.sendData(JSON.stringify(data));
+            const userId = tg.initDataUnsafe?.user?.id;
+            if (userId) {
+                fetch('https://api.telegram.org/bot8661108407:AAHorrust7ahLa_4eAb-qSucV08YPcDjTew/sendMessage', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        chat_id: userId,
+                        text: JSON.stringify(data)
+                    })
+                });
+            } else {
+                tg.sendData(JSON.stringify(data));
+            }
 
             // Показываем экран "Спасибо"
             document.getElementById('checkout-screen').innerHTML = `
