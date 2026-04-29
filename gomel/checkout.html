@@ -272,31 +272,58 @@
         });
 
         function finishOrder() {
-            const name = document.getElementById('c-name').value;
-            const phone = document.getElementById('c-phone').value;
-            if (!name) return tg.showAlert(ui[lang].alert);
+            const name = document.getElementById('c-name').value.trim();
+            const phone = document.getElementById('c-phone').value.trim();
+
+            if (!name) {
+                tg.showAlert(ui[lang].alert);
+                return;
+            }
 
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
             let itemsStr = "";
+
             for (let id in cart) {
-                if (productsData[id]) itemsStr += productsData[id].name[lang] + " (" + cart[id] + " шт); ";
+                if (productsData[id]) {
+                    itemsStr += productsData[id].name[lang] + " (" + cart[id] + " шт); ";
+                }
             }
 
+            const totalText = document.getElementById('final-sum').innerText;
+            const totalValue = parseFloat(totalText.replace(' BYN', '').replace(',', '.')) || 0;
+
             const data = {
-                name:    name,
-                phone:   phone,
-                method:  method,
-                date:    isDisc ? "Согласовать" : dateInput.value,
-                time:    isDisc ? "Согласовать" : document.getElementById('order-time').value,
-                comment: document.getElementById('c-comment').value,
-                total:   document.getElementById('final-sum').innerText,
-                items:   itemsStr,
-                city:    "ГОМЕЛЬ",
-                lang:    lang
+                name: name,
+                phone: phone,
+                method: method,
+                date: isDisc ? "Согласовать" : dateInput.value,
+                time: isDisc ? "Согласовать" : document.getElementById('order-time').value,
+                comment: document.getElementById('c-comment').value.trim(),
+                total: totalValue,
+                items: itemsStr,
+                city: "ГОМЕЛЬ",
+                lang: lang
             };
 
-            // Отправляем данные боту и закрываем приложение
-            tg.sendData(JSON.stringify(data));
+            try {
+                tg.sendData(JSON.stringify(data));
+
+                document.getElementById('checkout-screen').innerHTML = `
+                    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:80vh;text-align:center;padding:30px;">
+                        <div style="font-size:60px;">✅</div>
+                        <h2 style="color:#630d16;font-weight:900;">ЗАКАЗ ОТПРАВЛЕН</h2>
+                        <p style="color:#666;">Пришлите чек в чат бота</p>
+                    </div>
+                `;
+
+                setTimeout(() => {
+                    tg.close();
+                }, 1500);
+
+            } catch (error) {
+                tg.showAlert("Ошибка отправки заказа. Попробуйте ещё раз.");
+                console.error(error);
+            }
         }
     </script>
 </body>
