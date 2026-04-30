@@ -8,18 +8,34 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { --accent: #c5a059; --burgundy: #630d16; --dark: #2c1a11; --bg: #fdfaf5; --green: #21a252; }
-        body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; padding: 10px; color: var(--dark); min-height: 100vh; overflow-x: hidden; }
+        
+        /* Исправлено для предотвращения смещения на iOS */
+        html, body { 
+            font-family: 'Montserrat', sans-serif; 
+            background: var(--bg); 
+            margin: 0; 
+            padding: 10px; 
+            color: var(--dark); 
+            min-height: 100vh; 
+            overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
+        }
+
         #checkout-screen { display: flex; flex-direction: column; gap: 12px; padding-bottom: 40px; }
         .back-link-top { text-align: left; margin-bottom: 5px; }
         .back-link-top a { color: #aaa; text-decoration: none; font-size: 13px; font-weight: 700; }
         .checkout-card { background: white; border-radius: 20px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .checkout-title { font-weight: 900; font-size: 14px; margin-bottom: 12px; color: var(--burgundy); text-transform: uppercase; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
         label { display: block; font-size: 10px; font-weight: 700; margin-bottom: 6px; color: #888; text-transform: uppercase; }
+        
+        /* font-size: 16px предотвращает авто-зум в Safari iOS */
         input, select, textarea {
             width: 100%; padding: 14px; border: 1px solid #f0f0f0; border-radius: 12px;
-            font-family: 'Montserrat'; font-size: 14px; margin-bottom: 12px; box-sizing: border-box;
+            font-family: 'Montserrat'; font-size: 16px; margin-bottom: 12px; box-sizing: border-box;
             background: #fafafa; outline: none; color: black !important; caret-color: black !important;
+            -webkit-appearance: none;
         }
+        
         textarea { resize: none; height: 80px; }
         .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px; align-items: flex-start; }
         .item-name { flex: 1; padding-right: 10px; line-height: 1.4; }
@@ -32,8 +48,8 @@
         .btn-copy { background: #f0f0f0; color: #444; border: none; border-radius: 10px; padding: 12px; width: 100%; font-size: 11px; font-weight: 700; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; }
     </style>
 </head>
-<body onclick="document.activeElement.blur()">
-    <div id="checkout-screen" onclick="event.stopPropagation()">
+<body>
+    <div id="checkout-screen">
         <h2 id="ui-main-title" style="text-align: center; font-weight: 900; font-size: 22px; margin: 15px 0;">ОФОРМЛЕНИЕ</h2>
         <div class="back-link-top"><a href="../shop.html" id="ui-back">← Назад в каталог</a></div>
 
@@ -84,7 +100,7 @@
         </div>
 
         <div class="checkout-card">
-            <div class="checkout-title" id="ui-pay-title">Оплата (ЕРИП)</div>
+            <div class="checkout-title" id="ui-finish-title">Оплата (ЕРИП)</div>
             <div class="erip-box">
                 <div class="erip-text" id="ui-erip-text">Система Расчета ЕРИП / Банковские услуги / Банки / АЛЬФА-БАНК / Пополнение счета:</div>
                 <div class="erip-phone">+375 (29) 651-44-03</div>
@@ -101,6 +117,17 @@
         tg.setHeaderColor('#fdfaf5');
         tg.setBackgroundColor('#fdfaf5');
 
+        // Логика скрытия клавиатуры без прыжков экрана
+        document.addEventListener('click', function(e){
+            if(e.target.tagName !== 'INPUT' && 
+               e.target.tagName !== 'TEXTAREA' && 
+               e.target.tagName !== 'SELECT'){
+                if (document.activeElement) {
+                    document.activeElement.blur();
+                }
+            }
+        });
+
         let lang = localStorage.getItem('selectedLang') || 'ru';
 
         const ui = {
@@ -112,7 +139,7 @@
                 index: "Почтовый индекс", note: "*Отправка осуществляется после 100% оплаты заказа.",
                 comment: "Комментарий", comment_ph: "Напишите, если есть доп. пожелания...",
                 pay: "Оплата (ЕРИП)", copy: "Скопировать номер", finish: "Я оплатил, оформить заказ",
-                alert: "Заполните ФИО, телефон и город!", pcs: "шт.", copied: "Номер скопирован!"
+                alert: "Заполните ФИО, корректный телефон и город!", pcs: "шт.", copied: "Номер скопирован!"
             },
             by: {
                 title: "АФАРМЛЕННЕ", back: "← Назад у каталог", order: "Ваша замова", del_label: "Дастаўка поштай",
@@ -122,7 +149,7 @@
                 index: "Паштовы індэкс", note: "*Адпраўка ажыццяўляецца пасля 100% аплаты замовы.",
                 comment: "Каментарый", comment_ph: "Напішыце, калі ёсць дадатковыя пажаданні...",
                 pay: "Аплата (АРІП)", copy: "Скапіяваць нумар", finish: "Я аплаціў, аформіць замову",
-                alert: "Запоўніце ПІБ, тэлефон і горад!", pcs: "шт.", copied: "Нумар скапіяваны!"
+                alert: "Запоўніце ПІБ, карэктны тэлефон і горад!", pcs: "шт.", copied: "Нумар скапіяваны!"
             },
             en: {
                 title: "CHECKOUT", back: "← Back to catalog", order: "Your order", del_label: "Postal delivery",
@@ -132,7 +159,7 @@
                 index: "Postcode", note: "*Shipping is made after 100% payment.",
                 comment: "Comment", comment_ph: "Add any special requests...",
                 pay: "Payment (ERIP)", copy: "Copy number", finish: "Paid, place order",
-                alert: "Please fill in name, phone and city!", pcs: "pcs.", copied: "Copied!"
+                alert: "Please fill in name, valid phone and city!", pcs: "pcs.", copied: "Copied!"
             }
         };
 
@@ -159,6 +186,16 @@
             'n6': { name: {ru:'Набор 6', by:'Набор 6', en:'Set 6'}, price: 54.00 }
         };
 
+        // Форматирование телефона
+        document.getElementById('cust-phone').addEventListener('input', function (e) {
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,2})(\d{0,3})(\d{0,2})(\d{0,2})/);
+            if (!x[2] && e.target.value.length <= 5) {
+                e.target.value = '+375 ';
+            } else {
+                e.target.value = !x[3] ? '+375 (' + x[2] : '+375 (' + x[2] + ') ' + x[3] + (x[4] ? '-' + x[4] : '') + (x[5] ? '-' + x[5] : '');
+            }
+        });
+
         window.onload = function() {
             const l = ui[lang];
             document.getElementById('ui-main-title').innerText = l.title;
@@ -179,7 +216,7 @@
             document.getElementById('ui-note').innerText = l.note;
             document.getElementById('ui-comment-title').innerText = l.comment;
             document.getElementById('cust-comment').placeholder = l.comment_ph;
-            document.getElementById('ui-pay-title').innerText = l.pay;
+            document.getElementById('ui-finish-title').innerText = l.pay;
             document.getElementById('ui-copy-btn').innerText = l.copy;
             document.getElementById('ui-finish-btn').innerText = l.finish;
             renderCart();
@@ -221,8 +258,11 @@
             const name = document.getElementById('cust-name').value.trim();
             const phone = document.getElementById('cust-phone').value.trim();
             const city = document.getElementById('post-city').value.trim();
+            
+            // Проверка длины цифр в телефоне (375 + 9 цифр = 12)
+            const digits = phone.replace(/\D/g, '');
 
-            if (!name || phone.length < 10 || !city) {
+            if (!name || digits.length < 12 || !city) {
                 tg.showAlert(ui[lang].alert);
                 return;
             }
@@ -246,12 +286,12 @@
                 comment: document.getElementById('cust-comment').value,
                 items: itemsStr,
                 total: document.getElementById('final-sum').innerText,
+                city_tag: "РБ",
                 lang: lang
             };
 
             try {
                 tg.sendData(JSON.stringify(data));
-                
                 localStorage.removeItem('mara_cart');
                 localStorage.removeItem('mara_total');
 
@@ -262,7 +302,6 @@
                         <p style="color:#666;">Пришлите чек в чат бота</p>
                     </div>
                 `;
-
                 setTimeout(() => tg.close(), 1500);
             } catch(e) {
                 tg.showAlert("Ошибка!");
