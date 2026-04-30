@@ -30,7 +30,7 @@
         .item-cost { font-weight: 700; color: var(--accent); white-space: nowrap; }
         .final-total { text-align: right; font-weight: 900; color: var(--accent); font-size: 20px; margin-top: 10px; }
         .or-divider { text-align: center; font-size: 10px; font-weight: 700; color: #ccc; margin: 15px 0; text-transform: uppercase; }
-        .discuss-btn { width: 100%; padding: 14px; background: transparent; color: var(--burgundy); border: 2px dashed #ddd; border-radius: 14px; font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+        .discuss-btn { width: 100%; padding: 14px; background: transparent; color: var(--burgundy); border: 1px solid #ddd; border-radius: 14px; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
         .discuss-btn.active { background: var(--burgundy); color: white; border-style: solid; border-color: var(--burgundy); }
         .discuss-hint { display: block; text-align: center; font-size: 11px; color: #666; margin-top: 10px; font-weight: 500; line-height: 1.4; }
         .contact-label { display: block; font-size: 10px; font-weight: 800; color: #bbb; text-transform: uppercase; margin-bottom: 6px; margin-top: 12px; }
@@ -278,6 +278,11 @@
             if (!name) {
                 tg.showAlert(ui[lang].alert);
                 return;
+            }
+
+            // Добавленная проверка даты и времени
+            if (!isDisc && (!dateInput.value || !document.getElementById('order-time').value)) {
+               return tg.showAlert("Выберите дату и время");
             }
 
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
