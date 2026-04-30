@@ -157,7 +157,14 @@
         tg.setHeaderColor('#ffffff');
         tg.setBackgroundColor('#ffffff');
 
-        window.addEventListener('unload', function() {
+        // ЗАМЕНЕННЫЙ БЛОК:
+        tg.onEvent('viewportChanged', function() {
+            if (tg.isExpanded === false) {
+                localStorage.removeItem('mara_cart');
+                localStorage.removeItem('mara_total');
+            }
+        });
+        window.addEventListener('pagehide', function() {
             localStorage.removeItem('mara_cart');
             localStorage.removeItem('mara_total');
         });
