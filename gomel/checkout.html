@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mara Shop - Оформление (Гомель)</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -20,10 +20,10 @@
         #delivery-note { font-size: 11px; color: #888; line-height: 1.5; margin-bottom: 15px; background: #fffcf5; padding: 12px; border-radius: 12px; border-left: 3px solid var(--accent); }
         input, select, textarea { width: 100%; border: 1px solid transparent; border-radius: 14px; font-family: 'Montserrat'; font-size: 14px; box-sizing: border-box; background: var(--gray); outline: none; color: black !important; caret-color: black; }
         input:focus, textarea:focus { border-color: var(--accent); background: #fff; }
-        .datetime-row { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 5px; }
+        .datetime-row { display: flex; flex-direction: column; gap: 12px; margin-bottom: 5px; }
         .field-group { flex: 1; display: flex; flex-direction: column; }
         .field-group label { display: block; font-size: 10px; font-weight: 800; color: #bbb; text-transform: uppercase; margin-bottom: 6px; }
-        input[type="date"], #order-time { height: 48px; padding: 0 12px; -webkit-appearance: none; }
+        input[type="date"] { height: 48px; padding: 0 12px; -webkit-appearance: none; }
         textarea { padding: 14px; resize: none; margin-top: 5px; }
         .preview-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; border-bottom: 1px dashed #eee; padding-bottom: 6px; align-items: flex-start; }
         .item-name { flex: 1; padding-right: 10px; line-height: 1.4; }
@@ -38,6 +38,11 @@
         .erip-phone { color: var(--green); font-weight: 900; font-size: 18px; display: block; margin-top: 8px; letter-spacing: 0.5px; }
         .copy-btn { width: 100%; padding: 12px; background: var(--gray); color: var(--burgundy); border: none; border-radius: 14px; font-weight: 700; font-size: 11px; text-transform: uppercase; cursor: pointer; margin-top: 12px; transition: all 0.2s; }
         .btn-main { width: 100%; padding: 20px; background: var(--green); color: white; border: none; border-radius: 18px; font-weight: 900; font-size: 15px; text-transform: uppercase; cursor: pointer; margin-top: 15px; }
+
+        /* Сетка для времени */
+        #order-time-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .time-btn { padding: 12px; background: #f4f4f4; border-radius: 14px; text-align: center; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.2s; }
+        .time-btn.active { background: #630d16; color: white; }
     </style>
 </head>
 <body>
@@ -63,11 +68,10 @@
                         <label id="ui-date">Дата</label>
                         <input type="date" id="order-date" onchange="enableTime()">
                     </div>
-                    <div class="field-group">
+                    <div class="field-group" style="margin-top:10px;">
                         <label id="ui-time">Время</label>
-                        <select id="order-time" disabled>
-                            <option value="" id="ui-loading">Загрузка...</option>
-                        </select>
+                        <div id="order-time-list"></div>
+                        <input type="hidden" id="order-time">
                     </div>
                 </div>
             </div>
@@ -181,7 +185,6 @@
             document.getElementById('opt-delivery').innerText = l.delivery;
             document.getElementById('ui-date').innerText = l.date;
             document.getElementById('ui-time').innerText = l.time;
-            document.getElementById('ui-loading').innerText = l.loading;
             document.getElementById('ui-or').innerText = l.or;
             document.getElementById('btn-discuss').innerText = l.discuss;
             document.getElementById('discuss-hint').innerText = l.hint;
@@ -231,19 +234,35 @@
         }
 
         function enableTime() {
-            const t = document.getElementById('order-time');
+            const box = document.getElementById('order-time-list');
+            const hidden = document.getElementById('order-time');
+
+            box.innerHTML = '';
+            hidden.value = '';
+
             if (!dateInput.value) return;
+
             isDisc = false;
             document.getElementById('btn-discuss').classList.remove('active');
             document.getElementById('discuss-hint').style.display = 'none';
             document.getElementById('time-selection-area').style.opacity = '1';
-            t.disabled = false;
-            t.innerHTML = `<option value="">${ui[lang].select_time}</option>`;
+
             const currentHour = new Date().getHours();
+
             for (let h = 9; h <= 21; h++) {
-                if (dateInput.value === todayStr && h < (currentHour + 3)) continue;
-                let opt = document.createElement('option');
-                opt.value = h + ':00'; opt.innerText = h + ':00'; t.appendChild(opt);
+                if (dateInput.value === todayStr && h < currentHour + 3) continue;
+
+                let btn = document.createElement('div');
+                btn.className = 'time-btn';
+                btn.innerText = h + ':00';
+
+                btn.onclick = function(){
+                    document.querySelectorAll('.time-btn').forEach(x => x.classList.remove('active'));
+                    btn.classList.add('active');
+                    hidden.value = h + ':00';
+                };
+
+                box.appendChild(btn);
             }
         }
 
@@ -252,12 +271,17 @@
             document.getElementById('btn-discuss').classList.toggle('active', isDisc);
             document.getElementById('discuss-hint').style.display = isDisc ? 'block' : 'none';
             document.getElementById('time-selection-area').style.opacity = isDisc ? '0.4' : '1';
+            
+            const hidden = document.getElementById('order-time');
+            const box = document.getElementById('order-time-list');
+
             if (isDisc) {
                 dateInput.value = '';
-                document.getElementById('order-time').disabled = true;
-                document.getElementById('order-time').innerHTML = `<option value="">...</option>`;
+                hidden.value = '';
+                box.innerHTML = '';
             } else {
-                dateInput.value = todayStr; enableTime();
+                dateInput.value = todayStr; 
+                enableTime();
             }
         }
 
@@ -274,14 +298,14 @@
         function finishOrder() {
             const name = document.getElementById('c-name').value.trim();
             const phone = document.getElementById('c-phone').value.trim();
+            const timeVal = document.getElementById('order-time').value;
 
             if (!name) {
                 tg.showAlert(ui[lang].alert);
                 return;
             }
 
-            // Добавленная проверка даты и времени
-            if (!isDisc && (!dateInput.value || !document.getElementById('order-time').value)) {
+            if (!isDisc && (!dateInput.value || !timeVal)) {
                return tg.showAlert("Выберите дату и время");
             }
 
@@ -302,7 +326,7 @@
                 phone: phone,
                 method: method,
                 date: isDisc ? "Согласовать" : dateInput.value,
-                time: isDisc ? "Согласовать" : document.getElementById('order-time').value,
+                time: isDisc ? "Согласовать" : timeVal,
                 comment: document.getElementById('c-comment').value.trim(),
                 total: totalValue,
                 items: itemsStr,
