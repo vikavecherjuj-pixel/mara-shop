@@ -108,7 +108,7 @@
                 title: "ОФОРМЛЕНИЕ", back: "← Назад в каталог", order: "Ваш заказ", del_label: "Доставка почтой",
                 contact: "Контактные данные", name: "Фамилия и Имя", name_ph: "Для почты нужно полное ФИО",
                 phone: "Телефон", del_title: "Данные для доставки", city: "Город", city_ph: "Напр: Минск",
-                dept: "Номер или адрес отделения", dept_ph: "Напр: Отделение №142", addr: "Полный адрес (Улица, дом, кв)",
+                dept: "Номер или адрес отделения", dept_ph: "Напр: Отделение №142", addr: "Полный адрес (Вуліца, дом, кв)",
                 index: "Почтовый индекс", note: "*Отправка осуществляется после 100% оплаты заказа.",
                 comment: "Комментарий", comment_ph: "Напишите, если есть доп. пожелания...",
                 pay: "Оплата (ЕРИП)", copy: "Скопировать номер", finish: "Я оплатил, оформить заказ",
@@ -159,7 +159,7 @@
             'n6': { name: {ru:'Набор 6', by:'Набор 6', en:'Set 6'}, price: 54.00 }
         };
 
-        function applyLanguage() {
+        window.onload = function() {
             const l = ui[lang];
             document.getElementById('ui-main-title').innerText = l.title;
             document.getElementById('ui-back').innerText = l.back;
@@ -182,11 +182,24 @@
             document.getElementById('ui-pay-title').innerText = l.pay;
             document.getElementById('ui-copy-btn').innerText = l.copy;
             document.getElementById('ui-finish-btn').innerText = l.finish;
-        }
+            renderCart();
+        };
 
-        function copyPhone() {
-            navigator.clipboard.writeText('+375296514403');
-            tg.showAlert(ui[lang].copied);
+        function renderCart() {
+            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
+            const total = localStorage.getItem('mara_total') || '0.00';
+            let html = '';
+            for (let id in cart) {
+                if (productsData[id]) {
+                    html += `<div class="preview-row">
+                        <span class="item-name">${productsData[id].name[lang]} (${cart[id]} ${ui[lang].pcs})</span>
+                        <span class="item-cost">${(productsData[id].price * cart[id]).toFixed(2)} BYN</span>
+                    </div>`;
+                }
+            }
+            document.getElementById('cart-items-preview').innerHTML = html;
+            let final = (parseFloat(total) + 10).toFixed(2);
+            document.getElementById('final-sum').innerText = final + " BYN";
         }
 
         function togglePostFields() {
@@ -195,80 +208,66 @@
             document.getElementById('bel-box').style.display = type === 'Белпочта' ? 'block' : 'none';
         }
 
-        document.getElementById('cust-phone').addEventListener('input', function(e) {
-            let val = e.target.value;
-            if (!val.startsWith('+375 ')) { e.target.value = '+375 '; return; }
-            let digits = val.substring(5).replace(/\D/g, '');
-            let formatted = '+375 ';
-            if (digits.length > 0) formatted += '(' + digits.substring(0, 2);
-            if (digits.length >= 3) formatted += ') ' + digits.substring(2, 5);
-            if (digits.length >= 6) formatted += '-' + digits.substring(5, 7);
-            if (digits.length >= 8) formatted += '-' + digits.substring(7, 9);
-            e.target.value = formatted;
-        });
-
-        function renderOrder() {
-            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
-            let html = '';
-            for (let id in cart) {
-                const item = productsData[id];
-                if (item) {
-                    html += `<div class="preview-row">
-                                <span class="item-name">${item.name[lang]} (${cart[id]} ${ui[lang].pcs})</span>
-                                <span class="item-cost">${(item.price * cart[id]).toFixed(2)} BYN</span>
-                             </div>`;
-                }
-            }
-            document.getElementById('cart-items-preview').innerHTML = html;
-            let total = parseFloat(localStorage.getItem('mara_total') || 0);
-            document.getElementById('final-sum').innerText = (total + 10).toFixed(2) + " BYN";
+        function copyPhone() {
+            navigator.clipboard.writeText('+375296514403').then(() => {
+                const btn = document.getElementById('ui-copy-btn');
+                const old = btn.innerText;
+                btn.innerText = ui[lang].copied;
+                setTimeout(() => btn.innerText = old, 2000);
+            });
         }
 
         function finalSubmit() {
-            const name  = document.getElementById('cust-name').value;
-            const phone = document.getElementById('cust-phone').value;
-            const city  = document.getElementById('post-city').value;
-            if (!name || phone.length < 17 || !city) return tg.showAlert(ui[lang].alert);
+            const name = document.getElementById('cust-name').value.trim();
+            const phone = document.getElementById('cust-phone').value.trim();
+            const city = document.getElementById('post-city').value.trim();
 
-            const type = document.getElementById('post-type').value;
-            let deliveryInfo = `Почта: ${type}, Город: ${city}`;
-            if (type === 'Европочта') deliveryInfo += `, Отд: ${document.getElementById('post-dept').value}`;
-            else deliveryInfo += `, Адрес: ${document.getElementById('post-addr').value}, Индекс: ${document.getElementById('post-index').value}`;
+            if (!name || phone.length < 10 || !city) {
+                tg.showAlert(ui[lang].alert);
+                return;
+            }
 
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
             let itemsStr = "";
             for (let id in cart) {
-                if (productsData[id]) itemsStr += productsData[id].name[lang] + " (" + cart[id] + " шт); ";
+                if (productsData[id]) {
+                    itemsStr += productsData[id].name[lang] + " (" + cart[id] + " шт); ";
+                }
             }
 
             const data = {
-                name:    name,
-                phone:   phone,
-                method:  type,
-                address: deliveryInfo,
+                name: name,
+                phone: phone,
+                city: city,
+                postType: document.getElementById('post-type').value,
+                dept: document.getElementById('post-dept').value,
+                addr: document.getElementById('post-addr').value,
+                index: document.getElementById('post-index').value,
                 comment: document.getElementById('cust-comment').value,
-                items:   itemsStr,
-                total:   document.getElementById('final-sum').innerText,
-                city:    "РБ_ПОЧТА"
+                items: itemsStr,
+                total: document.getElementById('final-sum').innerText,
+                lang: lang
             };
 
-            // Отправляем данные боту через sendData
-            tg.sendData(JSON.stringify(data));
+            try {
+                tg.sendData(JSON.stringify(data));
+                
+                localStorage.removeItem('mara_cart');
+                localStorage.removeItem('mara_total');
 
-            // Показываем экран "Спасибо"
-            document.getElementById('checkout-screen').innerHTML = `
-                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:80vh; text-align:center; padding:30px;">
-                    <div style="font-size:60px;">✅</div>
-                    <h2 style="color:#630d16; font-weight:900; font-size:24px; margin:20px 0 10px;">ЗАКАЗ ОТПРАВЛЕН</h2>
-                    <p style="color:#666; font-weight:600;">Пришлите чек в чат бота</p>
-                </div>`;
-            setTimeout(() => { tg.close(); }, 2000);
+                document.getElementById('checkout-screen').innerHTML = `
+                    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:80vh;text-align:center;padding:30px;">
+                        <div style="font-size:60px;">✅</div>
+                        <h2 style="color:#630d16;font-weight:900;">ЗАКАЗ ОТПРАВЛЕН</h2>
+                        <p style="color:#666;">Пришлите чек в чат бота</p>
+                    </div>
+                `;
+
+                setTimeout(() => tg.close(), 1500);
+            } catch(e) {
+                tg.showAlert("Ошибка!");
+            }
         }
-
-        window.onload = function() {
-            applyLanguage();
-            renderOrder();
-        };
     </script>
 </body>
 </html>
