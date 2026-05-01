@@ -55,11 +55,10 @@
         .field-group { flex: 1; display: flex; flex-direction: column; }
         .field-group label { display: block; font-size: 10px; font-weight: 800; color: #bbb; text-transform: uppercase; margin-bottom: 6px; }
         
-        .preview-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; border-bottom: 1px dashed #eee; padding-bottom: 6px; }
-        .item-cost { font-weight: 700; color: var(--accent); }
+        .preview-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; border-bottom: 1px dashed #eee; padding-bottom: 6px; align-items: center; }
+        .item-cost { font-weight: 700; color: var(--accent); white-space: nowrap; margin-left: 10px; }
         .final-total { text-align:right; font-weight:900; color:var(--burgundy); font-size:26px; margin-top:14px; }
 
-        /* Исправленный шрифт кнопок */
         .discuss-btn { 
             width: 100%; padding: 14px; background: transparent; color: var(--burgundy); 
             border: 1px solid #ddd; border-radius: 14px; font-size: 13px; font-weight: 700; 
@@ -107,7 +106,7 @@
 </head>
 <body>
     <div id="checkout-screen">
-        <div class="back-link-container"><a href="../shop.html" id="ui-back">← Назад</a></div>
+        <div class="back-link-container"><a href="javascript:history.back();" id="ui-back">← Назад</a></div>
         
         <div class="checkout-card">
             <div class="section-title">Ваш выбор</div>
@@ -170,13 +169,21 @@
 
     <script>
         let tg = window.Telegram.WebApp;
+        // 1. Принудительная светлая шапка
         tg.expand();
+        tg.setHeaderColor('bg_color'); 
+        tg.setBackgroundColor('bg_color');
+
         let method = "Самовывоз";
         let isDisc = false;
         let upsells = [];
 
+        // База товаров для рендера корзины (обязательно должна совпадать с ID из основного каталога)
         const productsData = {
             'q1': { name: 'Орешки со сгущёнкой', price: 1.10 },
+            'q2': { name: 'Орешки со сгущёнкой и орехом', price: 1.50 },
+            'q3': { name: 'Кокос и миндаль', price: 1.80 },
+            'q4': { name: 'Nutella и фундук', price: 1.80 },
             'q5': { name: 'Трубочки', price: 4.00 },
             'q11': { name: 'Картошка', price: 4.00 },
             't1': { name: 'Медовик 1.1кг', price: 65.00 }
@@ -193,12 +200,6 @@
             setDeliv(method);
         };
 
-        document.addEventListener('click', function(e) {
-            if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
-                document.activeElement.blur();
-            }
-        });
-
         function setDeliv(m) {
             method = m;
             document.getElementById('opt-pickup').classList.toggle('active', m === 'Самовывоз');
@@ -208,16 +209,65 @@
                 `Яндекс.Доставка<br>ул. Свиридова, 6 подъезд.<br>Перед вызовом позвоните<br><strong>+375 (29) 651-44-03</strong>`;
         }
 
+        // 2. Исправленный рендер всех выбранных товаров
         function render() {
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
-            const total = localStorage.getItem('mara_total') || '0.00';
             let html = '';
+            let baseTotal = 0;
+
+            // Сначала выводим основные товары из каталога
             for (let id in cart) {
                 const item = productsData[id];
-                if (item) html += `<div class="preview-row"><span>${item.name} x${cart[id]}</span><span class="item-cost">${(item.price * cart[id]).toFixed(2)} BYN</span></div>`;
+                const qty = cart[id];
+                if (item && qty > 0) {
+                    const itemSum = item.price * qty;
+                    baseTotal += itemSum;
+                    html += `
+                    <div class="preview-row">
+                        <span>${item.name} x${qty}</span>
+                        <span class="item-cost">${itemSum.toFixed(2)} BYN</span>
+                    </div>`;
+                }
             }
+
+            // Добавляем дополнительные товары из блока "Добавить к заказу"
+            upsells.forEach(up => {
+                html += `
+                <div class="preview-row" style="color: var(--accent); font-weight: 500;">
+                    <span>${up.name}</span>
+                    <span class="item-cost">${up.price.toFixed(2)} BYN</span>
+                </div>`;
+            });
+
+            if (!html) html = '<div style="text-align:center; padding:10px; color:#999;">Корзина пуста</div>';
+            
             document.getElementById('cart-list').innerHTML = html;
-            recalc();
+            recalc(baseTotal);
+        }
+
+        function toggleUpsell(el, name, price) {
+            el.classList.toggle('active');
+            const idx = upsells.findIndex(x => x.name === name);
+            if(idx > -1) {
+                upsells.splice(idx, 1);
+            } else {
+                upsells.push({name, price});
+            }
+            render(); // Перерендериваем список, чтобы доп. товары появились вверху
+        }
+
+        function recalc(baseTotal) {
+            if (baseTotal === undefined) {
+                const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
+                baseTotal = 0;
+                for (let id in cart) {
+                    if (productsData[id]) baseTotal += productsData[id].price * cart[id];
+                }
+            }
+            let extra = upsells.reduce((s, x) => s + x.price, 0);
+            const totalText = (baseTotal + extra).toFixed(2) + ' BYN';
+            document.getElementById('final-sum-top').innerText = totalText;
+            document.getElementById('final-sum-bottom').innerText = totalText;
         }
 
         function enableTime() {
@@ -272,21 +322,6 @@
             if (digits.length >= 8) f += '-' + digits.substring(7, 9);
             e.target.value = f;
         });
-
-        function toggleUpsell(el, name, price) {
-            el.classList.toggle('active');
-            const idx = upsells.findIndex(x => x.name === name);
-            if(idx > -1) upsells.splice(idx, 1); else upsells.push({name, price});
-            recalc();
-        }
-
-        function recalc() {
-            let base = parseFloat(localStorage.getItem('mara_total') || '0');
-            let extra = upsells.reduce((s, x) => s + x.price, 0);
-            const totalText = (base + extra).toFixed(2) + ' BYN';
-            document.getElementById('final-sum-top').innerText = totalText;
-            document.getElementById('final-sum-bottom').innerText = totalText;
-        }
 
         function copyNumber(num, btn) {
             navigator.clipboard.writeText(num);
