@@ -169,7 +169,6 @@
 
     <script>
         let tg = window.Telegram.WebApp;
-        // 1. Принудительная светлая шапка
         tg.expand();
         tg.setHeaderColor('bg_color'); 
         tg.setBackgroundColor('bg_color');
@@ -178,7 +177,6 @@
         let isDisc = false;
         let upsells = [];
 
-        // База товаров для рендера корзины (обязательно должна совпадать с ID из основного каталога)
         const productsData = {
             'q1': { name: 'Орешки со сгущёнкой', price: 1.10 },
             'q2': { name: 'Орешки со сгущёнкой и орехом', price: 1.50 },
@@ -200,6 +198,13 @@
             setDeliv(method);
         };
 
+        // ФУНКЦИЯ СВОРАЧИВАНИЯ КЛАВИАТУРЫ (ВОЗВРАЩЕНА)
+        document.addEventListener('click', function(e) {
+            if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
+                document.activeElement.blur();
+            }
+        });
+
         function setDeliv(m) {
             method = m;
             document.getElementById('opt-pickup').classList.toggle('active', m === 'Самовывоз');
@@ -209,13 +214,11 @@
                 `Яндекс.Доставка<br>ул. Свиридова, 6 подъезд.<br>Перед вызовом позвоните<br><strong>+375 (29) 651-44-03</strong>`;
         }
 
-        // 2. Исправленный рендер всех выбранных товаров
         function render() {
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
             let html = '';
             let baseTotal = 0;
 
-            // Сначала выводим основные товары из каталога
             for (let id in cart) {
                 const item = productsData[id];
                 const qty = cart[id];
@@ -230,7 +233,6 @@
                 }
             }
 
-            // Добавляем дополнительные товары из блока "Добавить к заказу"
             upsells.forEach(up => {
                 html += `
                 <div class="preview-row" style="color: var(--accent); font-weight: 500;">
@@ -253,7 +255,7 @@
             } else {
                 upsells.push({name, price});
             }
-            render(); // Перерендериваем список, чтобы доп. товары появились вверху
+            render();
         }
 
         function recalc(baseTotal) {
