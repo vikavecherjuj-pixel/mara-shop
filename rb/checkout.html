@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --accent: #c5a059; --burgundy: #630d16; --dark: #2c1a11; --bg: #fdfaf5; --green: #21a252; }
+        :root { --accent: #c5a059; --burgundy: #630d16; --dark: #2c1a11; --bg: #fdfaf5; --green: #21a252; --gray: #f4f4f4; }
         
         html, body { 
             font-family: 'Montserrat', sans-serif; 
@@ -23,8 +23,17 @@
         #checkout-screen { display: flex; flex-direction: column; gap: 12px; padding-bottom: 40px; }
         .back-link-top { text-align: left; margin-bottom: 5px; }
         .back-link-top a { color: #aaa; text-decoration: none; font-size: 13px; font-weight: 700; }
-        .checkout-card { background: white; border-radius: 20px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .checkout-title { font-weight: 900; font-size: 14px; margin-bottom: 12px; color: var(--burgundy); text-transform: uppercase; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
+        
+        .checkout-card { 
+            background: white; border-radius: 20px; padding: 18px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+        }
+        
+        .checkout-title { 
+            font-weight: 900; font-size: 14px; margin-bottom: 12px; color: var(--burgundy); 
+            text-transform: uppercase; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; 
+        }
+        
         label { display: block; font-size: 10px; font-weight: 700; margin-bottom: 6px; color: #888; text-transform: uppercase; }
         
         input, select, textarea {
@@ -34,7 +43,6 @@
             -webkit-appearance: none;
         }
 
-        /* Индикатор того, что селект можно нажать */
         .select-wrapper { position: relative; }
         .select-wrapper::after {
             content: '▼'; font-size: 10px; position: absolute; right: 15px; top: 18px; color: var(--accent); pointer-events: none;
@@ -46,7 +54,11 @@
         .item-cost { font-weight: 700; color: var(--accent); white-space: nowrap; }
         .final-sum { text-align: right; font-weight: 900; color: var(--accent); font-size: 18px; margin-top: 10px; }
         
-        .btn-main { width: 100%; padding: 18px; background: var(--green); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; }
+        .btn-main { 
+            width: 100%; padding: 18px; background: var(--green); color: white; border: none; 
+            border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; 
+            cursor: pointer; font-family: 'Montserrat'; 
+        }
         
         .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 20px; border-radius: 15px; text-align: left; }
         .erip-text { font-size: 11px; color: #555; line-height: 1.6; margin-bottom: 10px; }
@@ -56,9 +68,21 @@
         .upsell-item { padding:14px; background:#fafafa; border-radius:12px; margin-bottom:10px; font-weight:700; cursor:pointer; border:1px solid #eee; font-size: 13px; }
         .upsell-item.active { background:#fff7ea; border:1px solid #c5a059; }
 
-        /* Итого в блоке оплаты */
-        .pay-total { font-weight: 900; font-size: 16px; color: var(--dark); text-align: center; margin-bottom: 15px; }
-        .pay-total span { color: var(--accent); }
+        /* Стиль блока оплаты как в Гомеле */
+        .payment-summary {
+            background: #fff; border-radius: 14px; padding: 12px; margin-bottom: 12px;
+            border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;
+        }
+        .payment-summary label { font-size: 11px; font-weight: 800; color: #999; text-transform: uppercase; margin-bottom: 0; }
+        .payment-summary span { font-size: 18px; font-weight: 900; color: var(--burgundy); }
+
+        /* Финальный экран */
+        .thanks-screen {
+            display:flex; flex-direction:column; align-items:center; justify-content:center; 
+            height:90vh; text-align:center; padding:20px; font-family:'Montserrat';
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn{ from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
     </style>
 </head>
 <body>
@@ -82,7 +106,7 @@
             <label id="ui-name-label">Фамилия и Имя</label>
             <input type="text" id="cust-name">
             <label id="ui-phone-label">Телефон</label>
-            <input type="tel" id="cust-phone" value="+375 ">
+            <input type="tel" id="cust-phone" value="+375 " maxlength="17">
         </div>
 
         <div class="checkout-card">
@@ -118,7 +142,7 @@
             <div class="checkout-title">Дата отправки заказа</div>
             <label>Когда отправить заказ</label>
             <input type="date" id="send-date" onchange="validateDate(this)">
-            <p style="font-size:11px;color:#666;">Отправка по выходным не производится</p>
+            <p style="font-size:11px;color:#666;">*Сегодняшняя дата и выходные недоступны для выбора</p>
         </div>
 
         <div class="checkout-card">
@@ -135,7 +159,12 @@
 
         <div class="checkout-card">
             <div class="checkout-title" id="ui-finish-title">Оплата (ЕРИП)</div>
-            <div class="pay-total">Сумма к оплате: <span id="pay-total-sum">0.00 BYN</span></div>
+            
+            <div class="payment-summary">
+                <label>К оплате:</label>
+                <span id="pay-total-sum">0.00 BYN</span>
+            </div>
+
             <div class="erip-box">
                 <div class="erip-text" id="ui-erip-text">Система Расчета ЕРИП / Банковские услуги / Банки / АЛЬФА-БАНК / Пополнение счета:</div>
                 <div class="erip-phone">+375 (29) 651-44-03</div>
@@ -162,8 +191,8 @@
                 addr: "Полный адрес (Улица, дом, кв)", index: "Почтовый индекс", 
                 note: "*Отправка осуществляется после 100% оплаты заказа.",
                 comment: "Комментарий", comment_ph: "Напишите, если есть доп. пожелания...",
-                pay: "Оплата (ЕРИП)", copy: "Скопировать номер", finish: "Я оплатил, оформить заказ",
-                alert: "Заполните ФИО, корректный телефон и город!", copied: "Номер скопирован!",
+                pay: "Оплата (ЕРИП)", copy: "Скопировать номер", finish: "Оплачено, заказать",
+                alert: "Заполните ФИО, корректный телефон и дату!", copied: "Номер скопирован!",
                 thanks: "ЗАКАЗ ОТПРАВЛЕН", check: "Пришлите чек в чат бота", close_in: "Приложение закроется через"
             },
             by: {
@@ -174,8 +203,8 @@
                 addr: "Поўны адрас (Вуліца, дом, кв)", index: "Паштовы індэкс", 
                 note: "*Адпраўка ажыццяўляецца пасля 100% аплаты замовы.",
                 comment: "Каментарый", comment_ph: "Напішыце, калі ёсць дадатковыя пажаданні...",
-                pay: "Аплата (АРІП)", copy: "Скапіяваць нумар", finish: "Я аплаціў, аформіць замову",
-                alert: "Запоўніце ПІБ, карэктны тэлефон і горад!", copied: "Нумар скапіяваны!",
+                pay: "Аплата (АРІП)", copy: "Скапіяваць нумар", finish: "Аплачана, замовіць",
+                alert: "Запоўніце ПІБ, карэктны тэлефон і дату!", copied: "Нумар скапіяваны!",
                 thanks: "ЗАКАЗ АДПРАЎЛЕНЫ", check: "Дашліце чэк у чат бота", close_in: "Дадатак закрыецца праз"
             }
         };
@@ -184,23 +213,44 @@
             'q1': { name: {ru:'Орешки со сгущёнкой', by:'Арэшкі са згушчонкай'}, price: 1.10 },
             'q5': { name: {ru:'Трубочки', by:'Трубачкі'}, price: 4.00 },
             'n1': { name: {ru:'Набор 1', by:'Набор 1'}, price: 22.00 }
-            // ... остальные товары из вашего списка
         };
 
-        // Блокировка выходных в календаре
+        // 1. Ограничение по телефону
+        const phoneInput = document.getElementById('cust-phone');
+        phoneInput.addEventListener('input', function(e) {
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,2})(\d{0,3})(\d{0,2})(\d{0,2})/);
+            if (!x[2]) e.target.value = '+375 ';
+            else e.target.value = '+375 (' + x[2] + ') ' + x[3] + (x[4] ? '-' + x[4] : '') + (x[5] ? '-' + x[5] : '');
+        });
+
+        // 2. Сворачивание клавиатуры при касании в любое место
+        document.addEventListener('click', function(e) {
+            if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
+                document.activeElement.blur();
+            }
+        });
+
+        // 4. Валидация даты (запрет выходных и СЕГОДНЯ)
         function validateDate(input) {
             const date = new Date(input.value);
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            
             const day = date.getDay(); 
-            if (day === 0 || day === 6) {
-                alert("Извините, отправка по выходным не производится. Выберите будний день.");
+            if (date <= today) {
+                tg.showAlert("Вы не можете выбрать сегодняшнюю или прошедшую дату. Доставка возможна только со следующего буднего дня.");
+                input.value = "";
+            } else if (day === 0 || day === 6) {
+                tg.showAlert("Извините, отправка по выходным не производится. Выберите будний день.");
                 input.value = "";
             }
         }
 
-        // Ограничение выбора даты в HTML (не дает выбрать прошедшие даты)
+        // Ограничение минимальной даты (минимум завтра)
         const dateInput = document.getElementById('send-date');
-        const today = new Date().toISOString().split('T')[0];
-        dateInput.setAttribute('min', today);
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        dateInput.setAttribute('min', tomorrow.toISOString().split('T')[0]);
 
         function toggleUpsell(el, name, price) {
             el.classList.toggle('active');
@@ -244,13 +294,14 @@
             });
         }
 
+        // 5. Финальный экран с таймером
         function finalSubmit() {
             const name = document.getElementById('cust-name').value.trim();
             const phone = document.getElementById('cust-phone').value.trim();
             const city = document.getElementById('post-city').value.trim();
             const sendDate = document.getElementById('send-date').value;
             
-            if(!name || phone.length < 12 || !city || !sendDate){
+            if(!name || phone.length < 17 || !city || !sendDate){
                 tg.showAlert(ui[lang].alert);
                 return;
             }
@@ -260,19 +311,19 @@
                 phone: phone,
                 city: city,
                 total: document.getElementById('final-sum').innerText,
-                date: sendDate
+                date: sendDate,
+                comment: document.getElementById('cust-comment').value
             };
 
             tg.sendData(JSON.stringify(data));
 
-            // Финальный экран с таймером
             let seconds = 5;
             document.body.innerHTML = `
-                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:90vh;text-align:center;padding:20px;font-family:'Montserrat';">
+                <div class="thanks-screen">
                     <div style="font-size:80px;margin-bottom:20px;">✅</div>
-                    <h2 style="color:var(--burgundy);font-weight:900;text-transform:uppercase;">${ui[lang].thanks}</h2>
-                    <p style="color:#555;font-weight:600;">${ui[lang].check}</p>
-                    <div style="margin-top:30px;font-size:12px;color:#aaa;">
+                    <h2 style="color:var(--burgundy);font-weight:900;text-transform:uppercase; margin:0;">${ui[lang].thanks}</h2>
+                    <p style="color:#555;font-weight:600;margin: 10px 0 30px 0;">${ui[lang].check}</p>
+                    <div style="font-size:12px;color:#aaa;">
                         ${ui[lang].close_in} <span id="timer">${seconds}</span>...
                     </div>
                 </div>
