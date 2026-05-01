@@ -78,7 +78,7 @@
         .time-btn.active { background: #630d16; color: white; }
 
         @keyframes fadeIn{ from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
-        .fade-in{ animation:fadeIn .35s ease; }
+        .fade-in{ animation:fadeIn .4s ease; }
         
         .upsell-item { display:flex; justify-content:space-between; align-items:center; padding:14px; background:#f8f8f8; border-radius:16px; margin-bottom:10px; font-size:14px; font-weight:700; cursor:pointer; border:1px solid transparent; }
         .upsell-item.active { background:#fff8ec; border:1px solid #c5a059; }
@@ -123,22 +123,23 @@
         <div class="checkout-card">
             <div class="section-title" id="ui-data">Ваши данные</div>
             <label style="font-size:10px; font-weight:800; color:#bbb;">ИМЯ</label>
-            <input type="text" id="c-name">
+            <input type="text" id="c-name" placeholder="Введите ваше имя">
             <label style="font-size:10px; font-weight:800; color:#bbb; margin-top:12px; display:block;">ТЕЛЕФОН</label>
             <input type="tel" id="c-phone" value="+375 ">
             <label style="font-size:10px; font-weight:800; color:#bbb; margin-top:12px; display:block;">КОММЕНТАРИЙ</label>
-            <textarea id="c-comment"></textarea>
+            <textarea id="c-comment" placeholder="Адрес доставки или пожелания"></textarea>
         </div>
 
         <div class="checkout-card">
             <div class="section-title">Добавить к заказу</div>
             <div class="upsell-item" onclick="toggleUpsell(this,'2 пирожных Картошка',8)"><span>✨ 2 пирожных Картошка</span><b>+8 BYN</b></div>
+            <div class="upsell-item" onclick="toggleUpsell(this,'Набор орешков мини (6 шт)',12)"><span>✨ Набор орешков мини (6 шт)</span><b>+12 BYN</b></div>
             <div class="upsell-item" onclick="toggleUpsell(this,'Трубочки 2 шт',8)"><span>✨ Трубочки 2 шт</span><b>+8 BYN</b></div>
         </div>
 
         <div class="checkout-card">
             <div class="section-title">Оплата (ЕРИП)</div>
-            <div style="font-size:11px; color:#555;">АЛЬФА-БАНК / Пополнение счета<span class="erip-phone">+375 (29) 651-44-03</span></div>
+            <div style="font-size:11px; color:#555;">Система Расчета ЕРИП / Банковские, Финансовые услуги / Банки, НКФО / АЛЬФА-БАНК / Пополнение счета<span class="erip-phone">+375 (29) 651-44-03</span></div>
             <button class="copy-btn" onclick="copyNumber('+375296514403', this)">Скопировать номер</button>
             <button class="btn-main" id="ui-finish" onclick="finishOrder()">Оплачено, заказать</button>
         </div>
@@ -159,47 +160,24 @@
             't1': { name: {ru:'Медовик 1.1кг', by:'Мядовік 1.1кг', en:'Honey cake'}, price: 65.00 }
         };
 
-        const ui = {
-            ru: { back: "← Назад", choice: "Ваш выбор", method: "Способ получения", pickup: "Самовывоз", delivery: "Яндекс.Доставка", finish: "Оплачено, заказать" },
-            by: { back: "← Назад", choice: "Ваш выбар", method: "Спосаб атрымання", pickup: "Самавываз", delivery: "Яндекс.Дастаўка", finish: "Аплачана, заказаць" },
-            en: { back: "← Back", choice: "Your selection", method: "Method", pickup: "Pickup", delivery: "Yandex Delivery", finish: "Paid, order" }
-        };
+        const todayStr = new Date(new Date().getTime() + 3*3600*1000).toISOString().split('T')[0];
 
         window.onload = function() {
-            applyLanguage();
             render();
-            const today = new Date(new Date().getTime() + 3*3600*1000).toISOString().split('T')[0];
-            document.getElementById('order-date').setAttribute('min', today);
-            document.getElementById('order-date').value = today;
+            const dateInput = document.getElementById('order-date');
+            dateInput.setAttribute('min', todayStr);
+            dateInput.value = todayStr;
             enableTime();
-        };
-
-        function applyLanguage() {
-            const l = ui[lang];
-            document.getElementById('ui-back').innerText = l.back;
-            document.getElementById('ui-choice').innerText = l.choice;
-            document.getElementById('ui-method').innerText = l.method;
-            document.getElementById('opt-pickup').innerText = l.pickup;
-            document.getElementById('opt-delivery').innerText = "Яндекс.Доставка";
-            document.getElementById('ui-finish').innerText = l.finish;
             setDeliv(method);
-        }
+        };
 
         function setDeliv(m) {
             method = m;
             document.getElementById('opt-pickup').classList.toggle('active', m === 'Самовывоз');
             document.getElementById('opt-delivery').classList.toggle('active', m === 'Доставка');
-
-            if(m === 'Самовывоз'){
-                document.getElementById('delivery-note').innerHTML =
-                `ул. Свиридова, 6 подъезд.<br><strong>Позвоните за 10 минут: +375 (29) 651-44-03</strong>`;
-            } else {
-                document.getElementById('delivery-note').innerHTML =
-                `Яндекс.Доставка<br>
-                ул. Свиридова, 6 подъезд.<br>
-                Перед вызовом доставки за 10–15 минут позвоните<br>
-                <strong>+375 (29) 651-44-03</strong>`;
-            }
+            document.getElementById('delivery-note').innerHTML = m === 'Самовывоз' ?
+                `ул. Свиридова, 6 подъезд.<br><strong>Позвоните за 10 минут: +375 (29) 651-44-03</strong>` :
+                `Яндекс.Доставка<br>ул. Свиридова, 6 подъезд.<br>Перед вызовом доставки за 10–15 минут позвоните<br><strong>+375 (29) 651-44-03</strong>`;
         }
 
         function render() {
@@ -216,15 +194,32 @@
 
         function enableTime() {
             const box = document.getElementById('order-time-list');
-            const dateVal = document.getElementById('order-date').value;
+            const dateInput = document.getElementById('order-date');
+            const hidden = document.getElementById('order-time');
             box.innerHTML = '';
+            hidden.value = '';
+            
+            // Если мы вернулись из режима "Согласовать", восстанавливаем вид
+            isDisc = false;
+            document.getElementById('btn-discuss').classList.remove('active');
+            document.getElementById('discuss-hint').style.display = 'none';
+            document.getElementById('time-selection-area').style.opacity = '1';
+
+            if (!dateInput.value) return;
+
+            const now = new Date();
+            const currentHour = now.getHours();
+
             for (let h = 9; h <= 21; h++) {
+                // Если выбрана сегодняшняя дата, показываем время только через 3 часа от текущего
+                if (dateInput.value === todayStr && h < currentHour + 3) continue;
+
                 let btn = document.createElement('div');
                 btn.className = 'time-btn'; btn.innerText = h + ':00';
                 btn.onclick = () => {
                     document.querySelectorAll('.time-btn').forEach(x => x.classList.remove('active'));
                     btn.classList.add('active');
-                    document.getElementById('order-time').value = h + ':00';
+                    hidden.value = h + ':00';
                 };
                 box.appendChild(btn);
             }
@@ -232,15 +227,44 @@
 
         function toggleDisc() {
             isDisc = !isDisc;
-            document.getElementById('btn-discuss').classList.toggle('active', isDisc);
-            document.getElementById('discuss-hint').style.display = isDisc ? 'block' : 'none';
-            document.getElementById('time-selection-area').style.opacity = isDisc ? '0.3' : '1';
+            const btn = document.getElementById('btn-discuss');
+            const hint = document.getElementById('discuss-hint');
+            const area = document.getElementById('time-selection-area');
+            const dateInput = document.getElementById('order-date');
+            
+            btn.classList.toggle('active', isDisc);
+            hint.style.display = isDisc ? 'block' : 'none';
+            area.style.opacity = isDisc ? '0.3' : '1';
+
+            if (isDisc) {
+                dateInput.value = '';
+                document.getElementById('order-time').value = '';
+                document.getElementById('order-time-list').innerHTML = '';
+            } else {
+                dateInput.value = todayStr;
+                enableTime();
+            }
         }
+
+        // Маска телефона
+        document.getElementById('c-phone').addEventListener('input', function(e) {
+            let digits = e.target.value.substring(5).replace(/\D/g, '');
+            let f = '+375 ';
+            if (digits.length > 0) f += '(' + digits.substring(0, 2);
+            if (digits.length >= 3) f += ') ' + digits.substring(2, 5);
+            if (digits.length >= 6) f += '-' + digits.substring(5, 7);
+            if (digits.length >= 8) f += '-' + digits.substring(7, 9);
+            e.target.value = f;
+        });
 
         function toggleUpsell(el, name, price) {
             el.classList.toggle('active');
             const idx = upsells.findIndex(x => x.name === name);
             if(idx > -1) upsells.splice(idx, 1); else upsells.push({name, price});
+            recalc();
+        }
+
+        function recalc() {
             let base = parseFloat(localStorage.getItem('mara_total') || '0');
             let extra = upsells.reduce((s, x) => s + x.price, 0);
             document.getElementById('final-sum').innerText = (base + extra).toFixed(2) + ' BYN';
@@ -248,8 +272,9 @@
 
         function copyNumber(num, btn) {
             navigator.clipboard.writeText(num);
+            const old = btn.innerText;
             btn.innerText = "Скопировано!";
-            setTimeout(() => btn.innerText = "Скопировать номер", 2000);
+            setTimeout(() => btn.innerText = old, 2000);
         }
 
         function finishOrder() {
@@ -263,11 +288,13 @@
                 date: isDisc ? "Согласовать" : document.getElementById('order-date').value,
                 time: isDisc ? "Согласовать" : document.getElementById('order-time').value,
                 total: document.getElementById('final-sum').innerText,
-                items: "Заказ оформлен"
+                items: "Заказ из приложения",
+                city: "ГОМЕЛЬ"
             };
 
             tg.sendData(JSON.stringify(data));
 
+            // Экран успеха
             document.getElementById('checkout-screen').innerHTML = `
             <div style="height:90vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:30px; animation:fadeIn .4s ease;">
                 <div style="width:110px; height:110px; border-radius:50%; background:linear-gradient(135deg,#21a252,#1bc965); display:flex; align-items:center; justify-content:center; font-size:56px; color:white; box-shadow:0 15px 35px rgba(33,162,82,.28);">✓</div>
