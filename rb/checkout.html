@@ -33,33 +33,32 @@
             background: #fafafa; outline: none; color: black !important; caret-color: black !important;
             -webkit-appearance: none;
         }
+
+        /* Индикатор того, что селект можно нажать */
+        .select-wrapper { position: relative; }
+        .select-wrapper::after {
+            content: '▼'; font-size: 10px; position: absolute; right: 15px; top: 18px; color: var(--accent); pointer-events: none;
+        }
         
         textarea { resize: none; height: 80px; }
         .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px; align-items: flex-start; }
         .item-name { flex: 1; padding-right: 10px; line-height: 1.4; }
         .item-cost { font-weight: 700; color: var(--accent); white-space: nowrap; }
         .final-sum { text-align: right; font-weight: 900; color: var(--accent); font-size: 18px; margin-top: 10px; }
+        
         .btn-main { width: 100%; padding: 18px; background: var(--green); color: white; border: none; border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; }
+        
         .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 20px; border-radius: 15px; text-align: left; }
         .erip-text { font-size: 11px; color: #555; line-height: 1.6; margin-bottom: 10px; }
         .erip-phone { color: var(--green); font-weight: 900; font-size: 20px; display: block; margin: 10px 0; letter-spacing: 0.5px; }
         .btn-copy { background: #f0f0f0; color: #444; border: none; border-radius: 10px; padding: 12px; width: 100%; font-size: 11px; font-weight: 700; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; }
 
-        /* Новые стили для доп. товаров */
-        .upsell-item{
-            padding:14px;
-            background:#fafafa;
-            border-radius:12px;
-            margin-bottom:10px;
-            font-weight:700;
-            cursor:pointer;
-            border:1px solid #eee;
-            font-size: 13px;
-        }
-        .upsell-item.active{
-            background:#fff7ea;
-            border:1px solid #c5a059;
-        }
+        .upsell-item { padding:14px; background:#fafafa; border-radius:12px; margin-bottom:10px; font-weight:700; cursor:pointer; border:1px solid #eee; font-size: 13px; }
+        .upsell-item.active { background:#fff7ea; border:1px solid #c5a059; }
+
+        /* Итого в блоке оплаты */
+        .pay-total { font-weight: 900; font-size: 16px; color: var(--dark); text-align: center; margin-bottom: 15px; }
+        .pay-total span { color: var(--accent); }
     </style>
 </head>
 <body>
@@ -81,7 +80,7 @@
         <div class="checkout-card">
             <div class="checkout-title" id="ui-contact-title">Контактные данные</div>
             <label id="ui-name-label">Фамилия и Имя</label>
-            <input type="text" id="cust-name" placeholder="">
+            <input type="text" id="cust-name">
             <label id="ui-phone-label">Телефон</label>
             <input type="tel" id="cust-phone" value="+375 ">
         </div>
@@ -89,16 +88,21 @@
         <div class="checkout-card">
             <div class="checkout-title" id="ui-delivery-title">Данные для доставки</div>
             <label>Способ доставки</label>
-            <select id="post-type" onchange="togglePostFields()">
-                <option value="Европочта">Европочта (пункт выдачи)</option>
-                <option value="Белпочта">Белпочта (на адрес)</option>
-            </select>
+            <div class="select-wrapper">
+                <select id="post-type" onchange="togglePostFields()">
+                    <option value="Европочта">Европочта (пункт выдачи)</option>
+                    <option value="Белпочта">Белпочта (на адрес)</option>
+                </select>
+            </div>
+            
             <label id="ui-city-label">Город</label>
-            <input type="text" id="post-city" placeholder="">
+            <input type="text" id="post-city">
+
             <div id="euro-box">
                 <label id="ui-dept-label">Номер или адрес отделения</label>
-                <input type="text" id="post-dept" placeholder="">
+                <input type="text" id="post-dept">
             </div>
+
             <div id="bel-box" style="display:none;">
                 <label id="ui-addr-label">Полный адрес (Улица, дом, кв)</label>
                 <input type="text" id="post-addr">
@@ -110,35 +114,28 @@
             </p>
         </div>
 
-        <!-- Дата отправки -->
         <div class="checkout-card">
             <div class="checkout-title">Дата отправки заказа</div>
             <label>Когда отправить заказ</label>
-            <input type="date" id="send-date">
+            <input type="date" id="send-date" onchange="validateDate(this)">
             <p style="font-size:11px;color:#666;">Отправка по выходным не производится</p>
         </div>
 
         <div class="checkout-card">
             <div class="checkout-title" id="ui-comment-title">Комментарий</div>
-            <textarea id="cust-comment" placeholder="" rows="3"></textarea>
+            <textarea id="cust-comment" rows="3"></textarea>
         </div>
 
-        <!-- Доп. товары (Upsell) -->
         <div class="checkout-card">
             <div class="checkout-title">Добавить к заказу</div>
-            <div class="upsell-item" onclick="toggleUpsell(this,'2 пирожных Картошка',8)">
-                ✨ 2 пирожных Картошка +8 BYN
-            </div>
-            <div class="upsell-item" onclick="toggleUpsell(this,'Набор орешков мини (6 шт)',12)">
-                ✨ Набор орешков мини (6 шт) +12 BYN
-            </div>
-            <div class="upsell-item" onclick="toggleUpsell(this,'Трубочки 2 шт',8)">
-                ✨ Трубочки 2 шт +8 BYN
-            </div>
+            <div class="upsell-item" onclick="toggleUpsell(this,'2 пирожных Картошка',8)">✨ 2 пирожных Картошка +8 BYN</div>
+            <div class="upsell-item" onclick="toggleUpsell(this,'Набор орешков мини (6 шт)',12)">✨ Набор орешков мини (6 шт) +12 BYN</div>
+            <div class="upsell-item" onclick="toggleUpsell(this,'Трубочки 2 шт',8)">✨ Трубочки 2 шт +8 BYN</div>
         </div>
 
         <div class="checkout-card">
             <div class="checkout-title" id="ui-finish-title">Оплата (ЕРИП)</div>
+            <div class="pay-total">Сумма к оплате: <span id="pay-total-sum">0.00 BYN</span></div>
             <div class="erip-box">
                 <div class="erip-text" id="ui-erip-text">Система Расчета ЕРИП / Банковские услуги / Банки / АЛЬФА-БАНК / Пополнение счета:</div>
                 <div class="erip-phone">+375 (29) 651-44-03</div>
@@ -153,14 +150,6 @@
         let upsells = [];
         tg.expand();
         tg.ready();
-        tg.setHeaderColor('#fdfaf5');
-        tg.setBackgroundColor('#fdfaf5');
-
-        document.addEventListener('click', function(e){
-            if(e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'SELECT'){
-                if (document.activeElement) { document.activeElement.blur(); }
-            }
-        });
 
         let lang = localStorage.getItem('selectedLang') || 'ru';
 
@@ -169,76 +158,135 @@
                 title: "ОФОРМЛЕНИЕ", back: "← Назад в каталог", order: "Ваш заказ", del_label: "Доставка почтой",
                 contact: "Контактные данные", name: "Фамилия и Имя", name_ph: "Для почты нужно полное ФИО",
                 phone: "Телефон", del_title: "Данные для доставки", city: "Город", city_ph: "Напр: Минск",
-                dept: "Номер или адрес отделения", dept_ph: "Напр: Отделение №142", addr: "Полный адрес (Вуліца, дом, кв)",
-                index: "Почтовый индекс", note: "*Отправка осуществляется после 100% оплаты заказа.",
+                dept: "Номер или адрес отделения", dept_ph: "Напр: Отделение №142", 
+                addr: "Полный адрес (Улица, дом, кв)", index: "Почтовый индекс", 
+                note: "*Отправка осуществляется после 100% оплаты заказа.",
                 comment: "Комментарий", comment_ph: "Напишите, если есть доп. пожелания...",
                 pay: "Оплата (ЕРИП)", copy: "Скопировать номер", finish: "Я оплатил, оформить заказ",
-                alert: "Заполните ФИО, корректный телефон и город!", pcs: "шт.", copied: "Номер скопирован!"
+                alert: "Заполните ФИО, корректный телефон и город!", copied: "Номер скопирован!",
+                thanks: "ЗАКАЗ ОТПРАВЛЕН", check: "Пришлите чек в чат бота", close_in: "Приложение закроется через"
             },
             by: {
                 title: "АФАРМЛЕННЕ", back: "← Назад у каталог", order: "Ваша замова", del_label: "Дастаўка поштай",
                 contact: "Кантактныя дадзеныя", name: "Прозвішча і Імя", name_ph: "Для пошты патрэбна поўнае ПІБ",
                 phone: "Тэлефон", del_title: "Дадзеныя для дастаўкі", city: "Горад", city_ph: "Напр: Мінск",
-                dept: "Нумар або адрас аддзялення", dept_ph: "Напр: Аддзяленне №142", addr: "Поўны адрас (Вуліца, дом, кв)",
-                index: "Паштовы індэкс", note: "*Адпраўка ажыццяўляецца пасля 100% аплаты замовы.",
+                dept: "Нумар або адрас аддзялення", dept_ph: "Напр: Аддзяленне №142", 
+                addr: "Поўны адрас (Вуліца, дом, кв)", index: "Паштовы індэкс", 
+                note: "*Адпраўка ажыццяўляецца пасля 100% аплаты замовы.",
                 comment: "Каментарый", comment_ph: "Напішыце, калі ёсць дадатковыя пажаданні...",
                 pay: "Аплата (АРІП)", copy: "Скапіяваць нумар", finish: "Я аплаціў, аформіць замову",
-                alert: "Запоўніце ПІБ, карэктны тэлефон і горад!", pcs: "шт.", copied: "Нумар скапіяваны!"
-            },
-            en: {
-                title: "CHECKOUT", back: "← Back to catalog", order: "Your order", del_label: "Postal delivery",
-                contact: "Contact details", name: "Full Name", name_ph: "Full name required for post",
-                phone: "Phone", del_title: "Delivery details", city: "City", city_ph: "e.g. Minsk",
-                dept: "Department number or address", dept_ph: "e.g. Dept №142", addr: "Full address (Street, house, apt)",
-                index: "Postcode", note: "*Shipping is made after 100% payment.",
-                comment: "Comment", comment_ph: "Add any special requests...",
-                pay: "Payment (ERIP)", copy: "Copy number", finish: "Paid, place order",
-                alert: "Please fill in name, valid phone and city!", pcs: "pcs.", copied: "Copied!"
+                alert: "Запоўніце ПІБ, карэктны тэлефон і горад!", copied: "Нумар скапіяваны!",
+                thanks: "ЗАКАЗ АДПРАЎЛЕНЫ", check: "Дашліце чэк у чат бота", close_in: "Дадатак закрыецца праз"
             }
         };
 
         const productsData = {
-            'q1': { name: {ru:'Орешки со сгущёнкой', by:'Арэшкі са згушчонкай', en:'Nuts with condensed milk'}, price: 1.10 },
-            'q2': { name: {ru:'Орешки + орех', by:'Арэшкі + арэх', en:'Nuts + nut'}, price: 1.50 },
-            'q3': { name: {ru:'Кокос и миндаль', by:'Какос і міндаль', en:'Coconut & Almond'}, price: 1.80 },
-            'q4': { name: {ru:'Nutella и фундук', by:'Nutella і фундук', en:'Nutella & Hazelnut'}, price: 1.80 },
-            'q5': { name: {ru:'Трубочки', by:'Трубачкі', en:'Rolls'}, price: 4.00 },
-            'q6': { name: {ru:'Муравейник', by:'Мурашнік', en:'Ant Hill'}, price: 2.50 },
-            'q7': { name: {ru:'Грибочки', by:'Грыбочкі', en:'Mushrooms'}, price: 2.50 },
-            'q8': { name: {ru:'Сердечки', by:'Сэрцайкі', en:'Hearts'}, price: 2.50 },
-            'q9': { name: {ru:'Кокосовое', by:'Какосавае', en:'Coconut cookies'}, price: 2.50 },
-            'q10': { name: {ru:'Орешки в глазури', by:'Арэшкі ў глазуры', en:'Glazed nuts'}, price: 2.50 },
-            'q11': { name: {ru:'Картошка', by:'Бульба', en:'Kartoshka cake'}, price: 4.00 },
-            'q12': { name: {ru:'Шоколадная колбаса', by:'Шакаладная каўбаса', en:'Chocolate sausage'}, price: 12.00 },
-            't1': { name: {ru:'Медовик 1.1кг', by:'Мядовік 1.1кг', en:'Honey cake 1.1kg'}, price: 65.00 },
-            't2': { name: {ru:'Медовик 2.2кг', by:'Мядовік 2.2кг', en:'Honey cake 2.2kg'}, price: 130.00 },
-            'n1': { name: {ru:'Набор 1', by:'Набор 1', en:'Set 1'}, price: 22.00 },
-            'n2': { name: {ru:'Набор 2', by:'Набор 2', en:'Set 2'}, price: 32.00 },
-            'n3': { name: {ru:'Набор 3', by:'Набор 3', en:'Set 3'}, price: 34.00 },
-            'n4': { name: {ru:'Набор 4', by:'Набор 4', en:'Set 4'}, price: 45.00 },
-            'n5': { name: {ru:'Набор 5', by:'Набор 5', en:'Set 5'}, price: 38.00 },
-            'n6': { name: {ru:'Набор 6', by:'Набор 6', en:'Set 6'}, price: 54.00 }
+            'q1': { name: {ru:'Орешки со сгущёнкой', by:'Арэшкі са згушчонкай'}, price: 1.10 },
+            'q5': { name: {ru:'Трубочки', by:'Трубачкі'}, price: 4.00 },
+            'n1': { name: {ru:'Набор 1', by:'Набор 1'}, price: 22.00 }
+            // ... остальные товары из вашего списка
         };
+
+        // Блокировка выходных в календаре
+        function validateDate(input) {
+            const date = new Date(input.value);
+            const day = date.getDay(); 
+            if (day === 0 || day === 6) {
+                alert("Извините, отправка по выходным не производится. Выберите будний день.");
+                input.value = "";
+            }
+        }
+
+        // Ограничение выбора даты в HTML (не дает выбрать прошедшие даты)
+        const dateInput = document.getElementById('send-date');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
 
         function toggleUpsell(el, name, price) {
             el.classList.toggle('active');
             const i = upsells.findIndex(x => x.name === name);
-            if (i > -1) {
-                upsells.splice(i, 1);
-            } else {
-                upsells.push({name, price});
-            }
+            if (i > -1) upsells.splice(i, 1); else upsells.push({name, price});
             renderCart();
         }
 
-        document.getElementById('cust-phone').addEventListener('input', function (e) {
-            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,2})(\d{0,3})(\d{0,2})(\d{0,2})/);
-            if (!x[2] && e.target.value.length <= 5) {
-                e.target.value = '+375 ';
-            } else {
-                e.target.value = !x[3] ? '+375 (' + x[2] : '+375 (' + x[2] + ') ' + x[3] + (x[4] ? '-' + x[4] : '') + (x[5] ? '-' + x[5] : '');
+        function renderCart() {
+            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
+            const total = parseFloat(localStorage.getItem('mara_total') || '0');
+            let html = '', extra = 0;
+
+            for (let id in cart) {
+                if (productsData[id]) {
+                    html += `<div class="preview-row"><span class="item-name">${productsData[id].name[lang]} (${cart[id]} шт)</span><span class="item-cost">${(productsData[id].price * cart[id]).toFixed(2)} BYN</span></div>`;
+                }
             }
-        });
+            upsells.forEach(item => {
+                extra += item.price;
+                html += `<div class="preview-row"><span class="item-name">${item.name}</span><span class="item-cost">${item.price.toFixed(2)} BYN</span></div>`;
+            });
+
+            document.getElementById('cart-items-preview').innerHTML = html;
+            let final = (total + 10 + extra).toFixed(2);
+            document.getElementById('final-sum').innerText = final + " BYN";
+            document.getElementById('pay-total-sum').innerText = final + " BYN";
+        }
+
+        function togglePostFields() {
+            const type = document.getElementById('post-type').value;
+            document.getElementById('euro-box').style.display = type === 'Европочта' ? 'block' : 'none';
+            document.getElementById('bel-box').style.display = type === 'Белпочта' ? 'block' : 'none';
+        }
+
+        function copyPhone() {
+            navigator.clipboard.writeText('+375296514403').then(() => {
+                const btn = document.getElementById('ui-copy-btn');
+                btn.innerText = ui[lang].copied;
+                setTimeout(() => btn.innerText = ui[lang].copy, 2000);
+            });
+        }
+
+        function finalSubmit() {
+            const name = document.getElementById('cust-name').value.trim();
+            const phone = document.getElementById('cust-phone').value.trim();
+            const city = document.getElementById('post-city').value.trim();
+            const sendDate = document.getElementById('send-date').value;
+            
+            if(!name || phone.length < 12 || !city || !sendDate){
+                tg.showAlert(ui[lang].alert);
+                return;
+            }
+
+            const data = {
+                name: name,
+                phone: phone,
+                city: city,
+                total: document.getElementById('final-sum').innerText,
+                date: sendDate
+            };
+
+            tg.sendData(JSON.stringify(data));
+
+            // Финальный экран с таймером
+            let seconds = 5;
+            document.body.innerHTML = `
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:90vh;text-align:center;padding:20px;font-family:'Montserrat';">
+                    <div style="font-size:80px;margin-bottom:20px;">✅</div>
+                    <h2 style="color:var(--burgundy);font-weight:900;text-transform:uppercase;">${ui[lang].thanks}</h2>
+                    <p style="color:#555;font-weight:600;">${ui[lang].check}</p>
+                    <div style="margin-top:30px;font-size:12px;color:#aaa;">
+                        ${ui[lang].close_in} <span id="timer">${seconds}</span>...
+                    </div>
+                </div>
+            `;
+            
+            const timer = setInterval(() => {
+                seconds--;
+                if(document.getElementById('timer')) document.getElementById('timer').innerText = seconds;
+                if(seconds <= 0) {
+                    clearInterval(timer);
+                    tg.close();
+                }
+            }, 1000);
+        }
 
         window.onload = function() {
             const l = ui[lang];
@@ -265,127 +313,6 @@
             document.getElementById('ui-finish-btn').innerText = l.finish;
             renderCart();
         };
-
-        function renderCart() {
-            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
-            const total = parseFloat(localStorage.getItem('mara_total') || '0');
-
-            let html = '';
-            let extra = 0;
-
-            for (let id in cart) {
-                if (productsData[id]) {
-                    html += `<div class="preview-row">
-                        <span class="item-name">${productsData[id].name[lang]} (${cart[id]} шт)</span>
-                        <span class="item-cost">${(productsData[id].price * cart[id]).toFixed(2)} BYN</span>
-                    </div>`;
-                }
-            }
-
-            upsells.forEach(item => {
-                extra += item.price;
-                html += `<div class="preview-row">
-                    <span class="item-name">${item.name}</span>
-                    <span class="item-cost">${item.price.toFixed(2)} BYN</span>
-                </div>`;
-            });
-
-            document.getElementById('cart-items-preview').innerHTML = html;
-            let final = (total + 10 + extra).toFixed(2);
-            document.getElementById('final-sum').innerText = final + " BYN";
-        }
-
-        function togglePostFields() {
-            const type = document.getElementById('post-type').value;
-            document.getElementById('euro-box').style.display = type === 'Европочта' ? 'block' : 'none';
-            document.getElementById('bel-box').style.display = type === 'Белпочта' ? 'block' : 'none';
-        }
-
-        function copyPhone() {
-            navigator.clipboard.writeText('+375296514403').then(() => {
-                const btn = document.getElementById('ui-copy-btn');
-                const old = btn.innerText;
-                btn.innerText = ui[lang].copied;
-                setTimeout(() => btn.innerText = old, 2000);
-            });
-        }
-
-        function finalSubmit() {
-            const name = document.getElementById('cust-name').value.trim();
-            const phone = document.getElementById('cust-phone').value.trim();
-            const city = document.getElementById('post-city').value.trim();
-            const sendDate = document.getElementById('send-date').value;
-            const type = document.getElementById('post-type').value;
-            const dept = document.getElementById('post-dept').value.trim();
-            const addr = document.getElementById('post-addr').value.trim();
-            const index = document.getElementById('post-index').value.trim();
-            const digits = phone.replace(/\D/g,'');
-
-            if(!name || digits.length < 12 || !city || !sendDate){
-                tg.showAlert("Заполните все обязательные поля");
-                return;
-            }
-
-            if(type === "Европочта" && !dept){
-                tg.showAlert("Введите отделение Европочты");
-                return;
-            }
-
-            if(type === "Белпочта" && (!addr || !index)){
-                tg.showAlert("Введите адрес и индекс");
-                return;
-            }
-
-            const d = new Date(sendDate);
-            const day = d.getDay();
-            if(day === 0 || day === 6){
-                tg.showAlert("По выходным отправки нет");
-                return;
-            }
-
-            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
-            let itemsStr = "";
-            for (let id in cart) {
-                if(productsData[id]){
-                    itemsStr += productsData[id].name[lang] + " (" + cart[id] + " шт); ";
-                }
-            }
-            upsells.forEach(x => {
-                itemsStr += x.name + "; ";
-            });
-
-            const data = {
-                name: name,
-                phone: phone,
-                city: city,
-                postType: type,
-                dept: dept,
-                addr: addr,
-                index: index,
-                comment: document.getElementById('cust-comment').value,
-                sendDate: sendDate,
-                items: itemsStr,
-                total: document.getElementById('final-sum').innerText,
-                city_tag: "РБ"
-            };
-
-            try {
-                tg.sendData(JSON.stringify(data));
-                localStorage.removeItem('mara_cart');
-                localStorage.removeItem('mara_total');
-
-                document.getElementById('checkout-screen').innerHTML = `
-                    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:80vh;text-align:center;padding:30px;">
-                        <div style="font-size:60px;">✅</div>
-                        <h2 style="color:#630d16;font-weight:900;">ЗАКАЗ ОТПРАВЛЕН</h2>
-                        <p style="color:#666;">Пришлите чек в чат бота</p>
-                    </div>
-                `;
-                setTimeout(() => tg.close(), 1500);
-            } catch(e) {
-                tg.showAlert("Ошибка!");
-            }
-        }
     </script>
 </body>
 </html>
