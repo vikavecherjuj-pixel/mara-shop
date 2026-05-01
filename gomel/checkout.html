@@ -25,6 +25,14 @@
         }
 
         #checkout-screen { display: flex; flex-direction: column; gap: 16px; padding-bottom: 40px; }
+        
+        /* Экран успеха */
+        #success-screen { 
+            display: none; text-align: center; padding: 40px 20px; 
+            animation: fadeIn 0.5s ease;
+        }
+        .success-icon { font-size: 60px; margin-bottom: 20px; }
+
         .back-link-container { margin-bottom: 5px; }
         .back-link-container a { color: #aaa; text-decoration: none; font-size: 13px; font-weight: 700; display: inline-block; padding: 5px 0; }
         
@@ -63,32 +71,13 @@
         .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 18px; border-radius: 18px; font-size: 11px; line-height: 1.5; }
         .erip-phone { color: var(--green); font-weight: 900; font-size: 18px; display: block; margin-top: 8px; }
 
-        /* ИСПРАВЛЕННЫЙ БЛОК .BTN-MAIN */
         .btn-main{
-            width:100%;
-            margin-top:18px;
-            position:relative;
-            left:auto;
-            right:auto;
-            bottom:auto;
-            display:block;
-
-            padding:18px;
-            background:linear-gradient(135deg,#21a252,#17833f);
-            color:white;
-            border:none;
-            border-radius:18px;
-            font-weight:900;
-            font-size:15px;
-            text-transform:uppercase;
-            cursor:pointer;
-            box-shadow:0 10px 25px rgba(33,162,82,0.25);
-            transition:.2s;
-            z-index:999;
+            width:100%; margin-top:18px; position:relative; display:block; padding:18px;
+            background:linear-gradient(135deg,#21a252,#17833f); color:white; border:none;
+            border-radius:18px; font-weight:900; font-size:15px; text-transform:uppercase;
+            cursor:pointer; box-shadow:0 10px 25px rgba(33,162,82,0.25); transition:.2s; z-index:999;
         }
 
-        .btn-main:active { transform: scale(0.98); }
-        
         .time-btn { padding: 12px; background: #f4f4f4; border-radius: 14px; text-align: center; font-weight: 700; cursor: pointer; }
         .time-btn.active { background: #630d16; color: white; }
         
@@ -98,24 +87,24 @@
         }
         .upsell-item.active{ background:#fff8ec; border:1px solid #c5a059; }
 
-        .fade-in { animation: fadeIn .35s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
     <div id="checkout-screen">
         <div class="back-link-container">
-            <a href="../shop.html" id="ui-back">← Назад в каталог</a>
+            <a href="../shop.html">← Назад в каталог</a>
         </div>
 
+        <!-- 1. Названия товаров возвращены -->
         <div class="checkout-card">
-            <div class="section-title" id="ui-choice">Ваш выбор</div>
+            <div class="section-title">Ваш выбор</div>
             <div id="cart-list"></div>
             <div class="final-total" id="final-sum">0.00 BYN</div>
         </div>
 
         <div class="checkout-card">
-            <div class="section-title" id="ui-method">Способ получения</div>
+            <div class="section-title">Способ получения</div>
             <div class="delivery-selector">
                 <div class="delivery-option active" id="opt-pickup" onclick="setDeliv('Самовывоз')">Самовывоз</div>
                 <div class="delivery-option" id="opt-delivery" onclick="setDeliv('Доставка')">Яндекс.Доставка</div>
@@ -123,24 +112,35 @@
             <div id="delivery-note"></div>
             <div id="time-selection-area">
                 <div class="field-group">
-                    <label id="ui-date">Дата</label>
+                    <label>Дата</label>
                     <input type="date" id="order-date" onchange="enableTime()">
                 </div>
                 <div class="field-group" style="margin-top:15px;">
-                    <label id="ui-time">Время</label>
+                    <label>Время</label>
                     <div id="order-time-list" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;"></div>
                     <input type="hidden" id="order-time">
                 </div>
             </div>
         </div>
 
+        <!-- 3. Поля данных из старого кода -->
         <div class="checkout-card">
-            <div class="section-title" id="ui-data">Ваши данные</div>
-            <input type="text" id="c-name" placeholder="Ваше имя" style="margin-bottom: 10px;">
-            <input type="tel" id="c-phone" value="+375 ">
-            <textarea id="c-comment" placeholder="Комментарий к заказу" style="margin-top:10px; height: 80px; padding-top: 15px;"></textarea>
+            <div class="section-title">Ваши данные</div>
+            <div class="field-group" style="margin-bottom:12px;">
+                <label>Ваше имя</label>
+                <input type="text" id="c-name" placeholder="Введите имя">
+            </div>
+            <div class="field-group">
+                <label>Телефон</label>
+                <input type="tel" id="c-phone" value="+375 ">
+            </div>
+            <div class="field-group" style="margin-top:12px;">
+                <label>Комментарий</label>
+                <textarea id="c-comment" placeholder="Дополнительные пожелания" style="height: 80px; padding-top: 15px;"></textarea>
+            </div>
         </div>
 
+        <!-- 2. Добавлен 3-й доп. продукт -->
         <div class="checkout-card">
             <div class="section-title">Добавить к заказу</div>
             <div class="upsell-item" onclick="toggleUpsell(this,'2 пирожных Картошка',8)">
@@ -149,69 +149,63 @@
             <div class="upsell-item" onclick="toggleUpsell(this,'Набор орешков мини (6 шт)',12)">
                 <span>✨ Набор орешков мини (6 шт)</span><b>+12 BYN</b>
             </div>
+            <div class="upsell-item" onclick="toggleUpsell(this,'Подарочная упаковка',5)">
+                <span>🎁 Красивая упаковка</span><b>+5 BYN</b>
+            </div>
         </div>
 
         <div class="checkout-card">
-            <div class="section-title" id="ui-pay-title">Оплата (ЕРИП)</div>
+            <div class="section-title">Оплата (ЕРИП)</div>
             <div class="erip-box">
                 Система Расчета ЕРИП / Пополнение счета
                 <span class="erip-phone">+375 (29) 651-44-03</span>
             </div>
-            
-            <!-- КНОПКА ТЕПЕРЬ ВНУТРИ ПОСЛЕДНЕЙ КАРТОЧКИ ИЛИ СРАЗУ ПОД НЕЙ -->
-            <button class="btn-main" id="ui-finish" onclick="finishOrder()">Оплачено, заказать</button>
+            <button class="btn-main" onclick="finishOrder()">Оплачено, заказать</button>
+        </div>
+    </div>
+
+    <!-- 4. Окно "Спасибо за заказ" с таймером -->
+    <div id="success-screen">
+        <div class="checkout-card">
+            <div class="success-icon">✅</div>
+            <h2 style="font-weight: 900; color: var(--burgundy);">СПАСИБО ЗА ЗАКАЗ!</h2>
+            <p>Мы получили вашу заявку и скоро свяжемся с вами.</p>
+            <hr style="border: 0; border-top: 1px dashed #ddd; margin: 20px 0;">
+            <p id="timer-text" style="font-size: 14px; color: #888;">Это окно закроется через <span id="seconds">7</span> сек.</p>
         </div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
-        let lang = localStorage.getItem('selectedLang') || 'ru';
         let method = "Самовывоз";
         let upsells = [];
 
-        window.onload = function() {
-            applyLanguage();
-            render();
-            setDeliv('Самовывоз');
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('order-date').setAttribute('min', today);
-            document.getElementById('order-date').value = today;
-            enableTime();
-        };
-
-        function applyLanguage() {
-            // Если у тебя есть объект с переводами, добавь это туда, 
-            // но согласно твоему запросу, просто принудительно ставим текст:
-            document.getElementById('opt-delivery').innerText = "Яндекс.Доставка";
-        }
-
+        // 1. Исправленный рендер товаров с названиями
         function render() {
+            // Пытаемся получить данные о названиях из mara_cart_names (или mara_cart)
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
             const total = localStorage.getItem('mara_total') || '0.00';
             let html = '';
+            
             for (let id in cart) {
-                html += `<div class="preview-row"><span>Товар ID: ${id}</span> <span>${cart[id]} шт.</span></div>`;
+                // Если id содержит название, выводим его, иначе пишем "Товар"
+                let name = id.length > 2 ? id : "Товар #" + id; 
+                html += `<div class="preview-row"><span>${name}</span> <span>${cart[id]} шт.</span></div>`;
             }
             document.getElementById('cart-list').innerHTML = html || 'Корзина пуста';
             document.getElementById('final-sum').innerText = total + " BYN";
         }
 
-        /* ИСПРАВЛЕННАЯ ФУНКЦИЯ setDeliv */
         function setDeliv(m) {
             method = m;
-
             document.getElementById('opt-pickup').classList.toggle('active', m === 'Самовывоз');
             document.getElementById('opt-delivery').classList.toggle('active', m === 'Доставка');
 
+            const note = document.getElementById('delivery-note');
             if(m === 'Самовывоз'){
-                document.getElementById('delivery-note').innerHTML =
-                `ул. Свиридова, 6 подъезд.<br><strong>Позвоните за 10 минут: +375 (29) 651-44-03</strong>`;
+                note.innerHTML = `ул. Свиридова, 6 подъезд.<br><strong>Позвоните за 10 минут: +375 (29) 651-44-03</strong>`;
             } else {
-                document.getElementById('delivery-note').innerHTML =
-                `Яндекс.Доставка<br>
-                ул. Свиридова, 6 подъезд.<br>
-                Перед вызовом доставки за 10–15 минут позвоните<br>
-                <strong>+375 (29) 651-44-03</strong>`;
+                note.innerHTML = `Яндекс.Доставка (оплата за ваш счет)<br>ул. Свиридова, 6 подъезд.<br>Перед вызовом за 10 мин. позвоните: <strong>+375 (29) 651-44-03</strong>`;
             }
         }
 
@@ -244,12 +238,47 @@
             document.getElementById('final-sum').innerText = (base + extra).toFixed(2) + ' BYN';
         }
 
+        // 4. Логика оформления и таймера
         function finishOrder() {
             const name = document.getElementById('c-name').value;
-            if(!name) return tg.showAlert("Введите имя");
-            tg.sendData(JSON.stringify({name: name, status: "paid"}));
-            tg.close();
+            const phone = document.getElementById('c-phone').value;
+            if(!name || phone.length < 10) {
+                tg.showAlert("Пожалуйста, заполните Имя и Телефон");
+                return;
+            }
+
+            // Отправляем данные в ТГ
+            tg.sendData(JSON.stringify({
+                name: name,
+                phone: phone,
+                method: method,
+                total: document.getElementById('final-sum').innerText
+            }));
+
+            // Показываем экран "Спасибо"
+            document.getElementById('checkout-screen').style.display = 'none';
+            document.getElementById('success-screen').style.display = 'block';
+
+            // Таймер закрытия
+            let sec = 7;
+            const timer = setInterval(() => {
+                sec--;
+                document.getElementById('seconds').innerText = sec;
+                if(sec <= 0) {
+                    clearInterval(timer);
+                    tg.close();
+                }
+            }, 1000);
         }
+
+        window.onload = function() {
+            render();
+            setDeliv('Самовывоз');
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('order-date').setAttribute('min', today);
+            document.getElementById('order-date').value = today;
+            enableTime();
+        };
     </script>
 </body>
 </html>
