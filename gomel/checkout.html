@@ -38,14 +38,9 @@
         .delivery-option.active { background: white; color: var(--burgundy); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         #delivery-note { font-size: 11px; color: #888; line-height: 1.5; margin-bottom: 15px; background: #fffcf5; padding: 12px; border-radius: 12px; border-left: 3px solid var(--accent); }
         
-        /* Исправление поля даты для iOS/iPhone Mini */
         input[type="date"] {
-            -webkit-appearance: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            min-width: 100%;
+            -webkit-appearance: none; display: flex; align-items: center; justify-content: center;
+            text-align: center; min-width: 100%;
         }
 
         input, select, textarea { 
@@ -64,20 +59,25 @@
         .item-cost { font-weight: 700; color: var(--accent); }
         .final-total { text-align:right; font-weight:900; color:var(--burgundy); font-size:26px; margin-top:14px; }
 
-        .discuss-btn { width: 100%; padding: 14px; background: transparent; color: var(--burgundy); border: 1px solid #ddd; border-radius: 14px; font-size: 12px; font-weight: 700; cursor: pointer; }
+        /* Исправленный шрифт кнопок */
+        .discuss-btn { 
+            width: 100%; padding: 14px; background: transparent; color: var(--burgundy); 
+            border: 1px solid #ddd; border-radius: 14px; font-size: 13px; font-weight: 700; 
+            cursor: pointer; font-family: 'Montserrat', sans-serif;
+        }
         .discuss-btn.active { background: var(--burgundy); color: white; }
         
         .btn-main {
             width:100%; padding:18px; background:linear-gradient(135deg,#21a252,#17833f);
             color:white; border:none; border-radius:18px; font-weight:900; font-size:15px;
             text-transform:uppercase; cursor:pointer; margin-top:15px; box-shadow:0 10px 25px rgba(33,162,82,0.25);
+            font-family: 'Montserrat', sans-serif;
         }
 
         #order-time-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
         .time-btn { padding: 12px; background: #f4f4f4; border-radius: 14px; text-align: center; font-weight: 700; font-size: 14px; cursor: pointer; }
         .time-btn.active { background: #630d16; color: white; }
 
-        /* Красивое оформление доп. товаров */
         .upsell-item { 
             display: block; padding: 14px 18px; background: #f8f8f8; border-radius: 16px; 
             margin-bottom: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px solid transparent; 
@@ -88,7 +88,19 @@
         .upsell-item.active { background: #fff8ec; border: 1px solid #c5a059; }
 
         .erip-phone { color: var(--green); font-weight: 900; font-size: 18px; display: block; margin-top: 8px; }
-        .copy-btn { width: 100%; padding: 12px; background: var(--gray); color: var(--burgundy); border: none; border-radius: 14px; font-weight: 700; font-size: 11px; text-transform: uppercase; margin-top: 12px; }
+        
+        .copy-btn { 
+            width: 100%; padding: 12px; background: var(--gray); color: var(--burgundy); 
+            border: none; border-radius: 14px; font-weight: 700; font-size: 12px; 
+            text-transform: uppercase; margin-top: 12px; font-family: 'Montserrat', sans-serif;
+        }
+
+        .payment-summary {
+            background: #fff; border-radius: 14px; padding: 12px; margin-bottom: 12px;
+            border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;
+        }
+        .payment-summary label { font-size: 11px; font-weight: 800; color: #999; text-transform: uppercase; }
+        .payment-summary span { font-size: 18px; font-weight: 900; color: var(--burgundy); }
 
         @keyframes fadeIn{ from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
     </style>
@@ -100,7 +112,7 @@
         <div class="checkout-card">
             <div class="section-title">Ваш выбор</div>
             <div id="cart-list"></div>
-            <div class="final-total" id="final-sum">0.00 BYN</div>
+            <div class="final-total" id="final-sum-top">0.00 BYN</div>
         </div>
 
         <div class="checkout-card">
@@ -146,7 +158,11 @@
 
         <div class="checkout-card">
             <div class="section-title">Оплата (ЕРИП)</div>
-            <div style="font-size:11px; color:#555;">Система Расчета ЕРИП / Банковские, Финансовые услуги / Банки, НКФО / АЛЬФА-БАНК / Пополнение счета<span class="erip-phone">+375 (29) 651-44-03</span></div>
+            <div class="payment-summary">
+                <label>К оплате:</label>
+                <span id="final-sum-bottom">0.00 BYN</span>
+            </div>
+            <div style="font-size:11px; color:#555; line-height: 1.4;">Система Расчета ЕРИП / Банковские, Финансовые услуги / Банки, НКФО / АЛЬФА-БАНК / Пополнение счета<span class="erip-phone">+375 (29) 651-44-03</span></div>
             <button class="copy-btn" onclick="copyNumber('+375296514403', this)">Скопировать номер</button>
             <button class="btn-main" id="ui-finish" onclick="finishOrder()">Оплачено, заказать</button>
         </div>
@@ -177,7 +193,6 @@
             setDeliv(method);
         };
 
-        // Сворачивание клавиатуры
         document.addEventListener('click', function(e) {
             if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
                 document.activeElement.blur();
@@ -202,7 +217,7 @@
                 if (item) html += `<div class="preview-row"><span>${item.name} x${cart[id]}</span><span class="item-cost">${(item.price * cart[id]).toFixed(2)} BYN</span></div>`;
             }
             document.getElementById('cart-list').innerHTML = html;
-            document.getElementById('final-sum').innerText = total + " BYN";
+            recalc();
         }
 
         function enableTime() {
@@ -211,20 +226,15 @@
             const hidden = document.getElementById('order-time');
             box.innerHTML = '';
             hidden.value = '';
-            
             isDisc = false;
             document.getElementById('btn-discuss').classList.remove('active');
             document.getElementById('discuss-hint').style.display = 'none';
             document.getElementById('time-selection-area').style.opacity = '1';
-
             if (!dateInput.value) return;
-
             const now = new Date();
             const currentHour = now.getHours();
-
             for (let h = 9; h <= 21; h++) {
                 if (dateInput.value === todayStr && h < currentHour + 3) continue;
-
                 let btn = document.createElement('div');
                 btn.className = 'time-btn'; btn.innerText = h + ':00';
                 btn.onclick = () => {
@@ -241,11 +251,9 @@
             const btn = document.getElementById('btn-discuss');
             const hint = document.getElementById('discuss-hint');
             const area = document.getElementById('time-selection-area');
-            
             btn.classList.toggle('active', isDisc);
             hint.style.display = isDisc ? 'block' : 'none';
             area.style.opacity = isDisc ? '0.3' : '1';
-
             if (isDisc) {
                 document.getElementById('order-time').value = '';
                 document.getElementById('order-time-list').innerHTML = '';
@@ -275,7 +283,9 @@
         function recalc() {
             let base = parseFloat(localStorage.getItem('mara_total') || '0');
             let extra = upsells.reduce((s, x) => s + x.price, 0);
-            document.getElementById('final-sum').innerText = (base + extra).toFixed(2) + ' BYN';
+            const totalText = (base + extra).toFixed(2) + ' BYN';
+            document.getElementById('final-sum-top').innerText = totalText;
+            document.getElementById('final-sum-bottom').innerText = totalText;
         }
 
         function copyNumber(num, btn) {
@@ -295,7 +305,7 @@
                 method: method,
                 date: isDisc ? "Согласовать" : document.getElementById('order-date').value,
                 time: isDisc ? "Согласовать" : document.getElementById('order-time').value,
-                total: document.getElementById('final-sum').innerText,
+                total: document.getElementById('final-sum-bottom').innerText,
                 city: "ГОМЕЛЬ"
             };
 
