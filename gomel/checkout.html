@@ -113,7 +113,7 @@
         .erip-phone { color: var(--green); font-weight: 900; font-size: 18px; display: block; margin-top: 8px; letter-spacing: 0.5px; }
         .copy-btn { width: 100%; padding: 12px; background: var(--gray); color: var(--burgundy); border: none; border-radius: 14px; font-weight: 700; font-size: 11px; text-transform: uppercase; cursor: pointer; margin-top: 12px; transition: all 0.2s; }
         
-        /* Обновленная кнопка заказа */
+        /* Кнопка заказа из старого стиля (внутри карточки) */
         .btn-main {
             width:100%;
             padding:18px;
@@ -137,25 +137,8 @@
         .time-btn { padding: 12px; background: #f4f4f4; border-radius: 14px; text-align: center; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.2s; }
         .time-btn.active { background: #630d16; color: white; }
 
-        /* Новые стили из задания */
         html{
             scroll-behavior:smooth;
-        }
-
-        #checkout-screen{
-            padding-bottom:120px;
-        }
-
-        .btn-main{
-            position:fixed;
-            left:12px;
-            right:12px;
-            bottom:calc(12px + env(safe-area-inset-bottom));
-            z-index:999;
-        }
-
-        .checkout-card:last-child{
-            padding-bottom:90px;
         }
 
         .fade-in{
@@ -191,7 +174,6 @@
             pointer-events:none;
         }
 
-        /* Стиль для Upsell элементов */
         .upsell-item{
             display:flex;
             justify-content:space-between;
@@ -260,20 +242,16 @@
             <textarea id="c-comment" placeholder="" rows="3"></textarea>
         </div>
 
-        <!-- Добавлено: Блок апсейлла -->
         <div class="checkout-card">
             <div class="section-title">Добавить к заказу</div>
-
             <div class="upsell-item" onclick="toggleUpsell(this,'2 пирожных Картошка',8)">
                 <span>✨ 2 пирожных Картошка</span>
                 <b>+8 BYN</b>
             </div>
-
             <div class="upsell-item" onclick="toggleUpsell(this,'Набор орешков мини (6 шт)',12)">
                 <span>✨ Набор орешков мини (6 шт)</span>
                 <b>+12 BYN</b>
             </div>
-
             <div class="upsell-item" onclick="toggleUpsell(this,'Трубочки 2 шт',8)">
                 <span>✨ Трубочки 2 шт</span>
                 <b>+8 BYN</b>
@@ -409,10 +387,8 @@
                 if(tg.HapticFeedback){
                     tg.HapticFeedback.notificationOccurred("success");
                 }
-
                 const originalText = btn.innerText;
                 btn.innerText = ui[lang].copied;
-
                 setTimeout(() => {
                     btn.innerText = originalText;
                 }, 1800);
@@ -433,8 +409,6 @@
                 }
             }
             document.getElementById('cart-list').innerHTML = html;
-            // Изначальный запуск recalcTotal не нужен, так как render вызывается при загрузке
-            // но нам нужно установить базу
             document.getElementById('final-sum').innerText = total + " BYN";
         }
 
@@ -498,20 +472,15 @@
             e.target.value = f;
         });
 
-        // Добавлено: Функции логики Upsell
         let upsells = [];
-
         function toggleUpsell(el,name,price){
             el.classList.toggle('active');
-
             const index = upsells.findIndex(x => x.name === name);
-
             if(index > -1){
                 upsells.splice(index,1);
             }else{
                 upsells.push({name,price});
             }
-
             recalcTotal();
         }
 
@@ -555,7 +524,6 @@
                 if (productsData[id]) { itemsStr += productsData[id].name[lang] + " (" + cart[id] + " шт); "; }
             }
 
-            // Добавлено: сбор Upsell в строку товаров
             upsells.forEach(x=>{
                itemsStr += x.name + "; ";
             });
