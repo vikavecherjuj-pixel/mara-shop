@@ -176,7 +176,6 @@
         let tg = window.Telegram.WebApp;
         let upsells = [];
         
-        // Делаем верхнюю панель светлой
         tg.setHeaderColor('#fdfaf5'); 
         tg.setBackgroundColor('#fdfaf5');
         tg.expand();
@@ -219,7 +218,6 @@
 
         const phoneInput = document.getElementById('cust-phone');
         phoneInput.addEventListener('input', function(e) {
-            // Регулярное выражение для 12 цифр (+375 XX XXX-XX-XX)
             let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,2})(\d{0,3})(\d{0,2})(\d{0,2})/);
             if (!x[2]) e.target.value = '+375 ';
             else e.target.value = '+375 (' + x[2] + ') ' + x[3] + (x[4] ? '-' + x[4] : '') + (x[5] ? '-' + x[5] : '');
@@ -298,8 +296,7 @@
             const phone = document.getElementById('cust-phone').value.trim();
             const city = document.getElementById('post-city').value.trim();
             const sendDate = document.getElementById('send-date').value;
-            
-            // Проверка на корректную длину номера (12 цифр + маска)
+
             if(!name || phone.length < 18 || !city || !sendDate){
                 tg.showAlert(ui[lang].alert);
                 return;
@@ -314,24 +311,29 @@
                 comment: document.getElementById('cust-comment').value
             };
 
-            tg.sendData(JSON.stringify(data));
-
             let seconds = 5;
+
             document.body.innerHTML = `
                 <div class="thanks-screen">
                     <div style="font-size:80px;margin-bottom:20px;">✅</div>
-                    <h2 style="color:var(--burgundy);font-weight:900;text-transform:uppercase; margin:0;">${ui[lang].thanks}</h2>
-                    <p style="color:#555;font-weight:600;margin: 10px 0 30px 0;">${ui[lang].check}</p>
+                    <h2 style="color:#630d16;font-weight:900;">${ui[lang].thanks}</h2>
+                    <p style="color:#555;">${ui[lang].check}</p>
                     <div style="font-size:12px;color:#aaa;">
                         ${ui[lang].close_in} <span id="timer">${seconds}</span>...
                     </div>
                 </div>
             `;
-            
+
+            setTimeout(() => {
+                tg.sendData(JSON.stringify(data));
+            }, 300);
+
             const timer = setInterval(() => {
                 seconds--;
-                if(document.getElementById('timer')) document.getElementById('timer').innerText = seconds;
-                if(seconds <= 0) {
+                const el = document.getElementById("timer");
+                if(el) el.innerText = seconds;
+
+                if(seconds <= 0){
                     clearInterval(timer);
                     tg.close();
                 }
