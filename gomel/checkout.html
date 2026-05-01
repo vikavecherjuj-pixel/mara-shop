@@ -12,16 +12,9 @@
         html, body { 
             font-family: 'Montserrat', sans-serif; 
             background: linear-gradient(180deg,#fffdf9 0%,#f8f1e8 100%); 
-            margin: 0; 
-            padding: 12px; 
-            color: var(--dark); 
-            min-height: 100vh; 
-            overflow-x: hidden; 
-            touch-action: pan-y;
-            position: relative;
-            width: 100%;
-            -webkit-text-size-adjust: 100%;
-            box-sizing: border-box;
+            margin: 0; padding: 12px; color: var(--dark); min-height: 100vh; 
+            overflow-x: hidden; touch-action: pan-y; position: relative; width: 100%;
+            -webkit-text-size-adjust: 100%; box-sizing: border-box;
         }
 
         #checkout-screen { display: flex; flex-direction: column; gap: 16px; padding-bottom: 50px; }
@@ -29,12 +22,8 @@
         .back-link-container a { color: #aaa; text-decoration: none; font-size: 13px; font-weight: 700; display: inline-block; padding: 5px 0; }
         
         .checkout-card { 
-            background: rgba(255,255,255,0.92);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            border-radius: 28px;
-            padding: 22px;
-            box-shadow: 0 8px 25px rgba(99,13,22,0.06), 0 2px 8px rgba(0,0,0,0.03);
+            background: rgba(255,255,255,0.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+            border-radius: 28px; padding: 22px; box-shadow: 0 8px 25px rgba(99,13,22,0.06), 0 2px 8px rgba(0,0,0,0.03);
             border: 1px solid rgba(255,255,255,0.7);
         }
 
@@ -49,11 +38,20 @@
         .delivery-option.active { background: white; color: var(--burgundy); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         #delivery-note { font-size: 11px; color: #888; line-height: 1.5; margin-bottom: 15px; background: #fffcf5; padding: 12px; border-radius: 12px; border-left: 3px solid var(--accent); }
         
+        /* Исправление поля даты для iOS/iPhone Mini */
+        input[type="date"] {
+            -webkit-appearance: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-width: 100%;
+        }
+
         input, select, textarea { 
             width: 100%; border: 1px solid transparent; border-radius: 14px; font-family: 'Montserrat'; font-size: 16px; 
             box-sizing: border-box; background: var(--gray); outline: none; 
-            color: #000 !important; 
-            caret-color: #000 !important; /* Возвращаем видимый курсор */
+            color: #000 !important; caret-color: #000 !important;
             padding: 0 16px; height: 54px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.03);
         }
         input:focus, textarea:focus { border-color: var(--accent); background: #fff; }
@@ -79,13 +77,20 @@
         .time-btn { padding: 12px; background: #f4f4f4; border-radius: 14px; text-align: center; font-weight: 700; font-size: 14px; cursor: pointer; }
         .time-btn.active { background: #630d16; color: white; }
 
-        @keyframes fadeIn{ from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
-        .fade-in{ animation:fadeIn .4s ease; }
-        
-        .upsell-item { display:flex; justify-content:space-between; align-items:center; padding:14px; background:#f8f8f8; border-radius:16px; margin-bottom:10px; font-size:14px; font-weight:700; cursor:pointer; border:1px solid transparent; }
-        .upsell-item.active { background:#fff8ec; border:1px solid #c5a059; }
+        /* Красивое оформление доп. товаров */
+        .upsell-item { 
+            display: block; padding: 14px 18px; background: #f8f8f8; border-radius: 16px; 
+            margin-bottom: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px solid transparent; 
+            transition: all 0.2s ease;
+        }
+        .upsell-item span { color: #333; }
+        .upsell-item b { color: var(--accent); margin-left: 6px; font-weight: 700; }
+        .upsell-item.active { background: #fff8ec; border: 1px solid #c5a059; }
+
         .erip-phone { color: var(--green); font-weight: 900; font-size: 18px; display: block; margin-top: 8px; }
         .copy-btn { width: 100%; padding: 12px; background: var(--gray); color: var(--burgundy); border: none; border-radius: 14px; font-weight: 700; font-size: 11px; text-transform: uppercase; margin-top: 12px; }
+
+        @keyframes fadeIn{ from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
     </style>
 </head>
 <body>
@@ -93,13 +98,13 @@
         <div class="back-link-container"><a href="../shop.html" id="ui-back">← Назад</a></div>
         
         <div class="checkout-card">
-            <div class="section-title" id="ui-choice">Ваш выбор</div>
+            <div class="section-title">Ваш выбор</div>
             <div id="cart-list"></div>
             <div class="final-total" id="final-sum">0.00 BYN</div>
         </div>
 
         <div class="checkout-card">
-            <div class="section-title" id="ui-method">Способ получения</div>
+            <div class="section-title">Способ получения</div>
             <div class="delivery-selector">
                 <div class="delivery-option active" id="opt-pickup" onclick="setDeliv('Самовывоз')">Самовывоз</div>
                 <div class="delivery-option" id="opt-delivery" onclick="setDeliv('Доставка')">Яндекс.Доставка</div>
@@ -108,22 +113,22 @@
             
             <div id="time-selection-area">
                 <div class="field-group">
-                    <label id="ui-date">Дата</label>
+                    <label>Дата</label>
                     <input type="date" id="order-date" onchange="enableTime()">
                 </div>
-                <div class="field-group" style="margin-top:10px;">
-                    <label id="ui-time">Время</label>
+                <div class="field-group" style="margin-top:14px;">
+                    <label>Время</label>
                     <div id="order-time-list"></div>
                     <input type="hidden" id="order-time">
                 </div>
             </div>
-            <div style="text-align:center; font-size:10px; margin:15px 0; color:#ccc;">ИЛИ</div>
+            <div style="text-align:center; font-size:10px; margin:15px 0; color:#ccc; font-weight: 700;">ИЛИ</div>
             <button id="btn-discuss" class="discuss-btn" onclick="toggleDisc()">Согласовать время после оплаты</button>
             <span id="discuss-hint" style="display:none; text-align:center; font-size:11px; color:#666; margin-top:10px;">Напишем вам в чат сразу после заказа.</span>
         </div>
 
         <div class="checkout-card">
-            <div class="section-title" id="ui-data">Ваши данные</div>
+            <div class="section-title">Ваши данные</div>
             <label style="font-size:10px; font-weight:800; color:#bbb;">ИМЯ</label>
             <input type="text" id="c-name" placeholder="Введите ваше имя">
             <label style="font-size:10px; font-weight:800; color:#bbb; margin-top:12px; display:block;">ТЕЛЕФОН</label>
@@ -150,16 +155,15 @@
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        let lang = localStorage.getItem('selectedLang') || 'ru';
         let method = "Самовывоз";
         let isDisc = false;
         let upsells = [];
 
         const productsData = {
-            'q1': { name: {ru:'Орешки со сгущёнкой', by:'Арэшкі са згушчонкай', en:'Nuts'}, price: 1.10 },
-            'q5': { name: {ru:'Трубочки', by:'Трубачкі', en:'Rolls'}, price: 4.00 },
-            'q11': { name: {ru:'Картошка', by:'Бульба', en:'Kartoshka'}, price: 4.00 },
-            't1': { name: {ru:'Медовик 1.1кг', by:'Мядовік 1.1кг', en:'Honey cake'}, price: 65.00 }
+            'q1': { name: 'Орешки со сгущёнкой', price: 1.10 },
+            'q5': { name: 'Трубочки', price: 4.00 },
+            'q11': { name: 'Картошка', price: 4.00 },
+            't1': { name: 'Медовик 1.1кг', price: 65.00 }
         };
 
         const todayStr = new Date(new Date().getTime() + 3*3600*1000).toISOString().split('T')[0];
@@ -173,9 +177,9 @@
             setDeliv(method);
         };
 
-        // Сворачивание клавиатуры при клике на пустое место
+        // Сворачивание клавиатуры
         document.addEventListener('click', function(e) {
-            if (['INPUT', 'TEXTAREA', 'SELECT'].indexOf(e.target.tagName) === -1) {
+            if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
                 document.activeElement.blur();
             }
         });
@@ -186,7 +190,7 @@
             document.getElementById('opt-delivery').classList.toggle('active', m === 'Доставка');
             document.getElementById('delivery-note').innerHTML = m === 'Самовывоз' ?
                 `ул. Свиридова, 6 подъезд.<br><strong>Позвоните за 10 минут: +375 (29) 651-44-03</strong>` :
-                `Яндекс.Доставка<br>ул. Свиридова, 6 подъезд.<br>Перед вызовом доставки за 10–15 минут позвоните<br><strong>+375 (29) 651-44-03</strong>`;
+                `Яндекс.Доставка<br>ул. Свиридова, 6 подъезд.<br>Перед вызовом позвоните<br><strong>+375 (29) 651-44-03</strong>`;
         }
 
         function render() {
@@ -195,7 +199,7 @@
             let html = '';
             for (let id in cart) {
                 const item = productsData[id];
-                if (item) html += `<div class="preview-row"><span>${item.name[lang]} x${cart[id]}</span><span class="item-cost">${(item.price * cart[id]).toFixed(2)} BYN</span></div>`;
+                if (item) html += `<div class="preview-row"><span>${item.name} x${cart[id]}</span><span class="item-cost">${(item.price * cart[id]).toFixed(2)} BYN</span></div>`;
             }
             document.getElementById('cart-list').innerHTML = html;
             document.getElementById('final-sum').innerText = total + " BYN";
@@ -237,18 +241,16 @@
             const btn = document.getElementById('btn-discuss');
             const hint = document.getElementById('discuss-hint');
             const area = document.getElementById('time-selection-area');
-            const dateInput = document.getElementById('order-date');
             
             btn.classList.toggle('active', isDisc);
             hint.style.display = isDisc ? 'block' : 'none';
             area.style.opacity = isDisc ? '0.3' : '1';
 
             if (isDisc) {
-                dateInput.value = '';
                 document.getElementById('order-time').value = '';
                 document.getElementById('order-time-list').innerHTML = '';
             } else {
-                dateInput.value = todayStr;
+                document.getElementById('order-date').value = todayStr;
                 enableTime();
             }
         }
@@ -294,11 +296,9 @@
                 date: isDisc ? "Согласовать" : document.getElementById('order-date').value,
                 time: isDisc ? "Согласовать" : document.getElementById('order-time').value,
                 total: document.getElementById('final-sum').innerText,
-                items: "Заказ из приложения",
                 city: "ГОМЕЛЬ"
             };
 
-            // Сначала отрисовываем экран, потом отправляем данные с задержкой
             document.getElementById('checkout-screen').innerHTML = `
             <div style="height:90vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:30px; animation:fadeIn .4s ease;">
                 <div style="width:110px; height:110px; border-radius:50%; background:linear-gradient(135deg,#21a252,#1bc965); display:flex; align-items:center; justify-content:center; font-size:56px; color:white; box-shadow:0 15px 35px rgba(33,162,82,.28);">✓</div>
@@ -312,12 +312,9 @@
             let sec = 3;
             const timer = setInterval(() => {
                 sec--;
-                const countdownEl = document.getElementById('countdown');
-                if(countdownEl) countdownEl.innerText = sec + '...';
-                
+                if(document.getElementById('countdown')) document.getElementById('countdown').innerText = sec + '...';
                 if(sec <= 0) {
                     clearInterval(timer);
-                    // Отправляем данные в самый последний момент перед закрытием
                     tg.sendData(JSON.stringify(data));
                     setTimeout(() => tg.close(), 100);
                 }
