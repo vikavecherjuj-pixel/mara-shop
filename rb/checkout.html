@@ -68,7 +68,6 @@
         .upsell-item { padding:14px; background:#fafafa; border-radius:12px; margin-bottom:10px; font-weight:700; cursor:pointer; border:1px solid #eee; font-size: 13px; }
         .upsell-item.active { background:#fff7ea; border:1px solid #c5a059; }
 
-        /* Стиль блока оплаты как в Гомеле */
         .payment-summary {
             background: #fff; border-radius: 14px; padding: 12px; margin-bottom: 12px;
             border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;
@@ -76,7 +75,6 @@
         .payment-summary label { font-size: 11px; font-weight: 800; color: #999; text-transform: uppercase; margin-bottom: 0; }
         .payment-summary span { font-size: 18px; font-weight: 900; color: var(--burgundy); }
 
-        /* Финальный экран */
         .thanks-screen {
             display:flex; flex-direction:column; align-items:center; justify-content:center; 
             height:90vh; text-align:center; padding:20px; font-family:'Montserrat';
@@ -106,7 +104,7 @@
             <label id="ui-name-label">Фамилия и Имя</label>
             <input type="text" id="cust-name">
             <label id="ui-phone-label">Телефон</label>
-            <input type="tel" id="cust-phone" value="+375 " maxlength="17">
+            <input type="tel" id="cust-phone" value="+375 " maxlength="19">
         </div>
 
         <div class="checkout-card">
@@ -177,6 +175,10 @@
     <script>
         let tg = window.Telegram.WebApp;
         let upsells = [];
+        
+        // Делаем верхнюю панель светлой
+        tg.setHeaderColor('#fdfaf5'); 
+        tg.setBackgroundColor('#fdfaf5');
         tg.expand();
         tg.ready();
 
@@ -204,7 +206,7 @@
                 note: "*Адпраўка ажыццяўляецца пасля 100% аплаты замовы.",
                 comment: "Каментарый", comment_ph: "Напішыце, калі ёсць дадатковыя пажаданні...",
                 pay: "Аплата (АРІП)", copy: "Скапіяваць нумар", finish: "Аплачана, замовіць",
-                alert: "Запоўніце ПІБ, карэктны тэлефон і дату!", copied: "Нумар скапіяваны!",
+                alert: "Запоўніце ПІБ, карэктны тэлефон и дату!", copied: "Нумар скапіяваны!",
                 thanks: "ЗАКАЗ АДПРАЎЛЕНЫ", check: "Дашліце чэк у чат бота", close_in: "Дадатак закрыецца праз"
             }
         };
@@ -215,22 +217,20 @@
             'n1': { name: {ru:'Набор 1', by:'Набор 1'}, price: 22.00 }
         };
 
-        // 1. Ограничение по телефону
         const phoneInput = document.getElementById('cust-phone');
         phoneInput.addEventListener('input', function(e) {
+            // Регулярное выражение для 12 цифр (+375 XX XXX-XX-XX)
             let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,2})(\d{0,3})(\d{0,2})(\d{0,2})/);
             if (!x[2]) e.target.value = '+375 ';
             else e.target.value = '+375 (' + x[2] + ') ' + x[3] + (x[4] ? '-' + x[4] : '') + (x[5] ? '-' + x[5] : '');
         });
 
-        // 2. Сворачивание клавиатуры при касании в любое место
         document.addEventListener('click', function(e) {
             if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
                 document.activeElement.blur();
             }
         });
 
-        // 4. Валидация даты (запрет выходных и СЕГОДНЯ)
         function validateDate(input) {
             const date = new Date(input.value);
             const today = new Date();
@@ -246,7 +246,6 @@
             }
         }
 
-        // Ограничение минимальной даты (минимум завтра)
         const dateInput = document.getElementById('send-date');
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
@@ -294,14 +293,14 @@
             });
         }
 
-        // 5. Финальный экран с таймером
         function finalSubmit() {
             const name = document.getElementById('cust-name').value.trim();
             const phone = document.getElementById('cust-phone').value.trim();
             const city = document.getElementById('post-city').value.trim();
             const sendDate = document.getElementById('send-date').value;
             
-            if(!name || phone.length < 17 || !city || !sendDate){
+            // Проверка на корректную длину номера (12 цифр + маска)
+            if(!name || phone.length < 18 || !city || !sendDate){
                 tg.showAlert(ui[lang].alert);
                 return;
             }
