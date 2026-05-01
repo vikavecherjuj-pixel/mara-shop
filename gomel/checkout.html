@@ -9,10 +9,9 @@
     <style>
         :root { --accent: #c5a059; --burgundy: #630d16; --dark: #2c1a11; --bg: #fdfaf5; --green: #21a252; --gray: #f4f4f4; }
         
-        /* Исправленная фиксация body для iOS */
         html, body { 
             font-family: 'Montserrat', sans-serif; 
-            background: var(--bg); 
+            background: linear-gradient(180deg,#fffdf9 0%,#f8f1e8 100%); 
             margin: 0; 
             padding: 12px; 
             color: var(--dark); 
@@ -28,8 +27,30 @@
         #checkout-screen { display: flex; flex-direction: column; gap: 16px; padding-bottom: 50px; }
         .back-link-container { margin-bottom: 5px; }
         .back-link-container a { color: #aaa; text-decoration: none; font-size: 13px; font-weight: 700; display: inline-block; padding: 5px 0; }
-        .checkout-card { background: white; border-radius: 24px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
-        .section-title { font-weight: 900; font-size: 13px; margin-bottom: 16px; color: var(--burgundy); text-transform: uppercase; border-bottom: 1px solid #f8f8f8; padding-bottom: 10px; }
+        
+        .checkout-card { 
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-radius: 28px;
+            padding: 22px;
+            box-shadow:
+                0 8px 25px rgba(99,13,22,0.06),
+                0 2px 8px rgba(0,0,0,0.03);
+            border: 1px solid rgba(255,255,255,0.7);
+        }
+
+        .section-title {
+            font-weight:900;
+            font-size:12px;
+            letter-spacing:1px;
+            margin-bottom:16px;
+            color:var(--burgundy);
+            text-transform:uppercase;
+            padding-bottom:10px;
+            border-bottom:1px solid rgba(197,160,89,0.18);
+        }
+
         .delivery-selector { display: flex; background: var(--gray); padding: 4px; border-radius: 14px; margin-bottom: 12px; }
         .delivery-option { flex: 1; padding: 12px; text-align: center; font-size: 12px; font-weight: 700; border-radius: 11px; cursor: pointer; color: #888; transition: all 0.2s; }
         .delivery-option.active { background: white; color: var(--burgundy); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
@@ -47,18 +68,37 @@
             color: black !important; 
             caret-color: black; 
             -webkit-appearance: none;
+            padding: 0 16px;
+            height: 54px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.03);
         }
 
         input:focus, textarea:focus { border-color: var(--accent); background: #fff; }
+        
+        textarea {
+            padding: 14px 16px;
+            min-height: 90px;
+            resize: none;
+            margin-top: 5px;
+        }
+
         .datetime-row { display: flex; flex-direction: column; gap: 12px; margin-bottom: 5px; }
         .field-group { flex: 1; display: flex; flex-direction: column; }
         .field-group label { display: block; font-size: 10px; font-weight: 800; color: #bbb; text-transform: uppercase; margin-bottom: 6px; }
-        input[type="date"] { height: 48px; padding: 0 12px; }
-        textarea { padding: 14px; resize: none; margin-top: 5px; }
+        
         .preview-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; border-bottom: 1px dashed #eee; padding-bottom: 6px; align-items: flex-start; }
         .item-name { flex: 1; padding-right: 10px; line-height: 1.4; }
         .item-cost { font-weight: 700; color: var(--accent); white-space: nowrap; }
-        .final-total { text-align: right; font-weight: 900; color: var(--accent); font-size: 20px; margin-top: 10px; }
+        
+        .final-total {
+            text-align:right;
+            font-weight:900;
+            color:var(--burgundy);
+            font-size:26px;
+            margin-top:14px;
+            letter-spacing:-0.5px;
+        }
+
         .or-divider { text-align: center; font-size: 10px; font-weight: 700; color: #ccc; margin: 15px 0; text-transform: uppercase; }
         .discuss-btn { width: 100%; padding: 14px; background: transparent; color: var(--burgundy); border: 1px solid #ddd; border-radius: 14px; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
         .discuss-btn.active { background: var(--burgundy); color: white; border-style: solid; border-color: var(--burgundy); }
@@ -67,11 +107,103 @@
         .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 18px; border-radius: 18px; font-size: 11px; line-height: 1.5; color: #555; }
         .erip-phone { color: var(--green); font-weight: 900; font-size: 18px; display: block; margin-top: 8px; letter-spacing: 0.5px; }
         .copy-btn { width: 100%; padding: 12px; background: var(--gray); color: var(--burgundy); border: none; border-radius: 14px; font-weight: 700; font-size: 11px; text-transform: uppercase; cursor: pointer; margin-top: 12px; transition: all 0.2s; }
-        .btn-main { width: 100%; padding: 20px; background: var(--green); color: white; border: none; border-radius: 18px; font-weight: 900; font-size: 15px; text-transform: uppercase; cursor: pointer; margin-top: 15px; }
+        
+        .btn-main {
+            width:100%;
+            padding:18px;
+            background:linear-gradient(135deg,#21a252,#17833f);
+            color:white;
+            border:none;
+            border-radius:18px;
+            font-weight:900;
+            font-size:15px;
+            text-transform:uppercase;
+            cursor:pointer;
+            margin-top:15px;
+            box-shadow:0 10px 25px rgba(33,162,82,0.25);
+            transition:0.2s;
+        }
+        .btn-main:active{
+            transform:scale(0.98);
+        }
 
         #order-time-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
         .time-btn { padding: 12px; background: #f4f4f4; border-radius: 14px; text-align: center; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.2s; }
         .time-btn.active { background: #630d16; color: white; }
+
+        html{
+            scroll-behavior:smooth;
+        }
+
+        #checkout-screen{
+            padding-bottom:120px;
+        }
+
+        .btn-main{
+            position:fixed;
+            left:12px;
+            right:12px;
+            bottom:calc(12px + env(safe-area-inset-bottom));
+            z-index:999;
+        }
+
+        .checkout-card:last-child{
+            padding-bottom:90px;
+        }
+
+        .fade-in{
+            animation:fadeIn .35s ease;
+        }
+
+        @keyframes fadeIn{
+            from{opacity:0;transform:translateY(8px);}
+            to{opacity:1;transform:translateY(0);}
+        }
+
+        .delivery-option,
+        .time-btn,
+        .copy-btn,
+        .discuss-btn,
+        .btn-main{
+            transition:all .18s ease;
+        }
+
+        .delivery-option:active,
+        .time-btn:active,
+        .copy-btn:active,
+        .discuss-btn:active{
+            transform:scale(.97);
+        }
+
+        .time-btn.active{
+            box-shadow:0 8px 18px rgba(99,13,22,.18);
+        }
+
+        .loading-btn{
+            opacity:.7;
+            pointer-events:none;
+        }
+
+        .upsell-item{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:14px;
+            background:#f8f8f8;
+            border-radius:16px;
+            margin-bottom:10px;
+            font-size:14px;
+            font-weight:700;
+            cursor:pointer;
+            transition:.2s;
+            border:1px solid transparent;
+        }
+
+        .upsell-item.active{
+            background:#fff8ec;
+            border:1px solid #c5a059;
+            transform:scale(.98);
+        }
     </style>
 </head>
 <body>
@@ -119,6 +251,26 @@
             <label class="contact-label" id="ui-comment">Комментарий</label>
             <textarea id="c-comment" placeholder="" rows="3"></textarea>
         </div>
+
+        <div class="checkout-card">
+            <div class="section-title">Добавить к заказу</div>
+
+            <div class="upsell-item" onclick="toggleUpsell(this,'2 пирожных Картошка',8)">
+                <span>✨ 2 пирожных Картошка</span>
+                <b>+8 BYN</b>
+            </div>
+
+            <div class="upsell-item" onclick="toggleUpsell(this,'Набор орешков мини (6 шт)',12)">
+                <span>✨ Набор орешков мини (6 шт)</span>
+                <b>+12 BYN</b>
+            </div>
+
+            <div class="upsell-item" onclick="toggleUpsell(this,'Трубочки 2 шт',8)">
+                <span>✨ Трубочки 2 шт</span>
+                <b>+8 BYN</b>
+            </div>
+        </div>
+
         <div class="checkout-card">
             <div class="section-title" id="ui-pay-title">Оплата (ЕРИП)</div>
             <div class="erip-box" id="ui-erip-info">
@@ -137,7 +289,6 @@
         tg.setHeaderColor('#fdfaf5');
         tg.setBackgroundColor('#fdfaf5');
 
-        // Исправленная логика blur и scroll fix для iPhone
         document.addEventListener('click', function(e) {
             if (!e.target.closest('input, textarea, .time-btn')) {
                 if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
@@ -214,6 +365,10 @@
             dateInput.setAttribute('min', todayStr);
             dateInput.value = todayStr;
             enableTime();
+
+            document.querySelectorAll('.checkout-card').forEach((el,i)=>{
+                setTimeout(()=>el.classList.add('fade-in'), i*80);
+            });
         };
 
         function applyLanguage() {
@@ -242,9 +397,16 @@
 
         function copyNumber(num, btn) {
             navigator.clipboard.writeText(num).then(() => {
+                if(tg.HapticFeedback){
+                    tg.HapticFeedback.notificationOccurred("success");
+                }
+
                 const originalText = btn.innerText;
                 btn.innerText = ui[lang].copied;
-                setTimeout(() => { btn.innerText = originalText; }, 2000);
+
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                }, 1800);
             });
         }
 
@@ -325,23 +487,63 @@
             e.target.value = f;
         });
 
+        let upsells = [];
+
+        function toggleUpsell(el,name,price){
+            el.classList.toggle('active');
+            const index = upsells.findIndex(x => x.name === name);
+            if(index > -1){
+                upsells.splice(index,1);
+            }else{
+                upsells.push({name,price});
+            }
+            recalcTotal();
+        }
+
+        function recalcTotal(){
+            let base = parseFloat(localStorage.getItem('mara_total') || '0');
+            let extra = upsells.reduce((sum,x)=>sum+x.price,0);
+            document.getElementById('final-sum').innerText = (base + extra).toFixed(2) + ' BYN';
+        }
+
         function finishOrder() {
+            const submitBtn = document.getElementById('ui-finish');
+            submitBtn.classList.add('loading-btn');
+            submitBtn.innerText = 'Отправка...';
+
             const name = document.getElementById('c-name').value.trim();
             const phone = document.getElementById('c-phone').value.trim();
             const timeVal = document.getElementById('order-time').value;
-            
-            // Валидация телефона (только цифры без +375)
             const phoneDigits = phone.replace(/\D/g, '').replace('375', '');
 
-            if (!name) { tg.showAlert(ui[lang].alert); return; }
-            if (phoneDigits.length < 9) { tg.showAlert(ui[lang].alert_phone); return; }
-            if (!isDisc && (!dateInput.value || !timeVal)) { return tg.showAlert("Выберите дату и время"); }
+            if (!name) { 
+                submitBtn.classList.remove('loading-btn');
+                submitBtn.innerText = ui[lang].finish;
+                tg.showAlert(ui[lang].alert); 
+                return; 
+            }
+            if (phoneDigits.length < 9) { 
+                submitBtn.classList.remove('loading-btn');
+                submitBtn.innerText = ui[lang].finish;
+                tg.showAlert(ui[lang].alert_phone); 
+                return; 
+            }
+            if (!isDisc && (!dateInput.value || !timeVal)) { 
+                submitBtn.classList.remove('loading-btn');
+                submitBtn.innerText = ui[lang].finish;
+                return tg.showAlert("Выберите дату и время"); 
+            }
             
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
             let itemsStr = "";
             for (let id in cart) {
                 if (productsData[id]) { itemsStr += productsData[id].name[lang] + " (" + cart[id] + " шт); "; }
             }
+
+            upsells.forEach(x=>{
+               itemsStr += x.name + "; ";
+            });
+
             const totalText = document.getElementById('final-sum').innerText;
             const totalValue = parseFloat(totalText.replace(' BYN', '').replace(',', '.')) || 0;
             const data = {
@@ -351,20 +553,84 @@
                 comment: document.getElementById('c-comment').value.trim(),
                 total: totalValue, items: itemsStr, city: "ГОМЕЛЬ", lang: lang
             };
+
             try {
                 tg.sendData(JSON.stringify(data));
                 localStorage.removeItem('mara_cart');
                 localStorage.removeItem('mara_total');
+                
                 document.getElementById('checkout-screen').innerHTML = `
-                    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:80vh;text-align:center;padding:30px;">
-                        <div style="font-size:60px;">✅</div>
-                        <h2 style="color:#630d16;font-weight:900;">ЗАКАЗ ОТПРАВЛЕН</h2>
-                        <p style="color:#666;">Пришлите чек в чат бота</p>
-                    </div>`;
-                setTimeout(() => tg.close(), 1500);
+                <div style="
+                height:90vh;
+                display:flex;
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                text-align:center;
+                padding:30px;
+                animation:fadeIn .4s ease;
+                ">
+
+                <div style="
+                width:110px;
+                height:110px;
+                border-radius:50%;
+                background:linear-gradient(135deg,#21a252,#1bc965);
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                font-size:56px;
+                color:white;
+                box-shadow:0 15px 35px rgba(33,162,82,.28);
+                ">✓</div>
+
+                <div style="
+                font-size:30px;
+                font-weight:900;
+                color:#630d16;
+                margin-top:22px;
+                ">
+                Спасибо за заказ
+                </div>
+
+                <div style="
+                font-size:15px;
+                color:#666;
+                line-height:1.6;
+                margin-top:12px;
+                max-width:280px;
+                ">
+                Ваш заказ успешно отправлен.<br>
+                Сейчас переведём вас в чат<br>
+                для отправки чека оплаты.
+                </div>
+
+                <div id="countdown" style="
+                margin-top:26px;
+                font-size:18px;
+                font-weight:800;
+                color:#c5a059;
+                ">
+                3...
+                </div>
+
+                </div>`;
+
+                let sec = 3;
+                const timer = setInterval(()=>{
+                    sec--;
+                    document.getElementById('countdown').innerText = sec + '...';
+
+                    if(sec <= 0){
+                        clearInterval(timer);
+                        tg.close();
+                    }
+                },1000);
+
             } catch (error) {
+                submitBtn.classList.remove('loading-btn');
+                submitBtn.innerText = ui[lang].finish;
                 tg.showAlert("Ошибка отправки заказа. Попробуйте ещё раз.");
-                console.error(error);
             }
         }
     </script>
