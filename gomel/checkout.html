@@ -51,7 +51,9 @@
         
         input, select, textarea { 
             width: 100%; border: 1px solid transparent; border-radius: 14px; font-family: 'Montserrat'; font-size: 16px; 
-            box-sizing: border-box; background: var(--gray); outline: none; color: black !important; 
+            box-sizing: border-box; background: var(--gray); outline: none; 
+            color: #000 !important; 
+            caret-color: #000 !important; /* Возвращаем видимый курсор */
             padding: 0 16px; height: 54px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.03);
         }
         input:focus, textarea:focus { border-color: var(--accent); background: #fff; }
@@ -171,6 +173,13 @@
             setDeliv(method);
         };
 
+        // Сворачивание клавиатуры при клике на пустое место
+        document.addEventListener('click', function(e) {
+            if (['INPUT', 'TEXTAREA', 'SELECT'].indexOf(e.target.tagName) === -1) {
+                document.activeElement.blur();
+            }
+        });
+
         function setDeliv(m) {
             method = m;
             document.getElementById('opt-pickup').classList.toggle('active', m === 'Самовывоз');
@@ -199,7 +208,6 @@
             box.innerHTML = '';
             hidden.value = '';
             
-            // Если мы вернулись из режима "Согласовать", восстанавливаем вид
             isDisc = false;
             document.getElementById('btn-discuss').classList.remove('active');
             document.getElementById('discuss-hint').style.display = 'none';
@@ -211,7 +219,6 @@
             const currentHour = now.getHours();
 
             for (let h = 9; h <= 21; h++) {
-                // Если выбрана сегодняшняя дата, показываем время только через 3 часа от текущего
                 if (dateInput.value === todayStr && h < currentHour + 3) continue;
 
                 let btn = document.createElement('div');
@@ -246,7 +253,6 @@
             }
         }
 
-        // Маска телефона
         document.getElementById('c-phone').addEventListener('input', function(e) {
             let digits = e.target.value.substring(5).replace(/\D/g, '');
             let f = '+375 ';
@@ -292,9 +298,7 @@
                 city: "ГОМЕЛЬ"
             };
 
-            tg.sendData(JSON.stringify(data));
-
-            // Экран успеха
+            // Сначала отрисовываем экран, потом отправляем данные с задержкой
             document.getElementById('checkout-screen').innerHTML = `
             <div style="height:90vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:30px; animation:fadeIn .4s ease;">
                 <div style="width:110px; height:110px; border-radius:50%; background:linear-gradient(135deg,#21a252,#1bc965); display:flex; align-items:center; justify-content:center; font-size:56px; color:white; box-shadow:0 15px 35px rgba(33,162,82,.28);">✓</div>
@@ -308,10 +312,14 @@
             let sec = 3;
             const timer = setInterval(() => {
                 sec--;
-                document.getElementById('countdown').innerText = sec + '...';
+                const countdownEl = document.getElementById('countdown');
+                if(countdownEl) countdownEl.innerText = sec + '...';
+                
                 if(sec <= 0) {
                     clearInterval(timer);
-                    tg.close();
+                    // Отправляем данные в самый последний момент перед закрытием
+                    tg.sendData(JSON.stringify(data));
+                    setTimeout(() => tg.close(), 100);
                 }
             }, 1000);
         }
