@@ -1,384 +1,338 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" style="height: 100%; overflow: hidden;">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mara Shop - Оформление (Гомель)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Mara Shop - Catalog</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --accent: #c5a059; --burgundy: #630d16; --dark: #2c1a11; --bg: #fdfaf5; --green: #21a252; --gray: #f4f4f4; }
+        :root { 
+            --accent: #c5a059; --burgundy: #630d16; --dark: #2c1a11; --bg: #fdfaf5; 
+            --btn-clear: #e9233a; --btn-order: #21a252; --white: #ffffff;
+        }
         
         html, body { 
+            height: 100%; 
+            width: 100%; 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden; 
+            position: fixed;
+        }
+
+        body { 
             font-family: 'Montserrat', sans-serif; 
-            background: linear-gradient(180deg,#fffdf9 0%,#f8f1e8 100%); 
-            margin: 0; padding: 12px; color: var(--dark); min-height: 100vh; 
-            overflow-x: hidden; touch-action: pan-y; position: relative; width: 100%;
-            -webkit-text-size-adjust: 100%; box-sizing: border-box;
+            background: var(--bg); 
+            display: flex; 
+            flex-direction: column; 
         }
 
-        #checkout-screen { display: flex; flex-direction: column; gap: 16px; padding-bottom: 50px; }
-        .back-link-container { margin-bottom: 5px; }
-        .back-link-container a { color: #aaa; text-decoration: none; font-size: 13px; font-weight: 700; display: inline-block; padding: 5px 0; }
+        .header-container { background: white; flex-shrink: 0; position: relative; display: flex; flex-direction: column; }
+        .back-floating-btn { position: absolute; top: 15px; left: 15px; z-index: 100; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(5px); border: none; padding: 8px 14px; border-radius: 20px; font-weight: 700; font-size: 11px; color: var(--burgundy); cursor: pointer; }
+        .promo-banner { width: 100%; height: 160px; overflow: hidden; }
+        .promo-banner img { width: 100%; height: 100%; object-fit: cover; }
+        .logo-area { padding: 12px 20px; border-bottom: 1px solid #eee; background: white; }
+        .logo-area img { max-width: 120px; height: auto; }
         
-        .checkout-card { 
-            background: rgba(255,255,255,0.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-            border-radius: 28px; padding: 22px; box-shadow: 0 8px 25px rgba(99,13,22,0.06), 0 2px 8px rgba(0,0,0,0.03);
-            border: 1px solid rgba(255,255,255,0.7);
+        .main-area { 
+            flex: 1; 
+            display: flex; 
+            overflow: hidden; 
+            min-height: 0;
         }
 
-        .section-title {
-            font-weight:900; font-size:12px; letter-spacing:1px; margin-bottom:16px;
-            color:var(--burgundy); text-transform:uppercase; padding-bottom:10px;
-            border-bottom:1px solid rgba(197,160,89,0.18);
+        .sidebar { 
+            width: 85px; 
+            background: white; 
+            border-right: 1px solid #ddd; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding-top: 10px; 
+            flex-shrink: 0; 
+            overflow-y: auto !important; 
+            height: auto; 
+            max-height: 100%; 
+            padding-bottom: 150px; 
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; 
+            -ms-overflow-style: none;
         }
-
-        .delivery-selector { display: flex; background: var(--gray); padding: 4px; border-radius: 14px; margin-bottom: 12px; }
-        .delivery-option { flex: 1; padding: 12px; text-align: center; font-size: 12px; font-weight: 700; border-radius: 11px; cursor: pointer; color: #888; transition: all 0.2s; }
-        .delivery-option.active { background: white; color: var(--burgundy); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        #delivery-note { font-size: 11px; color: #888; line-height: 1.5; margin-bottom: 15px; background: #fffcf5; padding: 12px; border-radius: 12px; border-left: 3px solid var(--accent); }
         
-        input[type="date"] {
-            -webkit-appearance: none; display: flex; align-items: center; justify-content: center;
-            text-align: center; min-width: 100%;
-        }
-
-        input, select, textarea { 
-            width: 100%; border: 1px solid transparent; border-radius: 14px; font-family: 'Montserrat'; font-size: 16px; 
-            box-sizing: border-box; background: var(--gray); outline: none; 
-            color: #000 !important; caret-color: #000 !important;
-            padding: 0 16px; height: 54px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.03);
-        }
-        input:focus, textarea:focus { border-color: var(--accent); background: #fff; }
-        textarea { padding: 14px 16px; min-height: 90px; resize: none; margin-top: 5px; }
-
-        .field-group { flex: 1; display: flex; flex-direction: column; }
-        .field-group label { display: block; font-size: 10px; font-weight: 800; color: #bbb; text-transform: uppercase; margin-bottom: 6px; }
+        .sidebar::-webkit-scrollbar { display: none; }
         
-        .preview-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; border-bottom: 1px dashed #eee; padding-bottom: 6px; align-items: center; }
-        .item-cost { font-weight: 700; color: var(--accent); white-space: nowrap; margin-left: 10px; }
-        .final-total { text-align:right; font-weight:900; color:var(--burgundy); font-size:26px; margin-top:14px; }
-
-        .discuss-btn { 
-            width: 100%; padding: 14px; background: transparent; color: var(--burgundy); 
-            border: 1px solid #ddd; border-radius: 14px; font-size: 13px; font-weight: 700; 
-            cursor: pointer; font-family: 'Montserrat', sans-serif;
+        .cat-item { 
+            margin-bottom: 15px; 
+            text-align: center; 
+            font-size: 8px; 
+            color: #555; 
+            width: 100%; 
+            font-weight: 700; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            flex-shrink: 0; 
         }
-        .discuss-btn.active { background: var(--burgundy); color: white; }
+
+        .cat-item img { width: 40px; height: 40px; border-radius: 50%; background: #eee; margin-bottom: 4px; border: 2px solid transparent; object-fit: cover; }
+        .cat-item.active { color: var(--burgundy); }
+        .cat-item.active img { border-color: var(--burgundy); box-shadow: 0 0 10px rgba(99, 13, 22, 0.2); }
         
-        .btn-main {
-            width:100%; padding:18px; background:linear-gradient(135deg,#21a252,#17833f);
-            color:white; border:none; border-radius:18px; font-weight:900; font-size:15px;
-            text-transform:uppercase; cursor:pointer; margin-top:15px; box-shadow:0 10px 25px rgba(33,162,82,0.25);
-            font-family: 'Montserrat', sans-serif;
+        .menu-grid { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 10px; 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
+            align-content: start; 
+            padding-bottom: 180px;
         }
 
-        #order-time-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .time-btn { padding: 12px; background: #f4f4f4; border-radius: 14px; text-align: center; font-weight: 700; font-size: 14px; cursor: pointer; }
-        .time-btn.active { background: #630d16; color: white; }
-
-        .upsell-item { 
-            display: block; padding: 14px 18px; background: #f8f8f8; border-radius: 16px; 
-            margin-bottom: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px solid transparent; 
-            transition: all 0.2s ease;
-        }
-        .upsell-item span { color: #333; }
-        .upsell-item b { color: var(--accent); margin-left: 6px; font-weight: 700; }
-        .upsell-item.active { background: #fff8ec; border: 1px solid #c5a059; }
-
-        .erip-phone { color: var(--green); font-weight: 900; font-size: 18px; display: block; margin-top: 8px; }
+        .product-card { background: white; border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 3px 8px rgba(0,0,0,0.05); position: relative; display: flex; flex-direction: column; gap: 4px; }
+        .product-card img { width: 100%; height: 85px; object-fit: cover; border-radius: 8px; margin-bottom: 4px; }
+        .product-card h3 { font-size: 10px; margin: 0; font-weight: 700; color: var(--dark); min-height: 24px; display: flex; align-items: center; justify-content: center; }
+        .product-card p { font-size: 8px; color: #777; margin: 0; min-height: 35px; line-height: 1.2; display: flex; align-items: center; justify-content: center; padding: 0 2px; }
+        .product-card .price { font-size: 11px; font-weight: 900; color: var(--accent); margin: 4px 0; }
+        .counter-controls { display: flex; align-items: center; justify-content: space-between; background: #f8f8f8; border-radius: 20px; padding: 2px; border: 1px solid #eee; margin-top: auto; }
+        .btn-qty { width: 28px; height: 28px; border-radius: 50%; border: none; background: white; color: var(--burgundy); font-weight: 900; font-size: 16px; cursor: pointer; }
+        .qty-badge { position: absolute; top: -4px; right: -4px; background: var(--burgundy); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; line-height: 18px; display: none; border: 2px solid white; font-weight: 900; z-index: 10; }
         
-        .copy-btn { 
-            width: 100%; padding: 12px; background: var(--gray); color: var(--burgundy); 
-            border: none; border-radius: 14px; font-weight: 700; font-size: 12px; 
-            text-transform: uppercase; margin-top: 12px; font-family: 'Montserrat', sans-serif;
-        }
-
-        .payment-summary {
-            background: #fff; border-radius: 14px; padding: 12px; margin-bottom: 12px;
-            border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;
-        }
-        .payment-summary label { font-size: 11px; font-weight: 800; color: #999; text-transform: uppercase; }
-        .payment-summary span { font-size: 18px; font-weight: 900; color: var(--burgundy); }
-
-        @keyframes fadeIn{ from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+        .payment-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1512; padding: 10px 15px 25px 15px; z-index: 500; border-radius: 20px 20px 0 0; }
+        .footer-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .total-price { font-size: 20px; color: var(--accent); font-weight: 900; }
+        .btn-footer { flex: 1; padding: 14px; border: none; border-radius: 12px; font-weight: 900; text-transform: uppercase; cursor: pointer; font-size: 12px; font-family: 'Montserrat'; }
+        .btn-view-order { background: rgba(255, 255, 255, 0.1); color: white; border: none; border-radius: 10px; padding: 10px 12px; font-family: 'Montserrat'; font-size: 9px; font-weight: 500; text-transform: uppercase; cursor: pointer; }
+        .btn-clear { background: var(--btn-clear); color: white; margin-right: 10px; }
+        .btn-pay { background: var(--btn-order); color: white; }
+        
+        #cart-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 2000; display: none; justify-content: center; align-items: flex-end; }
+        .modal-content { background: #fdfaf5; width: 100%; border-radius: 25px 25px 0 0; padding: 20px; max-height: 80vh; overflow-y: auto; box-sizing: border-box; }
+        
+        .cart-item-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px; font-size: 13px; }
+        .cart-item-info { flex: 1; margin-right: 10px; color: var(--dark); font-weight: 400; }
+        .cart-item-controls { display: flex; align-items: center; gap: 10px; }
+        .cart-qty-val { min-width: 40px; text-align: center; font-weight: 400; font-size: 12px; }
+        .btn-qty-small { width: 24px; height: 24px; border-radius: 50%; border: 1px solid #ddd; background: white; color: var(--burgundy); font-weight: 900; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div id="checkout-screen">
-        <div class="back-link-container"><a href="javascript:history.back();" id="ui-back">← Назад</a></div>
-        
-        <div class="checkout-card">
-            <div class="section-title">Ваш выбор</div>
-            <div id="cart-list"></div>
-            <div class="final-total" id="final-sum-top">0.00 BYN</div>
-        </div>
 
-        <div class="checkout-card">
-            <div class="section-title">Способ получения</div>
-            <div class="delivery-selector">
-                <div class="delivery-option active" id="opt-pickup" onclick="setDeliv('Самовывоз')">Самовывоз</div>
-                <div class="delivery-option" id="opt-delivery" onclick="setDeliv('Доставка')">Яндекс.Доставка</div>
-            </div>
-            <div id="delivery-note"></div>
-            
-            <div id="time-selection-area">
-                <div class="field-group">
-                    <label>Дата</label>
-                    <input type="date" id="order-date" onchange="enableTime()">
-                </div>
-                <div class="field-group" style="margin-top:14px;">
-                    <label>Время</label>
-                    <div id="order-time-list"></div>
-                    <input type="hidden" id="order-time">
-                </div>
-            </div>
-            <div style="text-align:center; font-size:10px; margin:15px 0; color:#ccc; font-weight: 700;">ИЛИ</div>
-            <button id="btn-discuss" class="discuss-btn" onclick="toggleDisc()">Согласовать время после оплаты</button>
-            <span id="discuss-hint" style="display:none; text-align:center; font-size:11px; color:#666; margin-top:10px;">Напишем вам в чат сразу после заказа.</span>
-        </div>
+    <div class="header-container">
+        <button class="back-floating-btn" id="btn-back" onclick="window.location.href='index.html'">← Назад</button>
+        <div class="promo-banner"><img src="img/shokoladnya oreshki.jpg"></div>
+        <div class="logo-area"><img src="Logo.png"></div>
+    </div>
 
-        <div class="checkout-card">
-            <div class="section-title">Ваши данные</div>
-            <label style="font-size:10px; font-weight:800; color:#bbb;">ИМЯ</label>
-            <input type="text" id="c-name" placeholder="Введите ваше имя">
-            <label style="font-size:10px; font-weight:800; color:#bbb; margin-top:12px; display:block;">ТЕЛЕФОН</label>
-            <input type="tel" id="c-phone" value="+375 ">
-            <label style="font-size:10px; font-weight:800; color:#bbb; margin-top:12px; display:block;">КОММЕНТАРИЙ</label>
-            <textarea id="c-comment" placeholder="Адрес доставки или пожелания"></textarea>
-        </div>
+    <div class="main-area">
+        <div class="sidebar" id="sidebar"></div>
+        <div class="menu-grid" id="menu-grid"></div>
+    </div>
 
-        <div class="checkout-card">
-            <div class="section-title">Добавить к заказу</div>
-            <div class="upsell-item" onclick="toggleUpsell(this,'2 пирожных Картошка',8)"><span>✨ 2 пирожных Картошка</span><b>+8 BYN</b></div>
-            <div class="upsell-item" onclick="toggleUpsell(this,'Набор орешков мини (6 шт)',12)"><span>✨ Набор орешков мини (6 шт)</span><b>+12 BYN</b></div>
-            <div class="upsell-item" onclick="toggleUpsell(this,'Трубочки 2 шт',8)"><span>✨ Трубочки 2 шт</span><b>+8 BYN</b></div>
+    <div class="payment-footer">
+        <div class="footer-top">
+            <button onclick="showCart()" class="btn-view-order" id="btn-view-cart">🛒 Просмотреть заказ</button>
+            <span class="total-price"><span id="total-val">0.00</span> BYN</span>
         </div>
+        <div style="display: flex;">
+            <button class="btn-footer btn-clear" id="main-clear-btn" disabled onclick="clearCart()">Очистить</button>
+            <button class="btn-footer btn-pay" id="main-pay-btn" disabled onclick="goToCheckout()">Оформить</button>
+        </div>
+    </div>
 
-        <div class="checkout-card">
-            <div class="section-title">Оплата (ЕРИП)</div>
-            <div class="payment-summary">
-                <label>К оплате:</label>
-                <span id="final-sum-bottom">0.00 BYN</span>
-            </div>
-            <div style="font-size:11px; color:#555; line-height: 1.4;">Система Расчета ЕРИП / Банковские, Финансовые услуги / Банки, НКФО / АЛЬФА-БАНК / Пополнение счета<span class="erip-phone">+375 (29) 651-44-03</span></div>
-            <button class="copy-btn" onclick="copyNumber('+375296514403', this)">Скопировать номер</button>
-            <button class="btn-main" id="ui-finish" onclick="finishOrder()">Оплачено, заказать</button>
+    <div id="cart-modal">
+        <div class="modal-content">
+            <h2 id="modal-title" style="text-align: center; color: var(--burgundy); font-weight: 900; margin-top: 0;">ВАШ ЗАКАЗ</h2>
+            <div id="cart-items-list"></div>
+            <div id="cart-total-modal" style="text-align: right; font-weight: 900; font-size: 18px; margin: 15px 0; color: var(--accent);"></div>
+            <button class="btn-footer btn-pay" id="btn-modal-checkout" style="width: 100%;" onclick="goToCheckout()">ОФОРМИТЬ</button>
+            <button class="btn-footer" id="btn-modal-back" style="width: 100%; background: #ddd; color: #333; margin-top: 10px;" onclick="document.getElementById('cart-modal').style.display='none'">НАЗАД</button>
         </div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
+        
         tg.expand();
-        tg.setHeaderColor('bg_color'); 
-        tg.setBackgroundColor('bg_color');
+        tg.setHeaderColor('#ffffff');
+        tg.setBackgroundColor('#ffffff');
 
-        let method = "Самовывоз";
-        let isDisc = false;
-        let upsells = [];
-
-        const productsData = {
-            'q1': { name: 'Орешки со сгущёнкой', price: 1.10 },
-            'q2': { name: 'Орешки со сгущёнкой и орехом', price: 1.50 },
-            'q3': { name: 'Кокос и миндаль', price: 1.80 },
-            'q4': { name: 'Nutella и фундук', price: 1.80 },
-            'q5': { name: 'Трубочки', price: 4.00 },
-            'q6': { name: 'Муравейник', price: 2.50 },
-            'q7': { name: 'Грибочки', price: 2.50 },
-            'q8': { name: 'Сердечки', price: 2.50 },
-            'q9': { name: 'Кокосовое', price: 2.50 },
-            'q10': { name: 'Орешки в глазури', price: 2.50 },
-            'q11': { name: 'Картошка', price: 4.00 },
-            'q12': { name: 'Шоколадная колбаса', price: 12.00 },
-            't1': { name: 'Медовик 1.1кг', price: 65.00 },
-            't2': { name: 'Медовик 2.2кг', price: 130.00 },
-            'n1': { name: 'Набор 1', price: 22.00 },
-            'n2': { name: 'Набор 2', price: 32.00 },
-            'n3': { name: 'Набор 3', price: 34.00 },
-            'n4': { name: 'Набор 4', price: 45.00 },
-            'n5': { name: 'Набор 5', price: 38.00 },
-            'n6': { name: 'Набор 6', price: 54.00 }
-        };
-
-        const todayStr = new Date(new Date().getTime() + 3*3600*1000).toISOString().split('T')[0];
-
-        window.onload = function() {
-            render();
-            const dateInput = document.getElementById('order-date');
-            dateInput.setAttribute('min', todayStr);
-            dateInput.value = todayStr;
-            enableTime();
-            setDeliv(method);
-        };
-
-        document.addEventListener('click', function(e) {
-            if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
-                document.activeElement.blur();
-            }
+        window.addEventListener('unload', function() {
+            localStorage.removeItem('mara_cart');
+            localStorage.removeItem('mara_total');
         });
 
-        function setDeliv(m) {
-            method = m;
-            document.getElementById('opt-pickup').classList.toggle('active', m === 'Самовывоз');
-            document.getElementById('opt-delivery').classList.toggle('active', m === 'Доставка');
-            document.getElementById('delivery-note').innerHTML = m === 'Самовывоз' ?
-                `ул. Свиридова, 6 подъезд.<br><strong>Позвоните за 10 минут: +375 (29) 651-44-03</strong>` :
-                `Яндекс.Доставка<br>ул. Свиридова, 6 подъезд.<br>Перед вызовом позвоните<br><strong>+375 (29) 651-44-03</strong>`;
+        let cart = {}; let total = 0;
+        const urlParams = new URLSearchParams(window.location.search);
+        let lang = urlParams.get('lang') || localStorage.getItem('selectedLang') || 'ru';
+        let cityFromUrl = urlParams.get('city') || localStorage.getItem('selectedCity') || 'Гомель';
+        localStorage.setItem('selectedCity', cityFromUrl);
+
+        const ui = {
+            ru: { back: "← Назад", view: "🛒 Просмотреть заказ", clear: "Очистить", pay: "Оформить", your_order: "ВАШ ЗАКАЗ", total: "ИТОГО", from: "от", pcs: "шт.", empty: "Пусто" },
+            by: { back: "← Назад", view: "🛒 Праглядзець замову", clear: "Ачысціць", pay: "Аформіць", your_order: "ВАША ЗАМОВА", total: "ВЫНІК", from: "ад", pcs: "шт.", empty: "Пуста" },
+            en: { back: "← Back", view: "🛒 View Order", clear: "Clear", pay: "Checkout", your_order: "YOUR ORDER", total: "TOTAL", from: "from", pcs: "pcs.", empty: "Empty" }
+        };
+
+        const products = [
+            { id: 'q1', cat: 0, name: {ru: 'Орешки со сгущёнкой', by: 'Арэшкі са згушчонкай', en: 'Nuts with condensed milk'}, price: 1.10, img: 'img/oreshki.jpg', min: 20 },
+            { id: 'q2', cat: 0, name: {ru: 'Орешки со сгущёнкой и орехом', by: 'Арэшкі са згушчонкай і арэхам', en: 'Nuts with condensed milk & nut'}, price: 1.50, img: 'img/oreshki sguchenka oreh.jpg', min: 20 },
+            { id: 'q3', cat: 0, name: {ru: 'Кокос и миндаль', by: 'Какос і миндаль', en: 'Coconut & Almond'}, price: 1.80, img: 'img/oreshki kokos.jpg', min: 20 },
+            { id: 'q4', cat: 0, name: {ru: 'Nutella и фундук', by: 'Nutella і фундук', en: 'Nutella & Hazelnut'}, price: 1.80, img: 'img/shokoladnya oreshki.jpg', min: 20 },
+            { id: 'q5', cat: 1, name: {ru: 'Трубочки со сгущенкой', by: 'Трубачкі са згушчонкай', en: 'Rolls with condensed milk'}, price: 4.00, img: 'img/trubochka1.jpg', min: 6 },
+            { id: 'q6', cat: 2, name: {ru: 'Муравейник', by: 'Мурашнік', en: 'Ant Hill cake'}, price: 2.50, img: 'img/muraveynik.jpg', min: 8 },
+            { id: 'q7', cat: 2, name: {ru: 'Грибочки', by: 'Грыбочкі', en: 'Mushrooms'}, price: 2.50, img: 'img/grobochki.jpg', min: 12 },
+            { id: 'q8', cat: 2, name: {ru: 'Сердечки', by: 'Сэрцайкі', en: 'Hearts'}, price: 2.50, img: 'img/serdechki.jpg', min: 8 },
+            { id: 'q9', cat: 2, name: {ru: 'Кокосовое', by: 'Какосавае', en: 'Coconut cookies'}, price: 2.50, img: 'img/kokosovoe.jpg', min: 8 },
+            { id: 'q10', cat: 2, name: {ru: 'Орешки в глазури', by: 'Арэшкі ў глазуры', en: 'Glazed nuts'}, price: 2.50, img: 'img/orshki v glazuri.jpg', min: 12 },
+            { id: 'q11', cat: 2, name: {ru: 'Картошка', by: 'Бульба', en: 'Kartoshka cake'}, price: 4.00, img: 'img/kartoshka.jpg', min: 4 },
+            { id: 'q12', cat: 2, name: {ru: 'Шоколадная колбаса', by: 'Шакаладная каўбаса', en: 'Chocolate sausage'}, price: 12.00, img: 'img/shokoladnaya kolbasa.jpg', min: 1 },
+            { id: 't1', name: {ru: 'Медовик 1.1кг', by: 'Мядовік 1.1кг', en: 'Honey cake 1.1kg'}, cat: 3, price: 65.00, img: 'img/tort 2.jpg', min: 1 },
+            { id: 't2', name: {ru: 'Медовик 2.2кг', by: 'Мядовік 2.2кг', en: 'Honey cake 2.2kg'}, cat: 3, price: 130.00, img: 'img/tort 2.jpg', min: 1 },
+            { id: 'n1', cat: 4, name: {ru: 'Набор 1', by: 'Набор 1', en: 'Set 1'}, desc: {ru: '20 половинок орешков со сгущенкой и орехами', by: '20 палавінак арэшкаў са згушчонкай і арэхамі', en: '20 nut halves with condensed milk and nuts'}, price: 22.00, img: 'img/nabor1.jpg', min: 1 },
+            { id: 'n2', cat: 4, name: {ru: 'Набор 2', by: 'Набор 2', en: 'Set 2'}, desc: {ru: '12 орешков со сгущенкой, покрытых шоколадной глазурью', by: '12 арэшкаў са згушчонкай, пакрытых шакаладнай глазурай', en: '12 nuts with condensed milk covered in chocolate glaze'}, price: 32.00, img: 'img/nabor2.jpg', min: 1 },
+            { id: 'n3', cat: 4, name: {ru: 'Набор 3', by: 'Набор 3', en: 'Set 3'}, desc: {ru: '3 орешка в глазури, 3 кокосовых пирожных, 3 муравейника, 4 грибочка со сгущенкой', by: '3 арэшкі ў глазуры, 3 какосавыя пірожныя, 3 мурашнікі, 4 грыбочкі са згушчонкай', en: '3 glazed nuts, 3 coconut pastries, 3 ant-hills, 4 mushrooms with condensed milk'}, price: 34.00, img: 'img/nabor3.jpg', min: 1 },
+            { id: 'n4', cat: 4, name: {ru: 'Набор 4', by: 'Набор 4', en: 'Set 4'}, desc: {ru: '12 орешков, 4 сердечка и 5 трубочек со сгущенкой', by: '12 арэшкаў, 4 сэрцайкі і 5 трубачак са згушчонкай', en: '12 nuts, 4 hearts and 5 rolls with condensed milk'}, price: 45.00, img: 'img/nabor4.jpg', min: 1 },
+            { id: 'n5', cat: 4, name: {ru: 'Набор 5', by: 'Набор 5', en: 'Set 5'}, desc: {ru: '9 орешков, 3 муравейника, 3 кокосовых и 3 трубочки', by: '9 арэшкаў, 3 мурашнікі, 3 какосавыя і 3 трубачкі', en: '9 nuts, 3 ant-hills, 3 coconut pastries and 3 rolls'}, price: 38.00, img: 'img/nabor5.jpg', min: 1 },
+            { id: 'n6', cat: 4, name: {ru: 'Набор 6', by: 'Набор 6', en: 'Set 6'}, desc: {ru: '3 трубочки, 16 орешков, 5 грибочков и 2 кокосовых', by: '3 трубачкі, 16 арэшкаў, 5 грыбочкаў і 2 какосавыя', en: '3 rolls, 16 nuts, 5 mushrooms and 2 coconut pastries'}, price: 54.00, img: 'img/nabor6.jpg', min: 1 }
+        ];
+
+        function init() { 
+            cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
+            applyLanguage();
+            renderSidebar(); 
+            renderProducts(0);
+            updateTotal(); 
         }
 
-        function render() {
-            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
-            let html = '';
-            let baseTotal = 0;
-
-            for (let id in cart) {
-                const item = productsData[id];
-                const qty = cart[id];
-                if (item && qty > 0) {
-                    const itemSum = item.price * qty;
-                    baseTotal += itemSum;
-                    html += `
-                    <div class="preview-row">
-                        <span>${item.name} x${qty}</span>
-                        <span class="item-cost">${itemSum.toFixed(2)} BYN</span>
-                    </div>`;
-                }
-            }
-
-            upsells.forEach(up => {
-                html += `
-                <div class="preview-row" style="color: var(--accent); font-weight: 500;">
-                    <span>${up.name}</span>
-                    <span class="item-cost">${up.price.toFixed(2)} BYN</span>
-                </div>`;
-            });
-
-            if (!html) html = '<div style="text-align:center; padding:10px; color:#999;">Корзина пуста</div>';
-            
-            document.getElementById('cart-list').innerHTML = html;
-            recalc(baseTotal);
-        }
-
-        function toggleUpsell(el, name, price) {
-            el.classList.toggle('active');
-            const idx = upsells.findIndex(x => x.name === name);
-            if(idx > -1) {
-                upsells.splice(idx, 1);
-            } else {
-                upsells.push({name, price});
-            }
-            render();
-        }
-
-        function recalc(baseTotal) {
-            if (baseTotal === undefined) {
-                const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
-                baseTotal = 0;
-                for (let id in cart) {
-                    if (productsData[id]) baseTotal += productsData[id].price * cart[id];
-                }
-            }
-            let extra = upsells.reduce((s, x) => s + x.price, 0);
-            const totalText = (baseTotal + extra).toFixed(2) + ' BYN';
-            document.getElementById('final-sum-top').innerText = totalText;
-            document.getElementById('final-sum-bottom').innerText = totalText;
-        }
-
-        function enableTime() {
-            const box = document.getElementById('order-time-list');
-            const dateInput = document.getElementById('order-date');
-            const hidden = document.getElementById('order-time');
-            box.innerHTML = '';
-            hidden.value = '';
-            isDisc = false;
-            document.getElementById('btn-discuss').classList.remove('active');
-            document.getElementById('discuss-hint').style.display = 'none';
-            document.getElementById('time-selection-area').style.opacity = '1';
-            if (!dateInput.value) return;
-            const now = new Date();
-            const currentHour = now.getHours();
-            for (let h = 9; h <= 21; h++) {
-                if (dateInput.value === todayStr && h < currentHour + 3) continue;
-                let btn = document.createElement('div');
-                btn.className = 'time-btn'; btn.innerText = h + ':00';
-                btn.onclick = () => {
-                    document.querySelectorAll('.time-btn').forEach(x => x.classList.remove('active'));
-                    btn.classList.add('active');
-                    hidden.value = h + ':00';
-                };
-                box.appendChild(btn);
-            }
-        }
-
-        function toggleDisc() {
-            isDisc = !isDisc;
-            const btn = document.getElementById('btn-discuss');
-            const hint = document.getElementById('discuss-hint');
-            const area = document.getElementById('time-selection-area');
-            btn.classList.toggle('active', isDisc);
-            hint.style.display = isDisc ? 'block' : 'none';
-            area.style.opacity = isDisc ? '0.3' : '1';
-            if (isDisc) {
-                document.getElementById('order-time').value = '';
-                document.getElementById('order-time-list').innerHTML = '';
-            } else {
-                document.getElementById('order-date').value = todayStr;
-                enableTime();
-            }
-        }
-
-        document.getElementById('c-phone').addEventListener('input', function(e) {
-            let digits = e.target.value.substring(5).replace(/\D/g, '');
-            let f = '+375 ';
-            if (digits.length > 0) f += '(' + digits.substring(0, 2);
-            if (digits.length >= 3) f += ') ' + digits.substring(2, 5);
-            if (digits.length >= 6) f += '-' + digits.substring(5, 7);
-            if (digits.length >= 8) f += '-' + digits.substring(7, 9);
-            e.target.value = f;
-        });
-
-        function copyNumber(num, btn) {
-            navigator.clipboard.writeText(num);
-            const old = btn.innerText;
-            btn.innerText = "Скопировано!";
-            setTimeout(() => btn.innerText = old, 2000);
-        }
-
-        function finishOrder() {
-            const name = document.getElementById('c-name').value.trim();
-            if(!name) return tg.showAlert("Введите имя");
-            
-            const data = {
-                name: name,
-                phone: document.getElementById('c-phone').value,
-                method: method,
-                date: isDisc ? "Согласовать" : document.getElementById('order-date').value,
-                time: isDisc ? "Согласовать" : document.getElementById('order-time').value,
-                total: document.getElementById('final-sum-bottom').innerText,
-                city: "ГОМЕЛЬ"
+        function renderSidebar() {
+            const imgs = ['img/oreshki.jpg', 'img/trubochka1.jpg', 'img/muraveynik.jpg', 'img/tort 2.jpg', 'img/nabor2.jpg'];
+            const names = {
+                ru: ["ОРЕШКИ", "ТРУБОЧКИ", "ПИРОЖНЫЕ", "ТОРТ", "НАБОРЫ"],
+                by: ["АРЭШКІ", "ТРУБАЧКІ", "ПІРОЖНЫЯ", "ТОРТ", "НАБОРЫ"],
+                en: ["NUTS", "ROLLS", "PASTRIES", "CAKES", "SETS"]
             };
-
-            document.getElementById('checkout-screen').innerHTML = `
-            <div style="height:90vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:30px; animation:fadeIn .4s ease;">
-                <div style="width:110px; height:110px; border-radius:50%; background:linear-gradient(135deg,#21a252,#1bc965); display:flex; align-items:center; justify-content:center; font-size:56px; color:white; box-shadow:0 15px 35px rgba(33,162,82,.28);">✓</div>
-                <div style="font-size:30px; font-weight:900; color:#630d16; margin-top:22px;">Спасибо за заказ</div>
-                <div style="font-size:15px; color:#666; line-height:1.6; margin-top:12px; max-width:280px;">
-                    Ваш заказ успешно отправлен.<br>Сейчас переведём вас в чат<br>для отправки чека оплаты.
-                </div>
-                <div id="countdown" style="margin-top:26px; font-size:18px; font-weight:800; color:#c5a059;">3...</div>
-            </div>`;
-
-            let sec = 3;
-            const timer = setInterval(() => {
-                sec--;
-                if(document.getElementById('countdown')) document.getElementById('countdown').innerText = sec + '...';
-                if(sec <= 0) {
-                    clearInterval(timer);
-                    tg.sendData(JSON.stringify(data));
-                    setTimeout(() => tg.close(), 100);
-                }
-            }, 1000);
+            document.getElementById('sidebar').innerHTML = names[lang].map((n, i) => `
+                <div class="cat-item ${i==0?'active':''}" onclick="changeCat(${i}, this)">
+                    <img src="${imgs[i]}"><br>${n}
+                </div>`).join('');
         }
+
+        function renderProducts(cat) {
+            const grid = document.getElementById('menu-grid');
+            grid.innerHTML = products.filter(p => p.cat === cat).map(p => {
+                const q = cart[p.id] || 0;
+                const description = p.desc ? p.desc[lang] : `${ui[lang].from} ${p.min} ${ui[lang].pcs}`;
+                return `
+                    <div class="product-card">
+                        <div class="qty-badge" id="badge-${p.id}" style="display:${q>0?'block':'none'}">${q}</div>
+                        <img src="${p.img}">
+                        <h3>${p.name[lang]}</h3>
+                        <p>${description}</p>
+                        <div class="price">${p.price.toFixed(2)} BYN</div>
+                        <div class="counter-controls">
+                            <button class="btn-qty" onclick="changeQty('${p.id}', -1)">-</button>
+                            <span id="qty-${p.id}">${q}</span>
+                            <button class="btn-qty" onclick="changeQty('${p.id}', 1)">+</button>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        function changeQty(id, delta) {
+            const p = products.find(x => x.id === id);
+            let cur = cart[id] || 0;
+            if (cur === 0 && delta === 1) delta = p.min;
+            let next = cur + delta;
+            if (next < 0) return;
+            if (next < p.min && next > 0 && delta < 0) next = 0;
+            cart[id] = next;
+            if (cart[id] <= 0) delete cart[id];
+            updateTotal();
+            
+            if(document.getElementById('cart-modal').style.display === 'flex') {
+                showCart();
+            }
+        }
+
+        function updateTotal() {
+            total = 0; let hasPotato = false; let itemCount = 0;
+            for (let k in cart) {
+                let pr = products.find(x => x.id === k);
+                if (pr) {
+                    total += (pr.price * cart[k]);
+                    itemCount += cart[k];
+                    if (k === 'q11') hasPotato = true;
+                    if(document.getElementById(`qty-${k}`)) document.getElementById(`qty-${k}`).innerText = cart[k];
+                    let b = document.getElementById(`badge-${k}`);
+                    if(b) { b.innerText = cart[k]; b.style.display = 'block'; }
+                }
+            }
+            products.forEach(p => { if(!cart[p.id]) {
+                if(document.getElementById(`qty-${p.id}`)) document.getElementById(`qty-${p.id}`).innerText = 0;
+                if(document.getElementById(`badge-${p.id}`)) document.getElementById(`badge-${p.id}`).style.display = 'none';
+            }});
+            document.getElementById('total-val').innerText = total.toFixed(2);
+            document.getElementById('main-pay-btn').disabled = (total < (hasPotato ? 16 : 20));
+            document.getElementById('main-clear-btn').disabled = (itemCount === 0);
+            localStorage.setItem('mara_cart', JSON.stringify(cart));
+            localStorage.setItem('mara_total', total.toFixed(2));
+        }
+
+        function showCart() {
+            const list = document.getElementById('cart-items-list');
+            const entries = Object.entries(cart);
+            if (!entries.length) {
+                list.innerHTML = `<div style="text-align:center; color:#999; padding:20px;">${ui[lang].empty}</div>`;
+                document.getElementById('cart-total-modal').innerText = "";
+            } else {
+                list.innerHTML = entries.map(([id, q]) => {
+                    const p = products.find(x => x.id === id);
+                    return `
+                    <div class="cart-item-row">
+                        <div class="cart-item-info">
+                            ${p.name[lang]}<br>
+                            <span style="color: var(--accent); font-weight: 700;">${(p.price * q).toFixed(2)} BYN</span>
+                        </div>
+                        <div class="cart-item-controls">
+                            <button class="btn-qty-small" onclick="changeQty('${id}', -1)">-</button>
+                            <span class="cart-qty-val">${q} ${ui[lang].pcs}</span>
+                            <button class="btn-qty-small" onclick="changeQty('${id}', 1)">+</button>
+                        </div>
+                    </div>`;
+                }).join('');
+                document.getElementById('cart-total-modal').innerText = ui[lang].total + ": " + total.toFixed(2) + " BYN";
+            }
+            document.getElementById('cart-modal').style.display = 'flex';
+        }
+
+        function goToCheckout() {
+            if (total === 0) return;
+            localStorage.setItem('mara_cart', JSON.stringify(cart));
+            localStorage.setItem('mara_total', total.toFixed(2));
+            const urlParams = new URLSearchParams(window.location.search);
+            const selectedCity = urlParams.get('city') || localStorage.getItem('selectedCity') || 'Гомель';
+            if (selectedCity === 'Гомель') {
+                window.location.href = 'gomel/checkout.html?city=Гомель&lang=' + lang;
+            } else {
+                window.location.href = 'rb/checkout.html?city=Другой&lang=' + lang;
+            }
+        }
+
+        function clearCart() { cart = {}; localStorage.removeItem('mara_cart'); updateTotal(); }
+        function changeCat(i, el) { 
+            document.querySelectorAll('.cat-item').forEach(c => c.classList.remove('active')); 
+            el.classList.add('active'); renderProducts(i); 
+        }
+        function applyLanguage() {
+            document.getElementById('btn-back').innerText = ui[lang].back;
+            document.getElementById('btn-view-cart').innerText = ui[lang].view;
+            document.getElementById('main-clear-btn').innerText = ui[lang].clear;
+            document.getElementById('main-pay-btn').innerText = ui[lang].pay;
+            document.getElementById('modal-title').innerText = ui[lang].your_order;
+        }
+
+        init();
     </script>
 </body>
 </html>
