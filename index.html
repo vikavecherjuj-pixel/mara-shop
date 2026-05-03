@@ -163,6 +163,7 @@
         /* Очищаем старые выборы */
         localStorage.removeItem('selectedLang');
         localStorage.removeItem('selectedCity');
+        localStorage.removeItem('mara_city');
 
         function checkSelection() {
             if (citySelected && langSelected) {
@@ -188,6 +189,9 @@
 
         function setCity(c, el) {
             localStorage.setItem('selectedCity', c);
+            // Дополнительный ключ для проверки в каталоге (shop.html)
+            localStorage.setItem('mara_city', c); 
+            
             citySelected = true;
 
             document.querySelectorAll('#city-btns .opt-btn')
