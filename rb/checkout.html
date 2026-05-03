@@ -86,7 +86,7 @@
 <body>
     <div id="checkout-screen">
         <h2 id="ui-main-title" style="text-align: center; font-weight: 900; font-size: 22px; margin: 15px 0;">ОФОРМЛЕНИЕ</h2>
-        <div class="back-link-top"><a href="../shop.html" id="ui-back">← Назад в каталог</a></div>
+        <div class="back-link-top"><a href="javascript:history.back()" id="ui-back">← Назад в каталог</a></div>
 
         <div class="checkout-card">
             <div class="checkout-title" id="ui-order-title">Ваш заказ</div>
@@ -212,8 +212,25 @@
 
         const productsData = {
             'q1': { name: {ru:'Орешки со сгущёнкой', by:'Арэшкі са згушчонкай'}, price: 1.10 },
+            'q2': { name: {ru:'Орешки сгущ.+орех', by:'Арэшкі са згушч.+арэх'}, price: 1.50 },
+            'q3': { name: {ru:'Кокос и миндаль', by:'Кокас і міндаль'}, price: 1.80 },
+            'q4': { name: {ru:'Nutella и фундук', by:'Nutella і фундук'}, price: 1.80 },
             'q5': { name: {ru:'Трубочки', by:'Трубачкі'}, price: 4.00 },
-            'n1': { name: {ru:'Набор 1', by:'Набор 1'}, price: 22.00 }
+            'q6': { name: {ru:'Муравейник', by:'Мурашнік'}, price: 2.50 },
+            'q7': { name: {ru:'Грибочки', by:'Грыбочкі'}, price: 2.50 },
+            'q8': { name: {ru:'Сердечки', by:'Сэрцайкі'}, price: 2.50 },
+            'q9': { name: {ru:'Кокосовое', by:'Кокасавае'}, price: 2.50 },
+            'q10': { name: {ru:'Орешки в глазури', by:'Арэшкі ў глазуры'}, price: 2.50 },
+            'q11': { name: {ru:'Картошка', by:'Бульба'}, price: 4.00 },
+            'q12': { name: {ru:'Шоколадная колбаса', by:'Шакаладная каўбаса'}, price: 12.00 },
+            't1': { name: {ru:'Медовик 1.1кг', by:'Мядовік 1.1кг'}, price: 65.00 },
+            't2': { name: {ru:'Медовик 2.2кг', by:'Мядовік 2.2кг'}, price: 130.00 },
+            'n1': { name: {ru:'Набор 1', by:'Набор 1'}, price: 22.00 },
+            'n2': { name: {ru:'Набор 2', by:'Набор 2'}, price: 32.00 },
+            'n3': { name: {ru:'Набор 3', by:'Набор 3'}, price: 34.00 },
+            'n4': { name: {ru:'Набор 4', by:'Набор 4'}, price: 45.00 },
+            'n5': { name: {ru:'Набор 5', by:'Набор 5'}, price: 38.00 },
+            'n6': { name: {ru:'Набор 6', by:'Набор 6'}, price: 54.00 }
         };
 
         const phoneInput = document.getElementById('cust-phone');
