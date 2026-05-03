@@ -348,6 +348,30 @@
             const name = document.getElementById('c-name').value.trim();
             if(!name) return tg.showAlert("Введите имя");
             
+            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
+            let items = [];
+
+            for (let id in cart) {
+                if (productsData[id]) {
+                    items.push({
+                        sku: id,
+                        name: productsData[id].name,
+                        quantity: cart[id],
+                        price: productsData[id].price
+                    });
+                }
+            }
+
+            // Добавляем выбранные допы (upsells) в массив товаров
+            upsells.forEach(up => {
+                items.push({
+                    sku: 'upsell',
+                    name: up.name,
+                    quantity: 1,
+                    price: up.price
+                });
+            });
+
             const data = {
                 name: name,
                 phone: document.getElementById('c-phone').value,
@@ -355,7 +379,9 @@
                 date: isDisc ? "Согласовать" : document.getElementById('order-date').value,
                 time: isDisc ? "Согласовать" : document.getElementById('order-time').value,
                 total: document.getElementById('final-sum-bottom').innerText,
-                city: "ГОМЕЛЬ"
+                city: "ГОМЕЛЬ",
+                comment: document.getElementById('c-comment').value,
+                items: items
             };
 
             document.getElementById('checkout-screen').innerHTML = `
