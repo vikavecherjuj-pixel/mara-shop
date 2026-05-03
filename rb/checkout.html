@@ -187,7 +187,7 @@
             ru: {
                 title: "ОФОРМЛЕНИЕ", back: "← Назад в каталог", order: "Ваш заказ", del_label: "Доставка почтой",
                 contact: "Контактные данные", name: "Фамилия и Имя", name_ph: "Для почты нужно полное ФИО",
-                phone: "Телефон", del_title: "Данные для доставки", city: "Город", city_ph: "Напр: Минск",
+                phone: "Телефон", del_title: "Дадзеныя для дастаўкі", city: "Город", city_ph: "Напр: Минск",
                 dept: "Номер или адрес отделения", dept_ph: "Напр: Отделение №142", 
                 addr: "Полный адрес (Улица, дом, кв)", index: "Почтовый индекс", 
                 note: "*Отправка осуществляется после 100% оплаты заказа.",
@@ -319,14 +319,32 @@
                 return;
             }
 
+            // --- ОБНОВЛЕННЫЙ БЛОК ДАННЫХ ---
+            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
+            let items = [];
+
+            for (let id in cart) {
+                if (productsData[id]) {
+                    items.push({
+                        sku: id,
+                        name: productsData[id].name.ru,
+                        quantity: cart[id],
+                        price: productsData[id].price
+                    });
+                }
+            }
+
             const data = {
                 name: name,
                 phone: phone,
                 city: city,
                 total: document.getElementById('final-sum').innerText,
                 date: sendDate,
-                comment: document.getElementById('cust-comment').value
+                comment: document.getElementById('cust-comment').value,
+                method: document.getElementById('post-type').value,
+                items: items
             };
+            // --- КОНЕЦ ОБНОВЛЕННОГО БЛОКА ---
 
             let seconds = 5;
 
