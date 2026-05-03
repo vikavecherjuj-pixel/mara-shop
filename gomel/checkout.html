@@ -183,8 +183,21 @@
             'q3': { name: 'Кокос и миндаль', price: 1.80 },
             'q4': { name: 'Nutella и фундук', price: 1.80 },
             'q5': { name: 'Трубочки', price: 4.00 },
+            'q6': { name: 'Муравейник', price: 2.50 },
+            'q7': { name: 'Грибочки', price: 2.50 },
+            'q8': { name: 'Сердечки', price: 2.50 },
+            'q9': { name: 'Кокосовое', price: 2.50 },
+            'q10': { name: 'Орешки в глазури', price: 2.50 },
             'q11': { name: 'Картошка', price: 4.00 },
-            't1': { name: 'Медовик 1.1кг', price: 65.00 }
+            'q12': { name: 'Шоколадная колбаса', price: 12.00 },
+            't1': { name: 'Медовик 1.1кг', price: 65.00 },
+            't2': { name: 'Медовик 2.2кг', price: 130.00 },
+            'n1': { name: 'Набор 1', price: 22.00 },
+            'n2': { name: 'Набор 2', price: 32.00 },
+            'n3': { name: 'Набор 3', price: 34.00 },
+            'n4': { name: 'Набор 4', price: 45.00 },
+            'n5': { name: 'Набор 5', price: 38.00 },
+            'n6': { name: 'Набор 6', price: 54.00 }
         };
 
         const todayStr = new Date(new Date().getTime() + 3*3600*1000).toISOString().split('T')[0];
@@ -198,7 +211,6 @@
             setDeliv(method);
         };
 
-        // ФУНКЦИЯ СВОРАЧИВАНИЯ КЛАВИАТУРЫ (ВОЗВРАЩЕНА)
         document.addEventListener('click', function(e) {
             if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
                 document.activeElement.blur();
