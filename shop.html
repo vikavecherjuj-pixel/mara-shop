@@ -3,248 +3,385 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mara Shop - Каталог РБ</title>
+    <title>Mara Shop - Доставка по РБ</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { --accent: #c5a059; --burgundy: #630d16; --dark: #2c1a11; --bg: #fdfaf5; --green: #21a252; --gray: #f4f4f4; }
         
-        /* 1. ИСПРАВЛЕНО: Удален position: fixed для предотвращения багов скролла */
-        html, body {
-            height: 100%;
-            width: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            font-family: 'Montserrat', sans-serif;
-            background: var(--bg);
+        html, body { 
+            font-family: 'Montserrat', sans-serif; 
+            background: var(--bg); 
+            margin: 0; 
+            padding: 10px; 
+            color: var(--dark); 
+            min-height: 100vh; 
+            overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
         }
 
-        .main-container {
-            display: flex;
-            height: 100vh;
-            width: 100vw;
+        #checkout-screen { display: flex; flex-direction: column; gap: 12px; padding-bottom: 40px; }
+        .back-link-top { text-align: left; margin-bottom: 5px; }
+        .back-link-top a { color: #aaa; text-decoration: none; font-size: 13px; font-weight: 700; }
+        
+        .checkout-card { 
+            background: white; border-radius: 20px; padding: 18px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+        }
+        
+        .checkout-title { 
+            font-weight: 900; font-size: 14px; margin-bottom: 12px; color: var(--burgundy); 
+            text-transform: uppercase; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; 
+        }
+        
+        label { display: block; font-size: 10px; font-weight: 700; margin-bottom: 6px; color: #888; text-transform: uppercase; }
+        
+        input, select, textarea {
+            width: 100%; padding: 14px; border: 1px solid #f0f0f0; border-radius: 12px;
+            font-family: 'Montserrat'; font-size: 16px; margin-bottom: 12px; box-sizing: border-box;
+            background: #fafafa; outline: none; color: black !important; caret-color: black !important;
+            -webkit-appearance: none;
         }
 
-        /* 2. ИСПРАВЛЕНО: Обновленный sidebar с высотой 100% и увеличенным отступом */
-        .sidebar {
-            width: 85px;
-            background: white;
-            border-right: 1px solid #ddd;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 10px;
-            flex-shrink: 0;
-
-            overflow-y: auto;
-            height: 100%;
-            min-height: 0;
-
-            padding-bottom: 220px;
-
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
+        .select-wrapper { position: relative; }
+        .select-wrapper::after {
+            content: '▼'; font-size: 10px; position: absolute; right: 15px; top: 18px; color: var(--accent); pointer-events: none;
         }
-        .sidebar::-webkit-scrollbar { display: none; }
-
-        .content {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 15px;
-            background: var(--bg);
-            padding-bottom: 220px;
-            -webkit-overflow-scrolling: touch;
+        
+        textarea { resize: none; height: 80px; }
+        .preview-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px; align-items: flex-start; }
+        .item-name { flex: 1; padding-right: 10px; line-height: 1.4; }
+        .item-cost { font-weight: 700; color: var(--accent); white-space: nowrap; }
+        .final-sum { text-align: right; font-weight: 900; color: var(--accent); font-size: 18px; margin-top: 10px; }
+        
+        .btn-main { 
+            width: 100%; padding: 18px; background: var(--green); color: white; border: none; 
+            border-radius: 15px; font-weight: 900; font-size: 14px; text-transform: uppercase; 
+            cursor: pointer; font-family: 'Montserrat'; 
         }
+        
+        .erip-box { background: #f9fdf9; border: 1px solid #eef7ee; padding: 20px; border-radius: 15px; text-align: left; }
+        .erip-text { font-size: 11px; color: #555; line-height: 1.6; margin-bottom: 10px; }
+        .erip-phone { color: var(--green); font-weight: 900; font-size: 20px; display: block; margin: 10px 0; letter-spacing: 0.5px; }
+        .btn-copy { background: #f0f0f0; color: #444; border: none; border-radius: 10px; padding: 12px; width: 100%; font-size: 11px; font-weight: 700; text-transform: uppercase; cursor: pointer; font-family: 'Montserrat'; }
 
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 12px 5px;
-            cursor: pointer;
-            width: 100%;
-            transition: 0.2s;
-            opacity: 0.6;
+        .upsell-item { padding:14px; background:#fafafa; border-radius:12px; margin-bottom:10px; font-weight:700; cursor:pointer; border:1px solid #eee; font-size: 13px; }
+        .upsell-item.active { background:#fff7ea; border:1px solid #c5a059; }
+
+        .payment-summary {
+            background: #fff; border-radius: 14px; padding: 12px; margin-bottom: 12px;
+            border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;
         }
-        .nav-item.active { opacity: 1; background: #fff8ee; border-left: 4px solid var(--accent); }
-        .nav-icon { width: 32px; height: 32px; margin-bottom: 5px; border-radius: 8px; }
-        .nav-label { font-size: 9px; font-weight: 700; text-align: center; color: var(--dark); text-transform: uppercase; }
+        .payment-summary label { font-size: 11px; font-weight: 800; color: #999; text-transform: uppercase; margin-bottom: 0; }
+        .payment-summary span { font-size: 18px; font-weight: 900; color: var(--burgundy); }
 
-        .product-card {
-            background: white;
-            border-radius: 20px;
-            padding: 12px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-            border: 1px solid #eee;
-            animation: fadeIn 0.4s ease forwards;
+        .thanks-screen {
+            display:flex; flex-direction:column; align-items:center; justify-content:center; 
+            height:90vh; text-align:center; padding:20px; font-family:'Montserrat';
+            animation: fadeIn 0.5s ease;
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .product-img { width: 85px; height: 85px; border-radius: 15px; object-fit: cover; margin-right: 15px; background: #f9f9f9; }
-        .product-info { flex-grow: 1; }
-        .product-name { font-weight: 700; font-size: 14px; margin-bottom: 4px; color: var(--dark); }
-        .product-price { color: var(--accent); font-weight: 900; font-size: 15px; }
-
-        .counter { display: flex; align-items: center; gap: 12px; background: var(--gray); padding: 5px 12px; border-radius: 12px; }
-        .btn-count { width: 28px; height: 28px; border: none; background: white; border-radius: 8px; font-weight: 900; font-size: 18px; color: var(--burgundy); cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .count-val { font-weight: 900; font-size: 16px; min-width: 20px; text-align: center; }
-
-        .payment-footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 20px;
-            border-top: 1px solid #eee;
-            box-shadow: 0 -10px 25px rgba(0,0,0,0.05);
-            display: none;
-            z-index: 1000;
-        }
-        .footer-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .total-label { font-size: 12px; font-weight: 700; color: #888; text-transform: uppercase; }
-        .total-sum { font-size: 24px; font-weight: 900; color: var(--burgundy); }
-        .btn-order { background: var(--green); color: white; border: none; width: 100%; padding: 18px; border-radius: 16px; font-weight: 900; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 6px 20px rgba(33, 162, 82, 0.3); }
-
-        .section-title { font-weight: 900; font-size: 18px; margin: 10px 0 20px 0; color: var(--burgundy); border-left: 4px solid var(--accent); padding-left: 10px; }
+        @keyframes fadeIn{ from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
     </style>
 </head>
 <body>
+    <div id="checkout-screen">
+        <h2 id="ui-main-title" style="text-align: center; font-weight: 900; font-size: 22px; margin: 15px 0;">ОФОРМЛЕНИЕ</h2>
+        <div class="back-link-top"><a href="javascript:history.back()" id="ui-back">← Назад в каталог</a></div>
 
-<div class="main-container">
-    <div class="sidebar" id="sidebar">
-        <!-- Категории будут здесь -->
-    </div>
-
-    <div class="content" id="content">
-        <div id="product-list">
-            <div style="padding: 40px; text-align: center; color: #ccc;">Загрузка меню...</div>
-        </div>
-    </div>
-</div>
-
-<div class="payment-footer" id="footer">
-    <div class="footer-flex">
-        <div>
-            <div class="total-label" id="ui-total-text">К оплате:</div>
-            <div class="total-sum" id="total-sum">0.00 BYN</div>
-        </div>
-        <div style="text-align: right;">
-            <div class="total-label" id="ui-items-text">Товаров:</div>
-            <div class="total-sum" id="total-count" style="font-size: 18px;">0</div>
-        </div>
-    </div>
-    <button class="btn-order" onclick="goToCheckout()" id="ui-order-btn">Оформить заказ</button>
-</div>
-
-<script>
-    let tg = window.Telegram.WebApp;
-    tg.expand();
-
-    let lang = 'ru';
-    let cart = {};
-
-    const categories = [
-        { id: 'sets', label: 'Наборы', icon: '🎁' },
-        { id: 'single', label: 'Поштучно', icon: '✨' },
-        { id: 'cakes', label: 'Торты', icon: '🎂' }
-    ];
-
-    const products = [
-        { id: 'n1', cat: 'sets', name: 'Набор №1', price: 22.00, img: 'https://via.placeholder.com/150' },
-        { id: 'n2', cat: 'sets', name: 'Набор №2', price: 32.00, img: 'https://via.placeholder.com/150' },
-        { id: 'q1', cat: 'single', name: 'Орешек со сгущенкой', price: 1.10, img: 'https://via.placeholder.com/150' },
-        { id: 'q5', cat: 'single', name: 'Трубочка', price: 4.00, img: 'https://via.placeholder.com/150' },
-        { id: 't1', cat: 'cakes', name: 'Медовик 1.1кг', price: 65.00, img: 'https://via.placeholder.com/150' }
-    ];
-
-    function init() {
-        renderSidebar();
-        renderProducts('sets');
-    }
-
-    function renderSidebar() {
-        const sb = document.getElementById('sidebar');
-        sb.innerHTML = categories.map(c => `
-            <div class="nav-item ${c.id === 'sets' ? 'active' : ''}" id="nav-${c.id}" onclick="changeCat('${c.id}')">
-                <div style="font-size: 24px; margin-bottom: 4px;">${c.icon}</div>
-                <div class="nav-label">${c.label}</div>
+        <div class="checkout-card">
+            <div class="checkout-title" id="ui-order-title">Ваш заказ</div>
+            <div id="cart-items-preview"></div>
+            <div class="preview-row" style="color: var(--burgundy); font-weight:700;">
+                <span id="ui-delivery-label">Доставка почтой</span>
+                <span class="item-cost">10.00 BYN</span>
             </div>
-        `).join('');
-    }
+            <div style="font-size:12px;color:#888;text-align:right;">К оплате:</div>
+            <div class="final-sum" id="final-sum">0.00 BYN</div>
+        </div>
 
-    function changeCat(id) {
-        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-        document.getElementById('nav-' + id).classList.add('active');
-        renderProducts(id);
-    }
+        <div class="checkout-card">
+            <div class="checkout-title" id="ui-contact-title">Контактные данные</div>
+            <label id="ui-name-label">Фамилия и Имя</label>
+            <input type="text" id="cust-name">
+            <label id="ui-phone-label">Телефон</label>
+            <input type="tel" id="cust-phone" value="+375 " maxlength="19">
+        </div>
 
-    function renderProducts(catId) {
-        const list = document.getElementById('product-list');
-        const filtered = products.filter(p => p.cat === catId);
-        
-        list.innerHTML = `<div class="section-title">${categories.find(c => c.id === catId).label}</div>` + 
-        filtered.map(p => `
-            <div class="product-card">
-                <img src="${p.img}" class="product-img">
-                <div class="product-info">
-                    <div class="product-name">${p.name}</div>
-                    <div class="product-price">${p.price.toFixed(2)} BYN</div>
-                </div>
-                <div class="counter">
-                    <button class="btn-count" onclick="updateCart('${p.id}', -1)">-</button>
-                    <div class="count-val" id="cnt-${p.id}">${cart[p.id] || 0}</div>
-                    <button class="btn-count" onclick="updateCart('${p.id}', 1)">+</button>
-                </div>
+        <div class="checkout-card">
+            <div class="checkout-title" id="ui-delivery-title">Данные для доставки</div>
+            <label>Способ доставки</label>
+            <div class="select-wrapper">
+                <select id="post-type" onchange="togglePostFields()">
+                    <option value="Европочта">Европочта (пункт выдачи)</option>
+                    <option value="Белпочта">Белпочта (на адрес)</option>
+                </select>
             </div>
-        `).join('');
-    }
+            
+            <label id="ui-city-label">Город</label>
+            <input type="text" id="post-city">
 
-    function updateCart(id, delta) {
-        if (!cart[id]) cart[id] = 0;
-        cart[id] = Math.max(0, cart[id] + delta);
-        
-        const el = document.getElementById('cnt-' + id);
-        if (el) el.innerText = cart[id];
-        
-        updateFooter();
-    }
+            <div id="euro-box">
+                <label id="ui-dept-label">Номер или адрес отделения</label>
+                <input type="text" id="post-dept">
+            </div>
 
-    function updateFooter() {
-        let total = 0;
-        let count = 0;
+            <div id="bel-box" style="display:none;">
+                <label id="ui-addr-label">Полный адрес (Улица, дом, кв)</label>
+                <input type="text" id="post-addr">
+                <label id="ui-index-label">Почтовый индекс</label>
+                <input type="text" id="post-index">
+            </div>
+            <p id="ui-note" style="color:#666; font-size:10px; font-weight:700; margin-top: 5px;">
+                *Отправка осуществляется после 100% оплаты заказа.
+            </p>
+        </div>
+
+        <div class="checkout-card">
+            <div class="checkout-title">Дата отправки заказа</div>
+            <label>Когда отправить заказ</label>
+            <input type="date" id="send-date" onchange="validateDate(this)">
+            <p style="font-size:11px;color:#666;">*Сегодняшняя дата и выходные недоступны для выбора</p>
+        </div>
+
+        <div class="checkout-card">
+            <div class="checkout-title" id="ui-comment-title">Комментарий</div>
+            <textarea id="cust-comment" rows="3"></textarea>
+        </div>
+
+        <div class="checkout-card">
+            <div class="checkout-title">Добавить к заказу</div>
+            <div class="upsell-item" onclick="toggleUpsell(this,'2 пирожных Картошка',8)">✨ 2 пирожных Картошка +8 BYN</div>
+            <div class="upsell-item" onclick="toggleUpsell(this,'Набор орешков мини (6 шт)',12)">✨ Набор орешков мини (6 шт) +12 BYN</div>
+            <div class="upsell-item" onclick="toggleUpsell(this,'Трубочки 2 шт',8)">✨ Трубочки 2 шт +8 BYN</div>
+        </div>
+
+        <div class="checkout-card">
+            <div class="checkout-title" id="ui-finish-title">Оплата (ЕРИП)</div>
+            
+            <div class="payment-summary">
+                <label>К оплате:</label>
+                <span id="pay-total-sum">0.00 BYN</span>
+            </div>
+
+            <div class="erip-box">
+                <div class="erip-text" id="ui-erip-text">Система Расчета ЕРИП / Банковские услуги / Банки / АЛЬФА-БАНК / Пополнение счета:</div>
+                <div class="erip-phone">+375 (29) 651-44-03</div>
+                <button class="btn-copy" id="ui-copy-btn" onclick="copyPhone()">Скопировать номер</button>
+            </div>
+            <button class="btn-main" id="ui-finish-btn" style="margin-top:15px;" onclick="finalSubmit()">Я оплатил, оформить заказ</button>
+        </div>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        let upsells = [];
         
-        for (let id in cart) {
-            let p = products.find(prod => prod.id === id);
-            if (p) {
-                total += p.price * cart[id];
-                count += cart[id];
+        tg.setHeaderColor('#fdfaf5'); 
+        tg.setBackgroundColor('#fdfaf5');
+        tg.expand();
+        tg.ready();
+
+        let lang = localStorage.getItem('selectedLang') || 'ru';
+
+        const ui = {
+            ru: {
+                title: "ОФОРМЛЕНИЕ", back: "← Назад в каталог", order: "Ваш заказ", del_label: "Доставка почтой",
+                contact: "Контактные данные", name: "Фамилия и Имя", name_ph: "Для почты нужно полное ФИО",
+                phone: "Телефон", del_title: "Данные для доставки", city: "Город", city_ph: "Напр: Минск",
+                dept: "Номер или адрес отделения", dept_ph: "Напр: Отделение №142", 
+                addr: "Полный адрес (Улица, дом, кв)", index: "Почтовый индекс", 
+                note: "*Отправка осуществляется после 100% оплаты заказа.",
+                comment: "Комментарий", comment_ph: "Напишите, если есть доп. пожелания...",
+                pay: "Оплата (ЕРИП)", copy: "Скопировать номер", finish: "Оплачено, заказать",
+                alert: "Заполните ФИО, корректный телефон и дату!", copied: "Номер скопирован!",
+                thanks: "ЗАКАЗ ОТПРАВЛЕН", check: "Пришлите чек в чат бота", close_in: "Приложение закроется через"
+            },
+            by: {
+                title: "АФАРМЛЕННЕ", back: "← Назад у каталог", order: "Ваша замова", del_label: "Дастаўка поштай",
+                contact: "Кантактныя дадзеныя", name: "Прозвішча і Імя", name_ph: "Для пошты патрэбна поўнае ПІБ",
+                phone: "Тэлефон", del_title: "Дадзеныя для дастаўкі", city: "Горад", city_ph: "Напр: Мінск",
+                dept: "Нумар або адрас аддзялення", dept_ph: "Напр: Аддзяленне №142", 
+                addr: "Поўны адрас (Вуліца, дом, кв)", index: "Паштовы індэкс", 
+                note: "*Адпраўка ажыццяўляецца пасля 100% аплаты замовы.",
+                comment: "Каментарый", comment_ph: "Напішыце, калі ёсць дадатковыя пажаданні...",
+                pay: "Аплата (АРІП)", copy: "Скапіяваць нумар", finish: "Аплачана, замовіць",
+                alert: "Запоўніце ПІБ, карэктны тэлефон и дату!", copied: "Нумар скапіяваны!",
+                thanks: "ЗАКАЗ АДПРАЎЛЕНЫ", check: "Дашліце чэк у чат бота", close_in: "Дадатак закрыецца праз"
+            }
+        };
+
+        const productsData = {
+            'q1': { name: {ru:'Орешки со сгущёнкой', by:'Арэшкі са згушчонкай'}, price: 1.10 },
+            'q2': { name: {ru:'Орешки сгущ.+орех', by:'Арэшкі са згушч.+арэх'}, price: 1.50 },
+            'q3': { name: {ru:'Кокос и миндаль', by:'Кокас і міндаль'}, price: 1.80 },
+            'q4': { name: {ru:'Nutella и фундук', by:'Nutella і фундук'}, price: 1.80 },
+            'q5': { name: {ru:'Трубочки', by:'Трубачкі'}, price: 4.00 },
+            'q6': { name: {ru:'Муравейник', by:'Мурашнік'}, price: 2.50 },
+            'q7': { name: {ru:'Грибочки', by:'Грыбочкі'}, price: 2.50 },
+            'q8': { name: {ru:'Сердечки', by:'Сэрцайкі'}, price: 2.50 },
+            'q9': { name: {ru:'Кокосовое', by:'Кокасавае'}, price: 2.50 },
+            'q10': { name: {ru:'Орешки в глазури', by:'Арэшкі ў глазуры'}, price: 2.50 },
+            'q11': { name: {ru:'Картошка', by:'Бульба'}, price: 4.00 },
+            'q12': { name: {ru:'Шоколадная колбаса', by:'Шакаладная каўбаса'}, price: 12.00 },
+            't1': { name: {ru:'Медовик 1.1кг', by:'Мядовік 1.1кг'}, price: 65.00 },
+            't2': { name: {ru:'Медовик 2.2кг', by:'Мядовік 2.2кг'}, price: 130.00 },
+            'n1': { name: {ru:'Набор 1', by:'Набор 1'}, price: 22.00 },
+            'n2': { name: {ru:'Набор 2', by:'Набор 2'}, price: 32.00 },
+            'n3': { name: {ru:'Набор 3', by:'Набор 3'}, price: 34.00 },
+            'n4': { name: {ru:'Набор 4', by:'Набор 4'}, price: 45.00 },
+            'n5': { name: {ru:'Набор 5', by:'Набор 5'}, price: 38.00 },
+            'n6': { name: {ru:'Набор 6', by:'Набор 6'}, price: 54.00 }
+        };
+
+        const phoneInput = document.getElementById('cust-phone');
+        phoneInput.addEventListener('input', function(e) {
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,2})(\d{0,3})(\d{0,2})(\d{0,2})/);
+            if (!x[2]) e.target.value = '+375 ';
+            else e.target.value = '+375 (' + x[2] + ') ' + x[3] + (x[4] ? '-' + x[4] : '') + (x[5] ? '-' + x[5] : '');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
+                document.activeElement.blur();
+            }
+        });
+
+        function validateDate(input) {
+            const date = new Date(input.value);
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            
+            const day = date.getDay(); 
+            if (date <= today) {
+                tg.showAlert("Вы не можете выбрать сегодняшнюю или прошедшую дату. Доставка возможна только со следующего буднего дня.");
+                input.value = "";
+            } else if (day === 0 || day === 6) {
+                tg.showAlert("Извините, отправка по выходным не производится. Выберите будний день.");
+                input.value = "";
             }
         }
-        
-        const footer = document.getElementById('footer');
-        if (count > 0) {
-            footer.style.display = 'block';
-            document.getElementById('total-sum').innerText = total.toFixed(2) + ' BYN';
-            document.getElementById('total-count').innerText = count;
-        } else {
-            footer.style.display = 'none';
+
+        const dateInput = document.getElementById('send-date');
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        dateInput.setAttribute('min', tomorrow.toISOString().split('T')[0]);
+
+        function toggleUpsell(el, name, price) {
+            el.classList.toggle('active');
+            const i = upsells.findIndex(x => x.name === name);
+            if (i > -1) upsells.splice(i, 1); else upsells.push({name, price});
+            renderCart();
         }
-    }
 
-    function goToCheckout() {
-        localStorage.setItem('mara_cart', JSON.stringify(cart));
-        localStorage.setItem('mara_total', document.getElementById('total-sum').innerText);
-        window.location.href = 'checkout-rb.html';
-    }
+        function renderCart() {
+            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
+            const total = parseFloat(localStorage.getItem('mara_total') || '0');
+            let html = '', extra = 0;
 
-    init();
-</script>
+            for (let id in cart) {
+                if (productsData[id]) {
+                    html += `<div class="preview-row"><span class="item-name">${productsData[id].name[lang]} (${cart[id]} шт)</span><span class="item-cost">${(productsData[id].price * cart[id]).toFixed(2)} BYN</span></div>`;
+                }
+            }
+            upsells.forEach(item => {
+                extra += item.price;
+                html += `<div class="preview-row"><span class="item-name">${item.name}</span><span class="item-cost">${item.price.toFixed(2)} BYN</span></div>`;
+            });
 
+            document.getElementById('cart-items-preview').innerHTML = html;
+            let final = (total + 10 + extra).toFixed(2);
+            document.getElementById('final-sum').innerText = final + " BYN";
+            document.getElementById('pay-total-sum').innerText = final + " BYN";
+        }
+
+        function togglePostFields() {
+            const type = document.getElementById('post-type').value;
+            document.getElementById('euro-box').style.display = type === 'Европочта' ? 'block' : 'none';
+            document.getElementById('bel-box').style.display = type === 'Белпочта' ? 'block' : 'none';
+        }
+
+        function copyPhone() {
+            navigator.clipboard.writeText('+375296514403').then(() => {
+                const btn = document.getElementById('ui-copy-btn');
+                btn.innerText = ui[lang].copied;
+                setTimeout(() => btn.innerText = ui[lang].copy, 2000);
+            });
+        }
+
+        function finalSubmit() {
+            const name = document.getElementById('cust-name').value.trim();
+            const phone = document.getElementById('cust-phone').value.trim();
+            const city = document.getElementById('post-city').value.trim();
+            const sendDate = document.getElementById('send-date').value;
+
+            if(!name || phone.length < 18 || !city || !sendDate){
+                tg.showAlert(ui[lang].alert);
+                return;
+            }
+
+            const data = {
+                name: name,
+                phone: phone,
+                city: city,
+                total: document.getElementById('final-sum').innerText,
+                date: sendDate,
+                comment: document.getElementById('cust-comment').value
+            };
+
+            let seconds = 5;
+
+            document.body.innerHTML = `
+                <div class="thanks-screen">
+                    <div style="font-size:80px;margin-bottom:20px;">✅</div>
+                    <h2 style="color:#630d16;font-weight:900;">${ui[lang].thanks}</h2>
+                    <p style="color:#555;">${ui[lang].check}</p>
+                    <div style="font-size:12px;color:#aaa;">
+                        ${ui[lang].close_in} <span id="timer">${seconds}</span>...
+                    </div>
+                </div>
+            `;
+
+            setTimeout(() => {
+                tg.sendData(JSON.stringify(data));
+            }, 300);
+
+            const timer = setInterval(() => {
+                seconds--;
+                const el = document.getElementById("timer");
+                if(el) el.innerText = seconds;
+
+                if(seconds <= 0){
+                    clearInterval(timer);
+                    tg.close();
+                }
+            }, 1000);
+        }
+
+        window.onload = function() {
+            const l = ui[lang];
+            document.getElementById('ui-main-title').innerText = l.title;
+            document.getElementById('ui-back').innerText = l.back;
+            document.getElementById('ui-order-title').innerText = l.order;
+            document.getElementById('ui-delivery-label').innerText = l.del_label;
+            document.getElementById('ui-contact-title').innerText = l.contact;
+            document.getElementById('ui-name-label').innerText = l.name;
+            document.getElementById('cust-name').placeholder = l.name_ph;
+            document.getElementById('ui-phone-label').innerText = l.phone;
+            document.getElementById('ui-delivery-title').innerText = l.del_title;
+            document.getElementById('ui-city-label').innerText = l.city;
+            document.getElementById('post-city').placeholder = l.city_ph;
+            document.getElementById('ui-dept-label').innerText = l.dept;
+            document.getElementById('post-dept').placeholder = l.dept_ph;
+            document.getElementById('ui-addr-label').innerText = l.addr;
+            document.getElementById('ui-index-label').innerText = l.index;
+            document.getElementById('ui-note').innerText = l.note;
+            document.getElementById('ui-comment-title').innerText = l.comment;
+            document.getElementById('cust-comment').placeholder = l.comment_ph;
+            document.getElementById('ui-finish-title').innerText = l.pay;
+            document.getElementById('ui-copy-btn').innerText = l.copy;
+            document.getElementById('ui-finish-btn').innerText = l.finish;
+            renderCart();
+        };
+    </script>
 </body>
 </html>
