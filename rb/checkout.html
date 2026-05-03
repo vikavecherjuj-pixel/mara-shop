@@ -319,7 +319,6 @@
                 return;
             }
 
-            // --- ОБНОВЛЕННЫЙ БЛОК ДАННЫХ ---
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
             let items = [];
 
@@ -342,9 +341,11 @@
                 date: sendDate,
                 comment: document.getElementById('cust-comment').value,
                 method: document.getElementById('post-type').value,
+                dept: document.getElementById('post-dept').value,
+                addr: document.getElementById('post-addr').value,
+                index: document.getElementById('post-index').value,
                 items: items
             };
-            // --- КОНЕЦ ОБНОВЛЕННОГО БЛОКА ---
 
             let seconds = 5;
 
