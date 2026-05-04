@@ -178,6 +178,23 @@
 
         let lang = localStorage.getItem('selectedLang') || 'ru';
 
+        // --- ЛОГИКА ПОЛУЧЕНИЯ КОРЗИНЫ ---
+        const params = new URLSearchParams(window.location.search);
+        let cartFromUrl = params.get('cart');
+        let cart = {};
+
+        if (cartFromUrl) {
+            try {
+                cart = JSON.parse(decodeURIComponent(cartFromUrl));
+                localStorage.setItem('mara_cart', JSON.stringify(cart));
+            } catch (e) {
+                cart = {};
+            }
+        } else {
+            cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
+        }
+        // --------------------------------
+
         const ui = {
             ru: {
                 title: "ОФОРМЛЕНИЕ", back: "← Назад в каталог", order: "Ваш заказ", del_label: "Доставка почтой",
@@ -262,20 +279,21 @@
         }
 
         function renderCart() {
-            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
-            const total = parseFloat(localStorage.getItem('mara_total') || '0');
-            let html = '', extra = 0;
+            let html = '', subtotal = 0;
             for (let id in cart) {
                 if (productsData[id]) {
-                    html += `<div class="preview-row"><span class="item-name">${productsData[id].name[lang]} (${cart[id]} шт)</span><span class="item-cost">${(productsData[id].price * cart[id]).toFixed(2)} BYN</span></div>`;
+                    let cost = productsData[id].price * cart[id];
+                    subtotal += cost;
+                    html += `<div class="preview-row"><span class="item-name">${productsData[id].name[lang]} (${cart[id]} шт)</span><span class="item-cost">${cost.toFixed(2)} BYN</span></div>`;
                 }
             }
+            let extra = 0;
             upsells.forEach(item => {
                 extra += item.price;
                 html += `<div class="preview-row"><span class="item-name">${item.name}</span><span class="item-cost">${item.price.toFixed(2)} BYN</span></div>`;
             });
             document.getElementById('cart-items-preview').innerHTML = html;
-            let final = (total + 10 + extra).toFixed(2);
+            let final = (subtotal + 10 + extra).toFixed(2);
             document.getElementById('final-sum').innerText = final + " BYN";
             document.getElementById('pay-total-sum').innerText = final + " BYN";
         }
@@ -304,7 +322,6 @@
             const addr = document.getElementById('post-addr').value.trim();
             const index = document.getElementById('post-index').value.trim();
 
-            // Валидация
             let isValid = name && phone.length >= 18 && city && sendDate;
             if (postType === 'Европочта' && !dept) isValid = false;
             if (postType === 'Белпочта' && (!addr || !index)) isValid = false;
@@ -314,8 +331,6 @@
                 return;
             }
 
-            // Сбор данных
-            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
             let items = [];
             for (let id in cart) {
                 if (productsData[id]) {
@@ -345,7 +360,6 @@
                 items: items
             };
 
-            // ЭКРАН ТАЙМЕРА (как в Гомеле)
             document.getElementById('checkout-screen').innerHTML = `
                 <div style="height:90vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:30px; animation:fadeIn .4s ease;">
                     <div style="width:110px; height:110px; border-radius:50%; background:linear-gradient(135deg,#21a252,#1bc965); display:flex; align-items:center; justify-content:center; font-size:56px; color:white; box-shadow:0 15px 35px rgba(33,162,82,.28);">✓</div>
