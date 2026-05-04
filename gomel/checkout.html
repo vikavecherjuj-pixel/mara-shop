@@ -1,19 +1,377 @@
-function finishOrder() {
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mara Shop - Оформление (Гомель)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root { --accent: #c5a059; --burgundy: #630d16; --dark: #2c1a11; --bg: #fdfaf5; --green: #21a252; --gray: #f4f4f4; }
+        
+        html, body { 
+            font-family: 'Montserrat', sans-serif; 
+            background: linear-gradient(180deg,#fffdf9 0%,#f8f1e8 100%); 
+            margin: 0; padding: 12px; color: var(--dark); min-height: 100vh; 
+            overflow-x: hidden; touch-action: pan-y; position: relative; width: 100%;
+            -webkit-text-size-adjust: 100%; box-sizing: border-box;
+        }
+
+        #checkout-screen { display: flex; flex-direction: column; gap: 16px; padding-bottom: 50px; }
+        .back-link-container { margin-bottom: 5px; }
+        .back-link-container a { color: #aaa; text-decoration: none; font-size: 13px; font-weight: 700; display: inline-block; padding: 5px 0; }
+        
+        .checkout-card { 
+            background: rgba(255,255,255,0.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+            border-radius: 28px; padding: 22px; box-shadow: 0 8px 25px rgba(99,13,22,0.06), 0 2px 8px rgba(0,0,0,0.03);
+            border: 1px solid rgba(255,255,255,0.7);
+        }
+
+        .section-title {
+            font-weight:900; font-size:12px; letter-spacing:1px; margin-bottom:16px;
+            color:var(--burgundy); text-transform:uppercase; padding-bottom:10px;
+            border-bottom:1px solid rgba(197,160,89,0.18);
+        }
+
+        .delivery-selector { display: flex; background: var(--gray); padding: 4px; border-radius: 14px; margin-bottom: 12px; }
+        .delivery-option { flex: 1; padding: 12px; text-align: center; font-size: 12px; font-weight: 700; border-radius: 11px; cursor: pointer; color: #888; transition: all 0.2s; }
+        .delivery-option.active { background: white; color: var(--burgundy); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        #delivery-note { font-size: 11px; color: #888; line-height: 1.5; margin-bottom: 15px; background: #fffcf5; padding: 12px; border-radius: 12px; border-left: 3px solid var(--accent); }
+        
+        input[type="date"] {
+            -webkit-appearance: none; display: flex; align-items: center; justify-content: center;
+            text-align: center; min-width: 100%;
+        }
+
+        input, select, textarea { 
+            width: 100%; border: 1px solid transparent; border-radius: 14px; font-family: 'Montserrat'; font-size: 16px; 
+            box-sizing: border-box; background: var(--gray); outline: none; 
+            color: #000 !important; caret-color: #000 !important;
+            padding: 0 16px; height: 54px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.03);
+        }
+        input:focus, textarea:focus { border-color: var(--accent); background: #fff; }
+        textarea { padding: 14px 16px; min-height: 90px; resize: none; margin-top: 5px; }
+
+        .field-group { flex: 1; display: flex; flex-direction: column; }
+        .field-group label { display: block; font-size: 10px; font-weight: 800; color: #bbb; text-transform: uppercase; margin-bottom: 6px; }
+        
+        .preview-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; border-bottom: 1px dashed #eee; padding-bottom: 6px; align-items: center; }
+        .item-cost { font-weight: 700; color: var(--accent); white-space: nowrap; margin-left: 10px; }
+        .final-total { text-align:right; font-weight:900; color:var(--burgundy); font-size:26px; margin-top:14px; }
+
+        .discuss-btn { 
+            width: 100%; padding: 14px; background: transparent; color: var(--burgundy); 
+            border: 1px solid #ddd; border-radius: 14px; font-size: 13px; font-weight: 700; 
+            cursor: pointer; font-family: 'Montserrat', sans-serif;
+        }
+        .discuss-btn.active { background: var(--burgundy); color: white; }
+        
+        .btn-main {
+            width:100%; padding:18px; background:linear-gradient(135deg,#21a252,#17833f);
+            color:white; border:none; border-radius:18px; font-weight:900; font-size:15px;
+            text-transform:uppercase; cursor:pointer; margin-top:15px; box-shadow:0 10px 25px rgba(33,162,82,0.25);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        #order-time-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .time-btn { padding: 12px; background: #f4f4f4; border-radius: 14px; text-align: center; font-weight: 700; font-size: 14px; cursor: pointer; }
+        .time-btn.active { background: #630d16; color: white; }
+
+        .upsell-item { 
+            display: block; padding: 14px 18px; background: #f8f8f8; border-radius: 16px; 
+            margin-bottom: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px solid transparent; 
+            transition: all 0.2s ease;
+        }
+        .upsell-item span { color: #333; }
+        .upsell-item b { color: var(--accent); margin-left: 6px; font-weight: 700; }
+        .upsell-item.active { background: #fff8ec; border: 1px solid #c5a059; }
+
+        .erip-phone { color: var(--green); font-weight: 900; font-size: 18px; display: block; margin-top: 8px; }
+        
+        .copy-btn { 
+            width: 100%; padding: 12px; background: var(--gray); color: var(--burgundy); 
+            border: none; border-radius: 14px; font-weight: 700; font-size: 12px; 
+            text-transform: uppercase; margin-top: 12px; font-family: 'Montserrat', sans-serif;
+        }
+
+        .payment-summary {
+            background: #fff; border-radius: 14px; padding: 12px; margin-bottom: 12px;
+            border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;
+        }
+        .payment-summary label { font-size: 11px; font-weight: 800; color: #999; text-transform: uppercase; }
+        .payment-summary span { font-size: 18px; font-weight: 900; color: var(--burgundy); }
+
+        @keyframes fadeIn{ from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+    </style>
+</head>
+<body>
+    <div id="checkout-screen">
+        <div class="back-link-container"><a href="javascript:history.back();" id="ui-back">← Назад</a></div>
+        
+        <div class="checkout-card">
+            <div class="section-title">Ваш выбор</div>
+            <div id="cart-list"></div>
+            <div class="final-total" id="final-sum-top">0.00 BYN</div>
+        </div>
+
+        <div class="checkout-card">
+            <div class="section-title">Способ получения</div>
+            <div class="delivery-selector">
+                <div class="delivery-option active" id="opt-pickup" onclick="setDeliv('Самовывоз')">Самовывоз</div>
+                <div class="delivery-option" id="opt-delivery" onclick="setDeliv('Доставка')">Яндекс.Доставка</div>
+            </div>
+            <div id="delivery-note"></div>
+            
+            <div id="time-selection-area">
+                <div class="field-group">
+                    <label>Дата</label>
+                    <input type="date" id="order-date" onchange="enableTime()">
+                </div>
+                <div class="field-group" style="margin-top:14px;">
+                    <label>Время</label>
+                    <div id="order-time-list"></div>
+                    <input type="hidden" id="order-time">
+                </div>
+            </div>
+            <div style="text-align:center; font-size:10px; margin:15px 0; color:#ccc; font-weight: 700;">ИЛИ</div>
+            <button id="btn-discuss" class="discuss-btn" onclick="toggleDisc()">Согласовать время после оплаты</button>
+            <span id="discuss-hint" style="display:none; text-align:center; font-size:11px; color:#666; margin-top:10px;">Напишем вам в чат сразу после заказа.</span>
+        </div>
+
+        <div class="checkout-card">
+            <div class="section-title">Ваши данные</div>
+            <label style="font-size:10px; font-weight:800; color:#bbb;">ИМЯ *</label>
+            <input type="text" id="c-name" placeholder="Введите ваше имя">
+            <label style="font-size:10px; font-weight:800; color:#bbb; margin-top:12px; display:block;">ТЕЛЕФОН *</label>
+            <input type="tel" id="c-phone" value="+375 ">
+            <label style="font-size:10px; font-weight:800; color:#bbb; margin-top:12px; display:block;">КОММЕНТАРИЙ</label>
+            <textarea id="c-comment" placeholder="Адрес доставки или пожелания"></textarea>
+        </div>
+
+        <div class="checkout-card">
+            <div class="section-title">Добавить к заказу</div>
+            <div class="upsell-item" onclick="toggleUpsell(this,'2 пирожных Картошка',8)"><span>✨ 2 пирожных Картошка</span><b>+8 BYN</b></div>
+            <div class="upsell-item" onclick="toggleUpsell(this,'Набор орешков мини (6 шт)',12)"><span>✨ Набор орешков мини (6 шт)</span><b>+12 BYN</b></div>
+            <div class="upsell-item" onclick="toggleUpsell(this,'Трубочки 2 шт',8)"><span>✨ Трубочки 2 шт</span><b>+8 BYN</b></div>
+        </div>
+
+        <div class="checkout-card">
+            <div class="section-title">Оплата (ЕРИП)</div>
+            <div class="payment-summary">
+                <label>К оплате:</label>
+                <span id="final-sum-bottom">0.00 BYN</span>
+            </div>
+            <div style="font-size:11px; color:#555; line-height: 1.4;">Система Расчета ЕРИП / Банковские, Финансовые услуги / Банки, НКФО / АЛЬФА-БАНК / Пополнение счета<span class="erip-phone">+375 (29) 651-44-03</span></div>
+            <button class="copy-btn" onclick="copyNumber('+375296514403', this)">Скопировать номер</button>
+            <button class="btn-main" id="ui-finish" onclick="finishOrder()">Оплачено, заказать</button>
+        </div>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.setHeaderColor('bg_color'); 
+        tg.setBackgroundColor('bg_color');
+
+        let method = "Самовывоз";
+        let isDisc = false;
+        let upsells = [];
+
+        // --- ЛОГИКА ПОЛУЧЕНИЯ КОРЗИНЫ ---
+        const params = new URLSearchParams(window.location.search);
+        let cartFromUrl = params.get('cart');
+        let cart = {};
+
+        if (cartFromUrl) {
+            try {
+                cart = JSON.parse(decodeURIComponent(cartFromUrl));
+                localStorage.setItem('mara_cart', JSON.stringify(cart));
+            } catch (e) {
+                cart = {};
+            }
+        } else {
+            cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
+        }
+        // --------------------------------
+
+        const productsData = {
+            'q1': { name: 'Орешки со сгущёнкой', price: 1.10 },
+            'q2': { name: 'Орешки со сгущёнкой и орехом', price: 1.50 },
+            'q3': { name: 'Кокос и миндаль', price: 1.80 },
+            'q4': { name: 'Nutella и фундук', price: 1.80 },
+            'q5': { name: 'Трубочки', price: 4.00 },
+            'q6': { name: 'Муравейник', price: 2.50 },
+            'q7': { name: 'Грибочки', price: 2.50 },
+            'q8': { name: 'Сердечки', price: 2.50 },
+            'q9': { name: 'Кокосовое', price: 2.50 },
+            'q10': { name: 'Орешки в глазури', price: 2.50 },
+            'q11': { name: 'Картошка', price: 4.00 },
+            'q12': { name: 'Шоколадная колбаса', price: 12.00 },
+            't1': { name: 'Медовик 1.1кг', price: 65.00 },
+            't2': { name: 'Медовик 2.2кг', price: 130.00 },
+            'n1': { name: 'Набор 1', price: 22.00 },
+            'n2': { name: 'Набор 2', price: 32.00 },
+            'n3': { name: 'Набор 3', price: 34.00 },
+            'n4': { name: 'Набор 4', price: 45.00 },
+            'n5': { name: 'Набор 5', price: 38.00 },
+            'n6': { name: 'Набор 6', price: 54.00 }
+        };
+
+        const todayStr = new Date(new Date().getTime() + 3*3600*1000).toISOString().split('T')[0];
+
+        window.onload = function() {
+            render();
+            const dateInput = document.getElementById('order-date');
+            dateInput.setAttribute('min', todayStr);
+            dateInput.value = todayStr;
+            enableTime();
+            setDeliv(method);
+        };
+
+        document.addEventListener('click', function(e) {
+            if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
+                document.activeElement.blur();
+            }
+        });
+
+        function setDeliv(m) {
+            method = m;
+            document.getElementById('opt-pickup').classList.toggle('active', m === 'Самовывоз');
+            document.getElementById('opt-delivery').classList.toggle('active', m === 'Доставка');
+            document.getElementById('delivery-note').innerHTML = m === 'Самовывоз' ?
+                `ул. Свиридова, 6 подъезд.<br><strong>Позвоните за 10 минут: +375 (29) 651-44-03</strong>` :
+                `Яндекс.Доставка<br>ул. Свиридова, 6 подъезд.<br>Перед вызовом позвоните<br><strong>+375 (29) 651-44-03</strong>`;
+        }
+
+        function render() {
+            let html = '';
+            let baseTotal = 0;
+
+            for (let id in cart) {
+                const item = productsData[id];
+                const qty = cart[id];
+                if (item && qty > 0) {
+                    const itemSum = item.price * qty;
+                    baseTotal += itemSum;
+                    html += `
+                    <div class="preview-row">
+                        <span>${item.name} x${qty}</span>
+                        <span class="item-cost">${itemSum.toFixed(2)} BYN</span>
+                    </div>`;
+                }
+            }
+
+            upsells.forEach(up => {
+                html += `
+                <div class="preview-row" style="color: var(--accent); font-weight: 500;">
+                    <span>${up.name}</span>
+                    <span class="item-cost">${up.price.toFixed(2)} BYN</span>
+                </div>`;
+            });
+
+            if (!html) html = '<div style="text-align:center; padding:10px; color:#999;">Корзина пуста</div>';
+            
+            document.getElementById('cart-list').innerHTML = html;
+            recalc(baseTotal);
+        }
+
+        function toggleUpsell(el, name, price) {
+            el.classList.toggle('active');
+            const idx = upsells.findIndex(x => x.name === name);
+            if(idx > -1) {
+                upsells.splice(idx, 1);
+            } else {
+                upsells.push({name, price});
+            }
+            render();
+        }
+
+        function recalc(baseTotal) {
+            if (baseTotal === undefined) {
+                baseTotal = 0;
+                for (let id in cart) {
+                    if (productsData[id]) baseTotal += productsData[id].price * cart[id];
+                }
+            }
+            let extra = upsells.reduce((s, x) => s + x.price, 0);
+            const totalText = (baseTotal + extra).toFixed(2) + ' BYN';
+            document.getElementById('final-sum-top').innerText = totalText;
+            document.getElementById('final-sum-bottom').innerText = totalText;
+        }
+
+        function enableTime() {
+            const box = document.getElementById('order-time-list');
+            const dateInput = document.getElementById('order-date');
+            const hidden = document.getElementById('order-time');
+            box.innerHTML = '';
+            hidden.value = '';
+            isDisc = false;
+            document.getElementById('btn-discuss').classList.remove('active');
+            document.getElementById('discuss-hint').style.display = 'none';
+            document.getElementById('time-selection-area').style.opacity = '1';
+            if (!dateInput.value) return;
+            const now = new Date();
+            const currentHour = now.getHours();
+            for (let h = 9; h <= 21; h++) {
+                if (dateInput.value === todayStr && h < currentHour + 3) continue;
+                let btn = document.createElement('div');
+                btn.className = 'time-btn'; btn.innerText = h + ':00';
+                btn.onclick = () => {
+                    document.querySelectorAll('.time-btn').forEach(x => x.classList.remove('active'));
+                    btn.classList.add('active');
+                    hidden.value = h + ':00';
+                };
+                box.appendChild(btn);
+            }
+        }
+
+        function toggleDisc() {
+            isDisc = !isDisc;
+            const btn = document.getElementById('btn-discuss');
+            const hint = document.getElementById('discuss-hint');
+            const area = document.getElementById('time-selection-area');
+            btn.classList.toggle('active', isDisc);
+            hint.style.display = isDisc ? 'block' : 'none';
+            area.style.opacity = isDisc ? '0.3' : '1';
+            if (isDisc) {
+                document.getElementById('order-time').value = '';
+                document.getElementById('order-time-list').innerHTML = '';
+            } else {
+                document.getElementById('order-date').value = todayStr;
+                enableTime();
+            }
+        }
+
+        document.getElementById('c-phone').addEventListener('input', function(e) {
+            let digits = e.target.value.substring(5).replace(/\D/g, '');
+            let f = '+375 ';
+            if (digits.length > 0) f += '(' + digits.substring(0, 2);
+            if (digits.length >= 3) f += ') ' + digits.substring(2, 5);
+            if (digits.length >= 6) f += '-' + digits.substring(5, 7);
+            if (digits.length >= 8) f += '-' + digits.substring(7, 9);
+            e.target.value = f;
+        });
+
+        function copyNumber(num, btn) {
+            navigator.clipboard.writeText(num);
+            const old = btn.innerText;
+            btn.innerText = "Скопировано!";
+            setTimeout(() => btn.innerText = old, 2000);
+        }
+
+        function finishOrder() {
             const name = document.getElementById('c-name').value.trim();
             const phone = document.getElementById('c-phone').value.trim();
             const date = document.getElementById('order-date').value;
             const time = document.getElementById('order-time').value;
-            
-            // Проверка имени
+
+            // ПРОВЕРКА ОБЯЗАТЕЛЬНЫХ ПОЛЕЙ
             if(!name) return tg.showAlert("Пожалуйста, введите ваше имя");
+            if(phone.length < 17) return tg.showAlert("Пожалуйста, введите полный номер телефона");
             
-            // Проверка телефона (минимум 17 символов для формата +375 (XX) XXX-XX-XX)
-            if(phone.length < 17) return tg.showAlert("Введите корректный номер телефона");
-            
-            // Проверка даты и времени (если не включена опция "Обсудить позже")
             if(!isDisc) {
-                if(!date) return tg.showAlert("Выберите дату получения");
-                if(!time) return tg.showAlert("Выберите удобное время");
+                if(!date) return tg.showAlert("Пожалуйста, выберите дату");
+                if(!time) return tg.showAlert("Пожалуйста, выберите время получения");
             }
 
             let items = [];
@@ -70,3 +428,6 @@ function finishOrder() {
                 }
             }, 1000);
         }
+    </script>
+</body>
+</html>
