@@ -157,11 +157,6 @@
         tg.setHeaderColor('#ffffff');
         tg.setBackgroundColor('#ffffff');
 
-        window.addEventListener('unload', function() {
-            localStorage.removeItem('mara_cart');
-            localStorage.removeItem('mara_total');
-        });
-
         let cart = {}; let total = 0;
         const urlParams = new URLSearchParams(window.location.search);
         let lang = urlParams.get('lang') || localStorage.getItem('selectedLang') || 'ru';
@@ -175,7 +170,7 @@
             },
             by: { 
                 back: "← Назад", view: "🛒 Праглядзець замову", clear: "Ачысціць", pay: "Аформіць", your_order: "ВАША ЗАМОВА", total: "ВЫНІК", from: "ад", pcs: "шт.", empty: "Пуста",
-                no_cake: "Торты даступныя толькі для замовы па Гомелю!"
+                no_cake: "Торты даступныя толькі для замовы по Гомелю!"
             },
             en: { 
                 back: "← Back", view: "🛒 View Order", clear: "Clear", pay: "Checkout", your_order: "YOUR ORDER", total: "TOTAL", from: "from", pcs: "pcs.", empty: "Empty",
@@ -317,21 +312,21 @@
 
         function goToCheckout() {
             if (total === 0) return;
-            localStorage.setItem('mara_cart', JSON.stringify(cart));
-            localStorage.setItem('mara_total', total.toFixed(2));
+
+            const cartString = encodeURIComponent(JSON.stringify(cart));
             const selectedCity = localStorage.getItem('selectedCity') || 'Гомель';
+
             if (selectedCity === 'Гомель') {
-                window.location.href = 'gomel/checkout.html?city=Гомель&lang=' + lang;
+                window.location.href = 'gomel/checkout.html?city=Гомель&lang=' + lang + '&cart=' + cartString;
             } else {
-                window.location.href = 'rb/checkout.html?city=Другой&lang=' + lang;
+                window.location.href = 'rb/checkout.html?city=Другой&lang=' + lang + '&cart=' + cartString;
             }
         }
 
         function clearCart() { cart = {}; localStorage.removeItem('mara_cart'); updateTotal(); }
 
         function changeCat(i, el) { 
-            // КАТЕГОРИЯ ТОРТЫ ИМЕЕТ ИНДЕКС 3 (четвертая в списке)
-            const selectedCity = localStorage.getItem('mara_city') || localStorage.getItem('selectedCity');
+            const selectedCity = localStorage.getItem('selectedCity');
             
             if (i === 3 && selectedCity !== 'Гомель') {
                 alert(ui[lang].no_cake);
