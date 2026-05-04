@@ -75,11 +75,6 @@
         .payment-summary label { font-size: 11px; font-weight: 800; color: #999; text-transform: uppercase; margin-bottom: 0; }
         .payment-summary span { font-size: 18px; font-weight: 900; color: var(--burgundy); }
 
-        .thanks-screen {
-            display:flex; flex-direction:column; align-items:center; justify-content:center; 
-            height:90vh; text-align:center; padding:20px; font-family:'Montserrat';
-            animation: fadeIn 0.5s ease;
-        }
         @keyframes fadeIn{ from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
     </style>
 </head>
@@ -194,19 +189,19 @@
                 comment: "Комментарий", comment_ph: "Напишите, если есть доп. пожелания...",
                 pay: "Оплата (ЕРИП)", copy: "Скопировать номер", finish: "Оплачено, заказать",
                 alert: "Заполните все данные для доставки!", copied: "Номер скопирован!",
-                thanks: "ЗАКАЗ ОТПРАВЛЕН", check: "Пришлите чек в чат бота", close_in: "Приложение закроется через"
+                thanks: "Спасибо за заказ", check: "Ваш заказ успешно отправлен.<br>Сейчас переведём вас в чат<br>для отправки чека оплаты."
             },
             by: {
                 title: "АФАРМЛЕННЕ", back: "← Назад у каталог", order: "Ваша замова", del_label: "Дастаўка поштай",
                 contact: "Кантактныя дадзеныя", name: "Прозвішча і Імя", name_ph: "Для пошты патрэбна поўнае ПІБ",
-                phone: "Тэлефон", del_title: "Дадзеныя для дастаўкі", city: "Горад", city_ph: "Напр: Мінск",
+                phone: "Тэлефон", del_title: "Дастаўка", city: "Горад", city_ph: "Напр: Мінск",
                 dept: "Нумар або адрас аддзялення", dept_ph: "Напр: Аддзяленне №142", 
                 addr: "Поўны адрас (Вуліца, дом, кв)", index: "Паштовы індэкс", 
                 note: "*Адпраўка ажыццяўляецца пасля 100% аплаты замовы.",
                 comment: "Каментарый", comment_ph: "Напішыце, калі ёсць дадатковыя пажаданні...",
                 pay: "Аплата (АРІП)", copy: "Скапіяваць нумар", finish: "Аплачана, замовіць",
                 alert: "Запоўніце ўсе дадзеныя для дастаўкі!", copied: "Нумар скапіяваны!",
-                thanks: "ЗАКАЗ АДПРАЎЛЕНЫ", check: "Дашліце чэк у чат бота", close_in: "Дадатак закрыецца праз"
+                thanks: "Дзякуй за замову", check: "Ваша замова паспяхова адпраўлена.<br>Зараз перевядзем вас у чат<br>для адпраўкі чэка аплаты."
             }
         };
 
@@ -240,23 +235,16 @@
             else e.target.value = '+375 (' + x[2] + ') ' + x[3] + (x[4] ? '-' + x[4] : '') + (x[5] ? '-' + x[5] : '');
         });
 
-        document.addEventListener('click', function(e) {
-            if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
-                document.activeElement.blur();
-            }
-        });
-
         function validateDate(input) {
             const date = new Date(input.value);
             const today = new Date();
             today.setHours(0,0,0,0);
-            
             const day = date.getDay(); 
             if (date <= today) {
-                tg.showAlert("Вы не можете выбрать сегодняшнюю или прошедшую дату. Доставка возможна только со следующего буднего дня.");
+                tg.showAlert("Выберите будущую дату.");
                 input.value = "";
             } else if (day === 0 || day === 6) {
-                tg.showAlert("Извините, отправка по выходным не производится. Выберите будний день.");
+                tg.showAlert("Выходные недоступны для отправки.");
                 input.value = "";
             }
         }
@@ -277,7 +265,6 @@
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
             const total = parseFloat(localStorage.getItem('mara_total') || '0');
             let html = '', extra = 0;
-
             for (let id in cart) {
                 if (productsData[id]) {
                     html += `<div class="preview-row"><span class="item-name">${productsData[id].name[lang]} (${cart[id]} шт)</span><span class="item-cost">${(productsData[id].price * cart[id]).toFixed(2)} BYN</span></div>`;
@@ -287,7 +274,6 @@
                 extra += item.price;
                 html += `<div class="preview-row"><span class="item-name">${item.name}</span><span class="item-cost">${item.price.toFixed(2)} BYN</span></div>`;
             });
-
             document.getElementById('cart-items-preview').innerHTML = html;
             let final = (total + 10 + extra).toFixed(2);
             document.getElementById('final-sum').innerText = final + " BYN";
@@ -318,24 +304,19 @@
             const addr = document.getElementById('post-addr').value.trim();
             const index = document.getElementById('post-index').value.trim();
 
-            // Базовая проверка (ФИО, Телефон, Город, Дата)
+            // Валидация
             let isValid = name && phone.length >= 18 && city && sendDate;
-
-            // Проверка специфических полей для Европочты или Белпочты
-            if (postType === 'Европочта') {
-                if (!dept) isValid = false;
-            } else if (postType === 'Белпочта') {
-                if (!addr || !index) isValid = false;
-            }
+            if (postType === 'Европочта' && !dept) isValid = false;
+            if (postType === 'Белпочта' && (!addr || !index)) isValid = false;
 
             if(!isValid){
                 tg.showAlert(ui[lang].alert);
                 return;
             }
 
+            // Сбор данных
             const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
             let items = [];
-
             for (let id in cart) {
                 if (productsData[id]) {
                     items.push({
@@ -346,11 +327,14 @@
                     });
                 }
             }
+            upsells.forEach(up => {
+                items.push({ sku: 'upsell', name: up.name, quantity: 1, price: up.price });
+            });
 
             const data = {
                 name: name,
                 phone: phone,
-                city: city,
+                city: city.toUpperCase(),
                 total: document.getElementById('final-sum').innerText,
                 date: sendDate,
                 comment: document.getElementById('cust-comment').value,
@@ -361,31 +345,28 @@
                 items: items
             };
 
-            let seconds = 5;
-
-            document.body.innerHTML = `
-                <div class="thanks-screen">
-                    <div style="font-size:80px;margin-bottom:20px;">✅</div>
-                    <h2 style="color:#630d16;font-weight:900;">${ui[lang].thanks}</h2>
-                    <p style="color:#555;">${ui[lang].check}</p>
-                    <div style="font-size:12px;color:#aaa;">
-                        ${ui[lang].close_in} <span id="timer">${seconds}</span>...
+            // ЭКРАН ТАЙМЕРА (как в Гомеле)
+            document.getElementById('checkout-screen').innerHTML = `
+                <div style="height:90vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:30px; animation:fadeIn .4s ease;">
+                    <div style="width:110px; height:110px; border-radius:50%; background:linear-gradient(135deg,#21a252,#1bc965); display:flex; align-items:center; justify-content:center; font-size:56px; color:white; box-shadow:0 15px 35px rgba(33,162,82,.28);">✓</div>
+                    <div style="font-size:30px; font-weight:900; color:#630d16; margin-top:22px;">${ui[lang].thanks}</div>
+                    <div style="font-size:15px; color:#666; line-height:1.6; margin-top:12px; max-width:280px;">
+                        ${ui[lang].check}
                     </div>
+                    <div id="countdown" style="margin-top:26px; font-size:18px; font-weight:800; color:#c5a059;">3...</div>
                 </div>
             `;
 
-            setTimeout(() => {
-                tg.sendData(JSON.stringify(data));
-            }, 300);
-
+            let sec = 3;
             const timer = setInterval(() => {
-                seconds--;
-                const el = document.getElementById("timer");
-                if(el) el.innerText = seconds;
-
-                if(seconds <= 0){
+                sec--;
+                const el = document.getElementById('countdown');
+                if(el) el.innerText = sec + '...';
+                
+                if(sec <= 0) {
                     clearInterval(timer);
-                    tg.close();
+                    tg.sendData(JSON.stringify(data));
+                    setTimeout(() => tg.close(), 100);
                 }
             }, 1000);
         }
