@@ -187,13 +187,13 @@
             ru: {
                 title: "ОФОРМЛЕНИЕ", back: "← Назад в каталог", order: "Ваш заказ", del_label: "Доставка почтой",
                 contact: "Контактные данные", name: "Фамилия и Имя", name_ph: "Для почты нужно полное ФИО",
-                phone: "Телефон", del_title: "Дадзеныя для дастаўкі", city: "Город", city_ph: "Напр: Минск",
+                phone: "Телефон", del_title: "Данные для доставки", city: "Город", city_ph: "Напр: Минск",
                 dept: "Номер или адрес отделения", dept_ph: "Напр: Отделение №142", 
                 addr: "Полный адрес (Улица, дом, кв)", index: "Почтовый индекс", 
                 note: "*Отправка осуществляется после 100% оплаты заказа.",
                 comment: "Комментарий", comment_ph: "Напишите, если есть доп. пожелания...",
                 pay: "Оплата (ЕРИП)", copy: "Скопировать номер", finish: "Оплачено, заказать",
-                alert: "Заполните ФИО, корректный телефон и дату!", copied: "Номер скопирован!",
+                alert: "Заполните все данные для доставки!", copied: "Номер скопирован!",
                 thanks: "ЗАКАЗ ОТПРАВЛЕН", check: "Пришлите чек в чат бота", close_in: "Приложение закроется через"
             },
             by: {
@@ -205,7 +205,7 @@
                 note: "*Адпраўка ажыццяўляецца пасля 100% аплаты замовы.",
                 comment: "Каментарый", comment_ph: "Напішыце, калі ёсць дадатковыя пажаданні...",
                 pay: "Аплата (АРІП)", copy: "Скапіяваць нумар", finish: "Аплачана, замовіць",
-                alert: "Запоўніце ПІБ, карэктны тэлефон и дату!", copied: "Нумар скапіяваны!",
+                alert: "Запоўніце ўсе дадзеныя для дастаўкі!", copied: "Нумар скапіяваны!",
                 thanks: "ЗАКАЗ АДПРАЎЛЕНЫ", check: "Дашліце чэк у чат бота", close_in: "Дадатак закрыецца праз"
             }
         };
@@ -313,8 +313,22 @@
             const phone = document.getElementById('cust-phone').value.trim();
             const city = document.getElementById('post-city').value.trim();
             const sendDate = document.getElementById('send-date').value;
+            const postType = document.getElementById('post-type').value;
+            const dept = document.getElementById('post-dept').value.trim();
+            const addr = document.getElementById('post-addr').value.trim();
+            const index = document.getElementById('post-index').value.trim();
 
-            if(!name || phone.length < 18 || !city || !sendDate){
+            // Базовая проверка (ФИО, Телефон, Город, Дата)
+            let isValid = name && phone.length >= 18 && city && sendDate;
+
+            // Проверка специфических полей для Европочты или Белпочты
+            if (postType === 'Европочта') {
+                if (!dept) isValid = false;
+            } else if (postType === 'Белпочта') {
+                if (!addr || !index) isValid = false;
+            }
+
+            if(!isValid){
                 tg.showAlert(ui[lang].alert);
                 return;
             }
@@ -340,10 +354,10 @@
                 total: document.getElementById('final-sum').innerText,
                 date: sendDate,
                 comment: document.getElementById('cust-comment').value,
-                method: document.getElementById('post-type').value,
-                dept: document.getElementById('post-dept').value,
-                addr: document.getElementById('post-addr').value,
-                index: document.getElementById('post-index').value,
+                method: postType,
+                dept: dept,
+                addr: addr,
+                index: index,
                 items: items
             };
 
