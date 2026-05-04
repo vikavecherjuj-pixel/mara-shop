@@ -177,6 +177,23 @@
         let isDisc = false;
         let upsells = [];
 
+        // --- ЛОГИКА ПОЛУЧЕНИЯ КОРЗИНЫ ---
+        const params = new URLSearchParams(window.location.search);
+        let cartFromUrl = params.get('cart');
+        let cart = {};
+
+        if (cartFromUrl) {
+            try {
+                cart = JSON.parse(decodeURIComponent(cartFromUrl));
+                localStorage.setItem('mara_cart', JSON.stringify(cart));
+            } catch (e) {
+                cart = {};
+            }
+        } else {
+            cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
+        }
+        // --------------------------------
+
         const productsData = {
             'q1': { name: 'Орешки со сгущёнкой', price: 1.10 },
             'q2': { name: 'Орешки со сгущёнкой и орехом', price: 1.50 },
@@ -227,7 +244,6 @@
         }
 
         function render() {
-            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
             let html = '';
             let baseTotal = 0;
 
@@ -272,7 +288,6 @@
 
         function recalc(baseTotal) {
             if (baseTotal === undefined) {
-                const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
                 baseTotal = 0;
                 for (let id in cart) {
                     if (productsData[id]) baseTotal += productsData[id].price * cart[id];
@@ -348,7 +363,6 @@
             const name = document.getElementById('c-name').value.trim();
             if(!name) return tg.showAlert("Введите имя");
             
-            const cart = JSON.parse(localStorage.getItem('mara_cart') || '{}');
             let items = [];
 
             for (let id in cart) {
@@ -362,7 +376,6 @@
                 }
             }
 
-            // Добавляем выбранные допы (upsells) в массив товаров
             upsells.forEach(up => {
                 items.push({
                     sku: 'upsell',
