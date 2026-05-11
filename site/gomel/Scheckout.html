@@ -411,14 +411,24 @@
                 <div id="countdown" style="margin-top:26px; font-size:18px; font-weight:800; color:#c5a059;">3...</div>
             </div>`;
 
+            // УКАЖИТЕ ЗДЕСЬ ВАШ URL
+            const SERVER_URL = 'https://your-server-address.com/api'; 
+
+            // Отправляем данные сразу
+            fetch(SERVER_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).catch(e => console.log("Ошибка отправки (но мы продолжим):", e));
+
             let sec = 3;
             const timer = setInterval(() => {
                 sec--;
                 if(document.getElementById('countdown')) document.getElementById('countdown').innerText = sec + '...';
                 if(sec <= 0) {
                     clearInterval(timer);
-                    console.log("Данные заказа:", data);
-                    // Здесь логика отправки данных на сервер, так как tg.sendData вне Telegram не работает
+                    // После таймера отправляем в Telegram к менеджеру
+                    window.location.href = "https://t.me/mara_manager"; 
                 }
             }, 1000);
         }
