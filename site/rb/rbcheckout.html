@@ -371,8 +371,7 @@
                 
                 if(sec <= 0) {
                     clearInterval(timer);
-                    console.log("Order Data:", data);
-                    // Здесь можно добавить перенаправление или отправку данных на сервер
+                    fetch('https://api.telegram.org/bot8661108407:AAHorrust7ahLa_4eAb-qSucV08YPcDjTew/sendMessage', {    method: 'POST',    headers: {'Content-Type': 'application/json'},    body: JSON.stringify({        chat_id: 689936256,        text: '🌐 ЗАКАЗ С САЙТА\n\n' +              '👤 ' + data.name + '\n' +              '📞 ' + data.phone + '\n' +              '🌍 ' + (data.city || 'ГОМЕЛЬ') + '\n' +              '🚚 ' + data.method + '\n' +              '📅 ' + (data.date || '-') + '\n' +              '🛒 ' + data.items.map(i => i.name + ' x' + i.quantity).join(', ') + '\n' +              '💰 ' + data.total    })});
                 }
             }, 1000);
         }
