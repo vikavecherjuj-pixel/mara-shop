@@ -219,11 +219,43 @@
 
         const todayStr = new Date(new Date().getTime() + 3*3600*1000).toISOString().split('T')[0];
 
+        function getNextWorkingDay(date) {
+            const d = new Date(date);
+
+            // 0 = воскресенье, 6 = суббота
+            while (d.getDay() === 0 || d.getDay() === 6) {
+                d.setDate(d.getDate() + 1);
+            }
+
+            return d;
+        }
+
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
+        }
+
         window.onload = function() {
             render();
             const dateInput = document.getElementById('order-date');
-            dateInput.setAttribute('min', todayStr);
-            dateInput.value = todayStr;
+
+            const firstAvailableDate = getNextWorkingDay(new Date());
+
+            dateInput.min = formatDate(firstAvailableDate);
+            dateInput.value = formatDate(firstAvailableDate);
+
+            dateInput.addEventListener("change", function () {
+                const selected = new Date(this.value);
+
+                if (selected.getDay() === 0 || selected.getDay() === 6) {
+                    tg.showAlert("В субботу и воскресенье заказы не принимаются.");
+
+                    const nextDay = getNextWorkingDay(selected);
+                    this.value = formatDate(nextDay);
+
+                    enableTime();
+                }
+            });
+
             enableTime();
             setDeliv(method);
         };
@@ -337,7 +369,8 @@
                 document.getElementById('order-time').value = '';
                 document.getElementById('order-time-list').innerHTML = '';
             } else {
-                document.getElementById('order-date').value = todayStr;
+                const firstAvailableDate = getNextWorkingDay(new Date());
+                document.getElementById('order-date').value = formatDate(firstAvailableDate);
                 enableTime();
             }
         }
